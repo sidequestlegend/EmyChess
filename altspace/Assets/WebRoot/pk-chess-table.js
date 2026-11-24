@@ -88,9 +88,38 @@
     get Protected() {
       return linkOf(this).protectedValues;
     }
-    /** For a per-player behaviour: the player it belongs to. Null on an ordinary behaviour. */
+    /**
+     * For a per-player behaviour: the player it belongs to. Null on an ordinary behaviour. An upstream field named
+     * `Player` would hide it: such a port renames the field (the convention: `upstreamPlayer`) or reads `OwnerPlayer`.
+     */
     get Player() {
       return linkOf(this).player;
+    }
+    /** The same as `Player`, under a name no upstream field is likely to use. */
+    get OwnerPlayer() {
+      return linkOf(this).player;
+    }
+    /**
+     * One object shared by every instance of this game on the page (two tables of one game keep one chip balance
+     * here). Page memory only: not synced, not saved, gone when the page reloads (use Storage for that).
+     */
+    get Shared() {
+      return linkOf(this).shared;
+    }
+    /** This instance's key (the `room` / `instance` attribute, or the element's index): `pk1.<slug>.<key>`. */
+    get InstanceKey() {
+      return linkOf(this).instanceKey;
+    }
+    /**
+     * This behaviour's own click reach in metres, overriding the bindings' `reach`, the class's `interactReach` and
+     * the game's default (a snippet setting, for example). Undefined: those apply. 0: any distance.
+     */
+    get InteractReach() {
+      return linkOf(this).reach.get(this);
+    }
+    set InteractReach(metres) {
+      if (metres === void 0) linkOf(this).reach.delete(this);
+      else linkOf(this).reach.set(this, metres);
     }
     // ---- calls --------------------------------------------------------------------------------------------------
     /** Sends the synced fields. Only the owner's request does anything; it goes out at the end of the tick. */
@@ -105,7 +134,8 @@
     /**
      * Runs `name` on every client (All: here at once, then everywhere else) or only on the owner's. Arguments
      * must be JSON data or the value types of values.ts. While the method runs, `Networking.CallingPlayer` is
-     * the sender: check it before honouring a request not everybody may make.
+     * the sender: check it before honouring a request not everybody may make. `name` must be listed in the
+     * class's `static networkCallable`.
      */
     SendCustomNetworkEvent(target, name, ...args) {
       linkOf(this).sendNetworkEvent(target, name, args);
@@ -249,8 +279,19 @@
   __publicField(Behaviour, "perPlayer", false);
   /** For a per-player behaviour: its synced fields are saved on the device and put back on the next visit. */
   __publicField(Behaviour, "persistent", false);
-  /** Metres from the local head within which a click counts as Interact(). 0 means any distance. */
+  /**
+   * Metres from the nearest of the local head and hands within which a click counts as Interact() (or as a bound
+   * click). 0 means any distance. A behaviour can change its own at run time with `InteractReach`.
+   */
   __publicField(Behaviour, "interactReach", 0);
+  /**
+   * The methods another client may run on this behaviour: by SendCustomNetworkEvent, or by SendCommand on the
+   * referee. Nothing else can be called from the network (a modified client names any method it likes), and a
+   * name starting with `_` never can. A subclass's list adds to its parent's.
+   *
+   *   static networkCallable = ["StartGame", "PlaceBid"];
+   */
+  __publicField(Behaviour, "networkCallable", []);
 
   // portkit/src/names.ts
   var TAG = "pk1";
@@ -584,6 +625,18 @@
     static Distance(a, b) {
       return a.sub(b).magnitude;
     }
+    /** Degrees between two directions, 0 to 180 (UnityEngine.Vector3.Angle; 0 when either is nearly zero). */
+    static Angle(from, to) {
+      const denominator = Math.sqrt(from.sqrMagnitude * to.sqrMagnitude);
+      if (denominator < 1e-15) return 0;
+      const dot = Mathf.Clamp(_Vector3.Dot(from, to) / denominator, -1, 1);
+      return Math.acos(dot) * Mathf.Rad2Deg;
+    }
+    /** Reflects a direction off the plane with normal `inNormal` (UnityEngine.Vector3.Reflect). */
+    static Reflect(inDirection, inNormal) {
+      const factor = -2 * _Vector3.Dot(inNormal, inDirection);
+      return new _Vector3(factor * inNormal.x + inDirection.x, factor * inNormal.y + inDirection.y, factor * inNormal.z + inDirection.z);
+    }
     static Dot(a, b) {
       return a.x * b.x + a.y * b.y + a.z * b.z;
     }
@@ -682,6 +735,46 @@
       };
       return new Vector3(wrap(ex), wrap(ey), wrap(ez));
     }
+    /** Degrees between two rotations (UnityEngine.Quaternion.Angle). */
+    static Angle(a, b) {
+      const dot = Math.min(Math.abs(a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w), 1);
+      return dot > 0.999999 ? 0 : Math.acos(dot) * 2 * Mathf.Rad2Deg;
+    }
+    /**
+     * The rotation whose forward (Z) is `forward` and whose up is as close to `upwards` as it can be
+     * (UnityEngine.Quaternion.LookRotation). A zero forward gives the identity.
+     */
+    static LookRotation(forward, upwards = new Vector3(0, 1, 0)) {
+      const f = forward.normalized;
+      if (f.sqrMagnitude < 1e-12) return _Quaternion.identity;
+      let r = Vector3.Cross(upwards, f);
+      if (r.sqrMagnitude < 1e-12) {
+        const axis = Vector3.Cross(new Vector3(0, 0, 1), f);
+        if (axis.sqrMagnitude < 1e-12) return f.z >= 0 ? _Quaternion.identity : new _Quaternion(0, 1, 0, 0);
+        return _Quaternion.AngleAxis(Math.acos(Mathf.Clamp(f.z, -1, 1)) * Mathf.Rad2Deg, axis);
+      }
+      r = r.normalized;
+      const u = Vector3.Cross(f, r);
+      const m00 = r.x, m01 = u.x, m02 = f.x;
+      const m10 = r.y, m11 = u.y, m12 = f.y;
+      const m20 = r.z, m21 = u.z, m22 = f.z;
+      const trace2 = m00 + m11 + m22;
+      let q;
+      if (trace2 > 0) {
+        const s = Math.sqrt(trace2 + 1) * 2;
+        q = new _Quaternion((m21 - m12) / s, (m02 - m20) / s, (m10 - m01) / s, 0.25 * s);
+      } else if (m00 > m11 && m00 > m22) {
+        const s = Math.sqrt(1 + m00 - m11 - m22) * 2;
+        q = new _Quaternion(0.25 * s, (m01 + m10) / s, (m02 + m20) / s, (m21 - m12) / s);
+      } else if (m11 > m22) {
+        const s = Math.sqrt(1 + m11 - m00 - m22) * 2;
+        q = new _Quaternion((m01 + m10) / s, 0.25 * s, (m12 + m21) / s, (m02 - m20) / s);
+      } else {
+        const s = Math.sqrt(1 + m22 - m00 - m11) * 2;
+        q = new _Quaternion((m02 + m20) / s, (m12 + m21) / s, 0.25 * s, (m10 - m01) / s);
+      }
+      return q;
+    }
     static Slerp(a, b, t) {
       const k = Mathf.Clamp01(t);
       let dot = a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
@@ -759,6 +852,111 @@
     }
     static get clear() {
       return new _Color(0, 0, 0, 0);
+    }
+    static get cyan() {
+      return new _Color(0, 1, 1, 1);
+    }
+    static get magenta() {
+      return new _Color(1, 0, 1, 1);
+    }
+    static get gray() {
+      return new _Color(0.5, 0.5, 0.5, 1);
+    }
+    static get grey() {
+      return new _Color(0.5, 0.5, 0.5, 1);
+    }
+    /**
+     * UnityEngine.Color.HSVToRGB, line for line: H, S, V in [0, 1]; with `hdr` false each channel is clamped to
+     * [0, 1]. Alpha is 1. (Unity computes in single precision; this in double: the last digits can differ.)
+     */
+    static HSVToRGB(H, S, V, hdr = true) {
+      const c = new _Color(1, 1, 1, 1);
+      if (S === 0) {
+        c.r = V;
+        c.g = V;
+        c.b = V;
+      } else if (V === 0) {
+        c.r = 0;
+        c.g = 0;
+        c.b = 0;
+      } else {
+        c.r = 0;
+        c.g = 0;
+        c.b = 0;
+        const h = H * 6;
+        const temp = Math.floor(h);
+        const t = h - temp;
+        const var1 = V * (1 - S);
+        const var2 = V * (1 - S * t);
+        const var3 = V * (1 - S * (1 - t));
+        switch (temp) {
+          case 0:
+            c.r = V;
+            c.g = var3;
+            c.b = var1;
+            break;
+          case 1:
+            c.r = var2;
+            c.g = V;
+            c.b = var1;
+            break;
+          case 2:
+            c.r = var1;
+            c.g = V;
+            c.b = var3;
+            break;
+          case 3:
+            c.r = var1;
+            c.g = var2;
+            c.b = V;
+            break;
+          case 4:
+            c.r = var3;
+            c.g = var1;
+            c.b = V;
+            break;
+          case 5:
+            c.r = V;
+            c.g = var1;
+            c.b = var2;
+            break;
+          case 6:
+            c.r = V;
+            c.g = var3;
+            c.b = var1;
+            break;
+          case -1:
+            c.r = V;
+            c.g = var1;
+            c.b = var2;
+            break;
+        }
+        if (!hdr) {
+          c.r = Mathf.Clamp01(c.r);
+          c.g = Mathf.Clamp01(c.g);
+          c.b = Mathf.Clamp01(c.b);
+        }
+      }
+      return c;
+    }
+    /** UnityEngine.Color.RGBToHSV: [H, S, V], each in [0, 1]. */
+    static RGBToHSV(color) {
+      const { r, g, b } = color;
+      const rgbToHue = (offset, dominant, c1, c2) => {
+        const V = dominant;
+        if (V === 0) return [0, 0, 0];
+        const min = c1 > c2 ? c2 : c1;
+        const delta = V - min;
+        if (delta === 0) return [0, 0, V];
+        const S = delta / V;
+        let H = offset + (c1 - c2) / delta;
+        H /= 6;
+        if (H < 0) H += 1;
+        return [H, S, V];
+      };
+      if (b > g && b > r) return rgbToHue(4, b, r, g);
+      if (g > r) return rgbToHue(2, g, b, r);
+      return rgbToHue(0, r, g, b);
     }
     clone() {
       return new _Color(this.r, this.g, this.b, this.a);
@@ -1017,6 +1215,8 @@
       if (entry.restored && !entry.announced) {
         entry.announced = true;
         this.hooks.restored(player);
+        const all = Object.keys(now).sort();
+        if (all.length) this.hooks.dataUpdated(player, all);
         return;
       }
       const keys = [];
@@ -1091,7 +1291,11 @@
     playerDelivered(player) {
       this.delivered.set(player.sid, player);
       if (player.isLocal) {
-        if (this.dataEnabled || this.hasPersistentLocal()) this.hooks.restored(player);
+        if (this.dataEnabled || this.hasPersistentLocal()) {
+          this.hooks.restored(player);
+          const all = Object.keys(this.local).sort();
+          if (this.dataEnabled && all.length) this.hooks.dataUpdated(player, all);
+        }
         return;
       }
       this.readRemoteData(player.sid);
@@ -1158,8 +1362,8 @@
   };
 
   // portkit/src/bindings.ts
-  var EVENT_KINDS = ["click", "grab", "drop", "triggerEnter", "triggerExit", "collisionEnter", "collisionExit", "uiButton", "uiSlider", "uiToggle", "heldTrigger", "heldPrimary", "heldSecondary", "graph"];
-  var GRAPH_KINDS = ["uiButton", "uiSlider", "uiToggle", "heldTrigger", "heldPrimary", "heldSecondary"];
+  var EVENT_KINDS = ["click", "grab", "drop", "triggerEnter", "triggerExit", "collisionEnter", "collisionExit", "uiButton", "uiSlider", "uiToggle", "heldTrigger", "heldPrimary", "heldSecondary", "field", "graph"];
+  var GRAPH_KINDS = ["uiButton", "uiSlider", "uiToggle", "heldTrigger", "heldPrimary", "heldSecondary", "field"];
   function validateBindings(json) {
     const problems = [];
     const fail = (text) => problems.push(text);
@@ -1244,213 +1448,6 @@
     };
   }
 
-  // portkit/src/commands.ts
-  var MAX_COMMAND_BYTES = 2048;
-  var Commands = class {
-    constructor(core, presence, referee, routes) {
-      __publicField(this, "core");
-      __publicField(this, "presence");
-      __publicField(this, "referee");
-      __publicField(this, "routes");
-      __publicField(this, "queue", []);
-      __publicField(this, "nextNumber", 0);
-      __publicField(this, "lastWritten", "");
-      __publicField(this, "lastWrittenAt", -Infinity);
-      /** False until behaviours have started: the referee runs nothing before then. */
-      __publicField(this, "started", false);
-      __publicField(this, "run", 0);
-      this.core = core;
-      this.presence = presence;
-      this.referee = referee;
-      this.routes = routes;
-    }
-    listen() {
-      this.core.onState((key) => {
-        if (key === "ack") this.review();
-      });
-      this.presence.onExtra(() => this.review());
-      this.presence.on(() => this.review());
-      this.referee.on(() => this.review());
-    }
-    send(behaviour, name, args) {
-      const address = this.routes.address(behaviour);
-      if (!address) return 0;
-      if (this.nextNumber === 0) this.nextNumber = (this.table()[this.core.me.sid] ?? 0) + 1;
-      const n = this.nextNumber++;
-      const record = [n, address.id, address.playerSid ?? "", name, args.map(encodeValue)];
-      if (utf8Length(asciiJson(record)) > MAX_COMMAND_BYTES) {
-        this.routes.refused(behaviour, "value_too_large", name);
-        return 0;
-      }
-      this.queue.push({ n, behaviour, record });
-      this.review();
-      return n;
-    }
-    /** Publishes, runs and acknowledges whatever is due. Also called about once a second. */
-    review() {
-      if (this.core.disposed || !this.started) return;
-      const me = this.core.me.sid;
-      const acked = this.table()[me] ?? 0;
-      while (this.queue.length && this.queue[0].n <= acked) {
-        const done = this.queue.shift();
-        this.core.guard("OnCommandAcknowledged", () => this.routes.acknowledged(done.behaviour, done.n));
-      }
-      const head = this.queue[0];
-      const published = this.presence.extra(me, "q");
-      if (head) {
-        if (!Array.isArray(published) || published[0] !== head.n) this.presence.setExtra("q", head.record);
-      } else if (published !== void 0) this.presence.setExtra("q", void 0);
-      if (this.referee.isMe()) this.officiate();
-    }
-    officiate() {
-      const table = this.workingTable();
-      let changed = false;
-      for (const sid of Object.keys(table)) {
-        if (!this.presence.has(sid)) {
-          delete table[sid];
-          changed = true;
-        }
-      }
-      for (const who of this.presence.list()) {
-        const q = this.presence.extra(who.sid, "q");
-        if (!Array.isArray(q) || typeof q[0] !== "number" || typeof q[1] !== "string" || typeof q[3] !== "string") continue;
-        if (q[0] <= (table[who.sid] ?? 0)) continue;
-        table[who.sid] = q[0];
-        changed = true;
-        const behaviour = this.routes.resolve(q[1], typeof q[2] === "string" && q[2] ? q[2] : null);
-        const args = Array.isArray(q[4]) ? q[4].map(decodeValue) : [];
-        this.run++;
-        if (behaviour) this.routes.invoke(behaviour, q[3], args, who.sid);
-      }
-      if (changed) this.writeTable(table);
-    }
-    table() {
-      return this.parseTable(this.core.get("ack"));
-    }
-    parseTable(text) {
-      const raw = safeParse(text);
-      const out = {};
-      if (!isRecord(raw) || raw.e !== this.referee.epoch || !isRecord(raw.m)) return out;
-      for (const sid of Object.keys(raw.m)) if (typeof raw.m[sid] === "number") out[sid] = raw.m[sid];
-      return out;
-    }
-    /** The table the referee builds on: its own last write while that is still on its way, else the mirror. */
-    workingTable() {
-      const mirrored = this.core.get("ack");
-      const inFlight = this.lastWritten !== "" && mirrored !== this.lastWritten && this.core.platform.clock.now() - this.lastWrittenAt < 3e3;
-      return this.parseTable(inFlight ? this.lastWritten : mirrored);
-    }
-    writeTable(table) {
-      const text = asciiJson({ e: this.referee.epoch, m: table });
-      if (text === this.core.get("ack")) return;
-      this.lastWritten = text;
-      this.lastWrittenAt = this.core.platform.clock.now();
-      this.core.set("ack", text);
-    }
-  };
-
-  // portkit/src/core.ts
-  var DEFAULT_OPTIONS = {
-    settleMs: 1e3,
-    claimStepMs: 400,
-    claimRetryMs: 3e3,
-    snapshotTimeoutMs: 8e3,
-    clockTimeoutMs: 2e3,
-    clockResyncMs: 6e4,
-    admitWarnMs: 15e3,
-    ownerClaimTimeoutMs: 5e3,
-    continuousIntervalMs: 200,
-    eventHoldMs: 2e3,
-    whenEmpty: "reset"
-  };
-  var Core = class {
-    constructor(platform, slug, inst, options, scheduler) {
-      __publicField(this, "platform");
-      __publicField(this, "slug");
-      __publicField(this, "inst");
-      /** `pk1.<slug>.<inst>` */
-      __publicField(this, "prefix");
-      __publicField(this, "options");
-      __publicField(this, "scheduler");
-      /** The local player as the platform reported them when the instance started. */
-      __publicField(this, "me");
-      __publicField(this, "disposed", false);
-      __publicField(this, "unsubs", []);
-      __publicField(this, "stateHandlers", []);
-      this.platform = platform;
-      this.slug = slug;
-      this.inst = inst;
-      this.prefix = statePrefix(slug, inst);
-      this.options = options;
-      this.scheduler = scheduler;
-      this.me = platform.local();
-    }
-    /** Starts listening to the room's state under this instance's prefix. */
-    listen() {
-      const dot = this.prefix + ".";
-      this.own(
-        this.platform.onState(dot, (path, value) => {
-          if (this.disposed) return;
-          const key = path.slice(dot.length);
-          for (const handler of this.stateHandlers.slice()) {
-            try {
-              handler(key, value);
-            } catch (error) {
-              this.error("state handler", error);
-            }
-          }
-        })
-      );
-    }
-    /** Reads a leaf of this instance from the mirror. `key` is relative to the prefix. */
-    get(key) {
-      return this.platform.stateGet(this.prefix + "." + key);
-    }
-    set(key, value) {
-      if (this.disposed) return;
-      this.platform.stateSet(this.prefix + "." + key, value);
-    }
-    entries() {
-      const dot = this.prefix + ".";
-      return this.platform.stateEntries(dot).map(([path, value]) => [path.slice(dot.length), value]);
-    }
-    onState(handler) {
-      this.stateHandlers.push(handler);
-    }
-    /** Keeps an unsubscribe to run when the instance is disposed. */
-    own(unsub) {
-      if (this.disposed) unsub();
-      else this.unsubs.push(unsub);
-    }
-    log(level, message) {
-      this.platform.log(level, `[${this.slug}:${this.inst}] ${message}`);
-    }
-    error(where, error) {
-      const text = error instanceof Error ? error.stack ?? error.message : String(error);
-      this.log("error", `${where}: ${text}`);
-    }
-    /** Runs game code so that one behaviour's exception cannot stop the others. */
-    guard(where, fn) {
-      try {
-        fn();
-      } catch (error) {
-        this.error(where, error);
-      }
-    }
-    dispose() {
-      if (this.disposed) return;
-      this.disposed = true;
-      this.scheduler.stop();
-      for (const unsub of this.unsubs.splice(0)) {
-        try {
-          unsub();
-        } catch {
-        }
-      }
-      this.stateHandlers.length = 0;
-    }
-  };
-
   // portkit/src/events.ts
   var NetEvents = class {
     constructor(core, sync, routes) {
@@ -1462,6 +1459,9 @@
       __publicField(this, "callingSid", null);
       __publicField(this, "sent", 0);
       __publicField(this, "received", 0);
+      /** Requests naming a method that may not be called from the network, for tests and diagnostics. */
+      __publicField(this, "refusedCount", 0);
+      __publicField(this, "refusedNames", /* @__PURE__ */ new Set());
       this.core = core;
       this.sync = sync;
       this.routes = routes;
@@ -1474,7 +1474,7 @@
       const address = this.routes.address(behaviour);
       if (!address) return;
       if (!callable(behaviour, name)) {
-        this.core.log("warn", `SendCustomNetworkEvent: ${address.id} has no public method '${name}' (names starting with '_' cannot be sent)`);
+        this.core.log("warn", `SendCustomNetworkEvent: ${address.id} has no network-callable method '${name}' (list it in its class's static networkCallable; names starting with '_' can never be sent)`);
         return;
       }
       const fields = { b: address.id, e: name };
@@ -1583,7 +1583,15 @@
     }
     /** Runs a method of game code on behalf of `fromSid` (a network event or a command). */
     invoke(behaviour, name, args, fromSid) {
-      if (!callable(behaviour, name)) return;
+      if (!callable(behaviour, name)) {
+        const key = `${behaviour.constructor.name}.${name}`;
+        if (!this.refusedNames.has(key) && this.refusedNames.size < 64) {
+          this.refusedNames.add(key);
+          this.core.log("warn", `refused a request from session ${fromSid} to run '${String(name).slice(0, 64)}' on ${behaviour.constructor.name}: not in its networkCallable list`);
+        }
+        this.refusedCount++;
+        return;
+      }
       const before = this.callingSid;
       this.callingSid = fromSid;
       try {
@@ -1593,10 +1601,28 @@
       }
     }
   };
+  var LISTS = /* @__PURE__ */ new WeakMap();
+  function networkCallableOf(cls) {
+    let set = LISTS.get(cls);
+    if (set) return set;
+    const names = /* @__PURE__ */ new Set();
+    for (let c = cls; typeof c === "function" && c !== Behaviour && c !== Function.prototype; c = Object.getPrototypeOf(c)) {
+      if (Object.prototype.hasOwnProperty.call(c, "networkCallable")) {
+        const list = c.networkCallable;
+        if (Array.isArray(list)) {
+          for (const name of list) if (typeof name === "string") names.add(name);
+        }
+      }
+    }
+    set = names;
+    LISTS.set(cls, set);
+    return set;
+  }
   function callable(behaviour, name) {
-    if (typeof name !== "string" || name.length === 0 || name.charCodeAt(0) === 95) return false;
+    if (typeof name !== "string" || name.length === 0 || name.charCodeAt(0) === 95 || name === "constructor") return false;
+    if (!networkCallableOf(behaviour.constructor).has(name)) return false;
     for (let proto = Object.getPrototypeOf(behaviour); proto && proto !== Behaviour.prototype && proto !== Object.prototype; proto = Object.getPrototypeOf(proto)) {
-      if (Object.prototype.hasOwnProperty.call(proto, name)) return name !== "constructor" && typeof behaviour[name] === "function";
+      if (Object.prototype.hasOwnProperty.call(proto, name)) return typeof behaviour[name] === "function";
     }
     return false;
   }
@@ -1613,6 +1639,265 @@
     if (e.pk !== 1 || e.g !== slug || e.i !== inst || typeof e.t !== "string") return null;
     return e;
   }
+
+  // portkit/src/refrecord.ts
+  var RefereeTable = class {
+    constructor(presence, referee, name, parseEntry) {
+      __publicField(this, "presence");
+      __publicField(this, "referee");
+      __publicField(this, "name");
+      __publicField(this, "parseEntry");
+      __publicField(this, "last", null);
+      __publicField(this, "lastText", "");
+      this.presence = presence;
+      this.referee = referee;
+      this.name = name;
+      this.parseEntry = parseEntry;
+    }
+    /** The table as the referee published it: read from the referee's own user state, else the last one read. */
+    read() {
+      const ref = this.referee.current();
+      const epoch = this.referee.epoch;
+      if (ref) {
+        const raw = this.presence.extra(ref.sid, this.name);
+        const parsed = this.parse(raw, epoch);
+        if (parsed) {
+          this.last = { e: epoch, m: parsed };
+          return parsed;
+        }
+      }
+      return this.last && this.last.e === epoch ? this.last.m : {};
+    }
+    /** A copy the referee may change and `write`: its own published table, else its predecessor's last one. */
+    working() {
+      const epoch = this.referee.epoch;
+      const own = this.parse(this.presence.extra(this.presence.localSid, this.name), epoch);
+      const base = own ?? (this.last && this.last.e === epoch ? this.last.m : {});
+      return JSON.parse(JSON.stringify(base));
+    }
+    /** Publishes the table in the local player's user state (only the referee calls this). */
+    write(table) {
+      const value = { e: this.referee.epoch, m: table };
+      const text = asciiJson(value);
+      if (text === this.lastText && this.presence.extra(this.presence.localSid, this.name) !== void 0) return;
+      this.lastText = text;
+      this.presence.setExtra(this.name, value);
+      this.last = { e: value.e, m: JSON.parse(JSON.stringify(table)) };
+    }
+    parse(raw, epoch) {
+      if (!isRecord(raw) || raw.e !== epoch || !isRecord(raw.m)) return null;
+      const out = {};
+      for (const key of Object.keys(raw.m)) {
+        const entry = this.parseEntry(raw.m[key]);
+        if (entry !== null) out[key] = entry;
+      }
+      return out;
+    }
+  };
+
+  // portkit/src/commands.ts
+  var MAX_COMMAND_BYTES = 2048;
+  var MAX_BATCH = 8;
+  var MAX_BATCH_BYTES = 4096;
+  var Commands = class {
+    constructor(core, presence, referee, routes) {
+      __publicField(this, "core");
+      __publicField(this, "presence");
+      __publicField(this, "referee");
+      __publicField(this, "routes");
+      __publicField(this, "queue", []);
+      __publicField(this, "nextNumber", 0);
+      __publicField(this, "acks");
+      /** False until behaviours have started: the referee runs nothing before then. */
+      __publicField(this, "started", false);
+      __publicField(this, "run", 0);
+      this.core = core;
+      this.presence = presence;
+      this.referee = referee;
+      this.routes = routes;
+      this.acks = new RefereeTable(presence, referee, "ak", (v) => typeof v === "number" ? v : null);
+    }
+    listen() {
+      this.presence.onExtra(() => this.review());
+      this.presence.on(() => this.review());
+      this.referee.on(() => this.review());
+    }
+    send(behaviour, name, args) {
+      const address = this.routes.address(behaviour);
+      if (!address) return 0;
+      if (!callable(behaviour, name)) {
+        this.core.log("warn", `SendCommand: ${address.id} has no network-callable method '${name}' (list it in its class's static networkCallable)`);
+        return 0;
+      }
+      if (this.nextNumber === 0) this.nextNumber = (this.table()[this.core.me.sid] ?? 0) + 1;
+      const n = this.nextNumber++;
+      const record = [n, address.id, address.playerSid ?? "", name, args.map(encodeValue)];
+      if (utf8Length(asciiJson(record)) > MAX_COMMAND_BYTES) {
+        this.routes.refused(behaviour, "value_too_large", name);
+        return 0;
+      }
+      this.queue.push({ n, behaviour, record });
+      this.review();
+      return n;
+    }
+    /** Publishes, runs and acknowledges whatever is due. Also called about once a second. */
+    review() {
+      if (this.core.disposed || !this.started) return;
+      const me = this.core.me.sid;
+      const acked = this.table()[me] ?? 0;
+      while (this.queue.length && this.queue[0].n <= acked) {
+        const done = this.queue.shift();
+        this.core.guard("OnCommandAcknowledged", () => this.routes.acknowledged(done.behaviour, done.n));
+      }
+      const published = this.presence.extra(me, "q");
+      if (this.queue.length) {
+        const batch = [];
+        let bytes = 2;
+        for (const pending of this.queue) {
+          const size = utf8Length(asciiJson(pending.record)) + 1;
+          if (batch.length >= MAX_BATCH || batch.length && bytes + size > MAX_BATCH_BYTES) break;
+          batch.push(pending.record);
+          bytes += size;
+        }
+        const first = Array.isArray(published) && Array.isArray(published[0]) ? published[0][0] : null;
+        const last = Array.isArray(published) && Array.isArray(published[published.length - 1]) ? published[published.length - 1][0] : null;
+        if (first !== batch[0][0] || last !== batch[batch.length - 1][0]) this.presence.setExtra("q", batch);
+      } else if (published !== void 0) this.presence.setExtra("q", void 0);
+      if (this.referee.isMe()) this.officiate();
+    }
+    officiate() {
+      const table = this.acks.working();
+      let changed = false;
+      for (const sid of Object.keys(table)) {
+        if (!this.presence.has(sid)) {
+          delete table[sid];
+          changed = true;
+        }
+      }
+      for (const who of this.presence.list()) {
+        const batch = this.presence.extra(who.sid, "q");
+        if (!Array.isArray(batch)) continue;
+        for (const q of batch.slice(0, MAX_BATCH)) {
+          if (!Array.isArray(q) || typeof q[0] !== "number" || typeof q[1] !== "string" || typeof q[3] !== "string") break;
+          const acked = table[who.sid] ?? 0;
+          if (q[0] <= acked) continue;
+          if (acked > 0 && q[0] !== acked + 1) break;
+          table[who.sid] = q[0];
+          changed = true;
+          const behaviour = this.routes.resolve(q[1], typeof q[2] === "string" && q[2] ? q[2] : null);
+          const args = Array.isArray(q[4]) ? q[4].map(decodeValue) : [];
+          this.run++;
+          if (behaviour) this.routes.invoke(behaviour, q[3], args, who.sid);
+        }
+      }
+      if (changed) this.acks.write(table);
+    }
+    table() {
+      return this.acks.read();
+    }
+  };
+
+  // portkit/src/core.ts
+  var DEFAULT_OPTIONS = {
+    settleMs: 1e3,
+    claimStepMs: 400,
+    claimRetryMs: 3e3,
+    snapshotTimeoutMs: 8e3,
+    clockTimeoutMs: 2e3,
+    clockResyncMs: 6e4,
+    admitWarnMs: 15e3,
+    ownerClaimTimeoutMs: 5e3,
+    continuousIntervalMs: 200,
+    eventHoldMs: 2e3,
+    whenEmpty: "reset"
+  };
+  var Core = class {
+    constructor(platform, slug, inst, options, scheduler) {
+      __publicField(this, "platform");
+      __publicField(this, "slug");
+      __publicField(this, "inst");
+      /** `pk1.<slug>.<inst>` */
+      __publicField(this, "prefix");
+      __publicField(this, "options");
+      __publicField(this, "scheduler");
+      /** The local player as the platform reported them when the instance started. */
+      __publicField(this, "me");
+      __publicField(this, "disposed", false);
+      __publicField(this, "unsubs", []);
+      __publicField(this, "stateHandlers", []);
+      this.platform = platform;
+      this.slug = slug;
+      this.inst = inst;
+      this.prefix = statePrefix(slug, inst);
+      this.options = options;
+      this.scheduler = scheduler;
+      this.me = platform.local();
+    }
+    /** Starts listening to the room's state under this instance's prefix. */
+    listen() {
+      const dot = this.prefix + ".";
+      this.own(
+        this.platform.onState(dot, (path, value) => {
+          if (this.disposed) return;
+          const key = path.slice(dot.length);
+          for (const handler of this.stateHandlers.slice()) {
+            try {
+              handler(key, value);
+            } catch (error) {
+              this.error("state handler", error);
+            }
+          }
+        })
+      );
+    }
+    /** Reads a leaf of this instance from the mirror. `key` is relative to the prefix. */
+    get(key) {
+      return this.platform.stateGet(this.prefix + "." + key);
+    }
+    set(key, value) {
+      if (this.disposed) return;
+      this.platform.stateSet(this.prefix + "." + key, value);
+    }
+    entries() {
+      const dot = this.prefix + ".";
+      return this.platform.stateEntries(dot).map(([path, value]) => [path.slice(dot.length), value]);
+    }
+    onState(handler) {
+      this.stateHandlers.push(handler);
+    }
+    /** Keeps an unsubscribe to run when the instance is disposed. */
+    own(unsub) {
+      if (this.disposed) unsub();
+      else this.unsubs.push(unsub);
+    }
+    log(level, message) {
+      this.platform.log(level, `[${this.slug}:${this.inst}] ${message}`);
+    }
+    error(where, error) {
+      const text = error instanceof Error ? error.stack ?? error.message : String(error);
+      this.log("error", `${where}: ${text}`);
+    }
+    /** Runs game code so that one behaviour's exception cannot stop the others. */
+    guard(where, fn) {
+      try {
+        fn();
+      } catch (error) {
+        this.error(where, error);
+      }
+    }
+    dispose() {
+      if (this.disposed) return;
+      this.disposed = true;
+      this.scheduler.stop();
+      for (const unsub of this.unsubs.splice(0)) {
+        try {
+          unsub();
+        } catch {
+        }
+      }
+      this.stateHandlers.length = 0;
+    }
+  };
 
   // portkit/src/host.ts
   function encodeRelayArg(text) {
@@ -1724,16 +2009,57 @@
       if (!target.startsWith("@") && this.refs.indexOf(target) < 0 && this.fallbackActive(target, active)) return;
       this.value("active", target, "active", [active ? "1" : "0"]);
     }
-    playClip(target, clipIndex, clipsOn) {
+    playClip(target, clipIndex, clipsOn, volumeScale) {
       const own = clipsOn === void 0 || clipsOn === target;
-      if (own && !target.startsWith("@") && this.refs.indexOf(target) < 0 && this.fallbackClip(target, clipIndex)) return;
+      const scaled = volumeScale !== void 0 && volumeScale !== 1;
+      if (own && !scaled && !target.startsWith("@") && this.refs.indexOf(target) < 0 && this.fallbackClip(target, clipIndex)) return;
       const holder = this.resolve("audio", own ? target : clipsOn);
       if (holder === null) return;
       if (typeof holder !== "number") {
         this.warnOnce(`audio:${holder}`, `the clips of ${holder} cannot be played: the audio op needs the holder in bindings.refs`);
         return;
       }
-      this.event("audio", target, [String(Math.trunc(clipIndex)), String(holder)]);
+      if (scaled) this.event("audioScaled", target, [String(Math.trunc(clipIndex)), String(holder), relayNumber(volumeScale)]);
+      else this.event("audio", target, [String(Math.trunc(clipIndex)), String(holder)]);
+    }
+    audioPitch(target, pitch) {
+      this.value("audioPitch", target, "audioPitch", [relayNumber(pitch)]);
+    }
+    audioVolume(target, volume) {
+      this.value("audioVolume", target, "audioVolume", [relayNumber(volume)]);
+    }
+    animEnabled(target, enabled) {
+      this.value("animEnabled", target, "animEnabled", [enabled ? "1" : "0"]);
+    }
+    uiSetToggle(target, on) {
+      this.value("uiSetToggle", target, "uiSetToggle", [on ? "1" : "0"]);
+    }
+    uiSetSlider(target, value) {
+      this.value("uiSetSlider", target, "uiSetSlider", [relayNumber(value)]);
+    }
+    scale(target, localScale) {
+      this.value("scale", target, "scale", [relayNumber(localScale.x), relayNumber(localScale.y), relayNumber(localScale.z)]);
+    }
+    rbVelocity(target, velocity) {
+      this.event("rbVelocity", target, [relayNumber(velocity.x), relayNumber(velocity.y), relayNumber(velocity.z)]);
+    }
+    rbKinematic(target, kinematic) {
+      this.value("rbKinematic", target, "rbKinematic", [kinematic ? "1" : "0"]);
+    }
+    spawn(target, name) {
+      this.event("spawn", target, [name]);
+    }
+    despawn(target) {
+      this.event("despawn", target, []);
+      if (target.startsWith("@")) {
+        for (const key of [...this.last.keys()]) if (key.startsWith(target + "/")) this.last.delete(key);
+      }
+    }
+    op(name, target, args, property) {
+      if (!/^[A-Za-z][A-Za-z0-9_]{0,63}$/.test(name) || name === "clock") throw new Error(`'${name}' is not a relay op name (letters, digits, _; not clock)`);
+      const text = args.map((a) => typeof a === "number" ? relayNumber(a) : typeof a === "boolean" ? a ? "1" : "0" : String(a));
+      if (property !== void 0) this.value(name, target, `op.${name}.${property}`, text);
+      else this.event(name, target, text);
     }
     /** The clock is not batched: its answer is timed from the moment it is sent. */
     requestClock() {
@@ -1963,6 +2289,22 @@
       if (this.subscribe) this.subscribe(kind, handler);
       else this.host?.on(kind, handler);
     }
+    /**
+     * Attaches this object to the local player's hand (0 left, 1 right), at an offset from it (BS.AttachedObject;
+     * UNVERIFIED in Play mode). Only the local player can be attached to; other players see it only through a synced
+     * transform.
+     */
+    AttachToHand(side, position = new Vector3(), rotation = new Quaternion()) {
+      this.host?.attachToHand(side, position, rotation);
+    }
+    /** Lets go of what AttachToHand attached. */
+    Detach() {
+      this.host?.detach();
+    }
+    /** Makes the local player let go of this object if they hold it (VRChat: VRCPickup.Drop()); `drop` follows. */
+    ReleaseGrab() {
+      this.host?.releaseGrab();
+    }
     /** Asks to own the object's synced transform (VRChat: Networking.SetOwner on a VRCObjectSync). */
     TakeOwnership() {
       this.host?.takeOwnership();
@@ -2004,6 +2346,18 @@
     }
   };
   var AnimatorRef = class extends ComponentRef {
+    constructor() {
+      super(...arguments);
+      __publicField(this, "on", true);
+    }
+    /** Animator.enabled: a disabled animator holds its pose. Reading gives what the script last set. */
+    get enabled() {
+      return this.on;
+    }
+    set enabled(value) {
+      this.on = !!value;
+      this.actions.animEnabled(this.gameObject.key, this.on);
+    }
     SetBool(name, value) {
       this.actions.animBool(this.gameObject.key, name, value);
     }
@@ -2045,10 +2399,37 @@
     }
   };
   var AudioSourceRef = class extends ComponentRef {
+    constructor() {
+      super(...arguments);
+      __publicField(this, "pitchValue", 1);
+      __publicField(this, "volumeValue", 1);
+      /** The clip `Play()` plays (UnityEngine.AudioSource.clip). */
+      __publicField(this, "clip", null);
+    }
     /** Plays a clip (a `$clip` field value, or an index into this object's own clip list) through this audio source. */
-    PlayOneShot(clip) {
-      if (typeof clip === "number") this.actions.playClip(this.gameObject.key, clip);
-      else this.actions.playClip(this.gameObject.key, clip.index, clip.on ?? void 0);
+    PlayOneShot(clip, volumeScale) {
+      if (typeof clip === "number") this.actions.playClip(this.gameObject.key, clip, void 0, volumeScale);
+      else this.actions.playClip(this.gameObject.key, clip.index, clip.on ?? void 0, volumeScale);
+    }
+    /** Plays `clip` as a one-shot (it overlaps a sound still playing instead of cutting it off). */
+    Play() {
+      if (this.clip) this.PlayOneShot(this.clip);
+    }
+    /** AudioSource.pitch (relay op `audioPitch`). Reading gives what the script last set. */
+    get pitch() {
+      return this.pitchValue;
+    }
+    set pitch(value) {
+      this.pitchValue = value;
+      this.actions.audioPitch(this.gameObject.key, value);
+    }
+    /** AudioSource.volume (relay op `audioVolume`). */
+    get volume() {
+      return this.volumeValue;
+    }
+    set volume(value) {
+      this.volumeValue = value;
+      this.actions.audioVolume(this.gameObject.key, value);
     }
   };
   var AudioClipRef = class {
@@ -2419,6 +2800,8 @@
       __publicField(this, "known", /* @__PURE__ */ new Map());
       __publicField(this, "extras", /* @__PURE__ */ new Map());
       __publicField(this, "texts", /* @__PURE__ */ new Map());
+      /** Every public key each session has announced, kept after it leaves (a sealed box can outlive its sender's visit). */
+      __publicField(this, "keysSeen", /* @__PURE__ */ new Map());
       __publicField(this, "handlers", []);
       __publicField(this, "extraHandlers", []);
       __publicField(this, "announced", null);
@@ -2463,6 +2846,10 @@
       this.dirty = true;
       this.emitExtra(this.core.me.sid);
     }
+    /** The local player's session id. */
+    get localSid() {
+      return this.core.me.sid;
+    }
     /** A published record of any participant, from the mirror (the local player's own is read back at once). */
     extra(sid, name) {
       if (sid === this.core.me.sid) return this.localExtras[name];
@@ -2496,6 +2883,10 @@
     }
     get(sid) {
       return this.known.get(sid);
+    }
+    /** The public key a session announced, now or before it left; undefined for a session never seen. */
+    keyOf(sid) {
+      return this.known.get(sid)?.publicKey ?? this.keysSeen.get(sid);
     }
     /** Position of `sid` in `list()`, or -1. */
     rank(sid) {
@@ -2537,6 +2928,7 @@
           before.publicKey = who.publicKey;
         }
       }
+      for (const who of now.values()) this.keysSeen.set(who.sid, who.publicKey);
       for (const who of left) {
         this.known.delete(who.sid);
         this.extras.delete(who.sid);
@@ -2591,6 +2983,7 @@
   };
 
   // portkit/src/referee.ts
+  var CROSSING_MS = 1500;
   var Referee = class {
     constructor(core, presence, rule) {
       __publicField(this, "core");
@@ -2678,6 +3071,10 @@
       if (now) {
         this.cancelTimer();
         if (!before || before.sid !== now.sid || before.term !== now.term || before.e !== now.e) {
+          const me2 = this.core.me.sid;
+          if (before && before.sid === me2 && now.sid !== me2 && this.isCandidate(me2) && this.core.platform.clock.now() - this.claimAt > CROSSING_MS) {
+            this.core.log("warn", `the referee seat was taken by session ${now.sid} (term ${now.term}) while this client was referee`);
+          }
           this.lastEpoch = now.e;
           this.seen = now;
           this.publishEpoch();
@@ -2985,7 +3382,20 @@ ${index}`));
       return this.seed;
     }
   };
+  var DRAW_KEEP_MS = 12e4;
+  function parseDrawEntry(e) {
+    if (!Array.isArray(e) || typeof e[0] !== "string" || typeof e[1] !== "string" || typeof e[2] !== "string") return null;
+    return [e[0], e[1], e[2], typeof e[3] === "number" ? e[3] : 0, e[4] === 1 ? 1 : 0, typeof e[5] === "string" ? e[5] : ""];
+  }
   var CURVE = { name: "ECDH", namedCurve: "P-256" };
+  function parseDeal(raw) {
+    if (!isRecord(raw) || typeof raw.l !== "string" || typeof raw.h !== "string" || !Array.isArray(raw.s)) return null;
+    return { l: raw.l, h: raw.h, s: raw.s.filter((x) => typeof x === "string"), p: raw.p === 1 ? 1 : 0, r: typeof raw.r === "string" ? raw.r : void 0 };
+  }
+  function parseContribution(raw) {
+    if (!isRecord(raw) || typeof raw.l !== "string" || typeof raw.h !== "string") return null;
+    return { l: raw.l, h: raw.h, c: typeof raw.c === "string" ? raw.c : void 0 };
+  }
   var Secrets = class {
     constructor(core, presence, referee, nowSeconds) {
       __publicField(this, "core");
@@ -3000,8 +3410,21 @@ ${index}`));
       __publicField(this, "derived", /* @__PURE__ */ new Map());
       __publicField(this, "mySecret", null);
       __publicField(this, "lastStates", /* @__PURE__ */ new Map());
-      __publicField(this, "lastWritten", "");
-      __publicField(this, "lastWrittenAt", -Infinity);
+      /** The referee's numbers and judgements, read from the referee's own user state. */
+      __publicField(this, "numbers");
+      __publicField(this, "pins", /* @__PURE__ */ new Map());
+      __publicField(this, "pinsEpoch", -1);
+      __publicField(this, "warnedPins", /* @__PURE__ */ new Set());
+      __publicField(this, "goneSince", /* @__PURE__ */ new Map());
+      __publicField(this, "drawStore", null);
+      __publicField(this, "drawKey", "");
+      __publicField(this, "restoring", null);
+      /** The referee's own seed for its current deal. */
+      __publicField(this, "dealSeed", null);
+      /** This player's contribution to a deal. */
+      __publicField(this, "myContribution", null);
+      /** Commitments and contributions as first seen, per deal label and session (they outlive a player's visit). */
+      __publicField(this, "dealSeen", /* @__PURE__ */ new Map());
       /** Told when a player's draw changes state. */
       __publicField(this, "onDrawChanged", () => {
       });
@@ -3010,15 +3433,17 @@ ${index}`));
       this.referee = referee;
       this.crypto = core.platform.crypto;
       this.nowSeconds = nowSeconds;
+      this.numbers = new RefereeTable(presence, referee, "fn", parseDrawEntry);
     }
     /** Starts following commitments, the referee's numbers and reveals. */
     listen() {
-      this.core.onState((key) => {
-        if (key === "fd") this.review();
-      });
       this.presence.onExtra(() => this.review());
       this.presence.on(() => this.review());
       this.referee.on(() => this.review());
+    }
+    /** `n` bytes from the strong generator (WebCrypto; seeded in the fake room). */
+    RandomBytes(n) {
+      return this.crypto.getRandomValues(new Uint8Array(Math.max(0, Math.floor(n))));
     }
     // ---- commit / reveal ----------------------------------------------------------------------------------------
     commit(value) {
@@ -3058,22 +3483,33 @@ ${index}`));
       return isRecord(value) ? value : {};
     }
     // ---- fair draws ---------------------------------------------------------------------------------------------
+    //
+    // Where each part lives, so that nobody can change another player's part:
+    //   x.fd  [label, hash]          the player's commitment, in the player's own user state
+    //   x.fr  [label, secret]        the player's reveal, in the player's own user state
+    //   x.fn  {e, m: {sid: entry}}   the referee's numbers and judgements, in the referee's own user state
+    //                                (refrecord.ts); entry = [label, hash, number, deadline, forfeit, uid]
+    // Each client also keeps the first hash and number it saw for a player's label in this epoch (`pins`): a later
+    // table that changes them (a referee seat taken over by a modified client) is not believed.
     /** Starts a draw for the local player under `label` (a round name). It replaces their previous draw. */
     beginDraw(label) {
       const secret = toBase64(this.crypto.getRandomValues(new Uint8Array(16)));
       this.mySecret = { label, secret };
+      this.restoring = null;
+      this.saveDraw(false);
       this.presence.setExtra("fr", void 0);
       this.presence.setExtra("fd", [label, sha256Text(secret)]);
     }
     /** Publishes the local player's secret for `label`, so everyone can compute and check the draw. */
     revealDraw(label) {
       if (!this.mySecret || this.mySecret.label !== label) return;
+      this.saveDraw(true);
       this.presence.setExtra("fr", [label, this.mySecret.secret]);
     }
     /** The referee starts the clock: draws under `label` not revealed within `seconds` are forfeit. */
     demandReveal(label, seconds) {
       if (!this.referee.isMe()) return;
-      const table = this.workingTable();
+      const table = this.numbers.working();
       const deadline = this.nowSeconds() + seconds;
       let changed = false;
       for (const sid of Object.keys(table)) {
@@ -3083,11 +3519,11 @@ ${index}`));
           changed = true;
         }
       }
-      if (changed) this.writeTable(table);
+      if (changed) this.numbers.write(table);
     }
     /** Where a participant's draw under `label` stands, and the draw itself once this client may know it. */
     drawOf(sid, label) {
-      const entry = this.table()[sid];
+      const entry = this.entryOf(sid);
       const committed = this.presence.extra(sid, "fd");
       const hasCommit = Array.isArray(committed) && committed[0] === label && typeof committed[1] === "string";
       if (!entry || entry[0] !== label) return { state: hasCommit ? "committed" : "none", draw: null };
@@ -3109,42 +3545,40 @@ ${index}`));
     myDraw(label) {
       return this.drawOf(this.core.me.sid, label).draw;
     }
-    table() {
-      return this.parseTable(this.core.get("fd"));
-    }
-    parseTable(text) {
-      const raw = safeParse(text);
-      const out = {};
-      if (!isRecord(raw) || raw.e !== this.referee.epoch || !isRecord(raw.m)) return out;
-      for (const sid of Object.keys(raw.m)) {
-        const e = raw.m[sid];
-        if (Array.isArray(e) && typeof e[0] === "string" && typeof e[1] === "string" && typeof e[2] === "string") {
-          out[sid] = [e[0], e[1], e[2], typeof e[3] === "number" ? e[3] : 0, e[4] === 1 ? 1 : 0];
-        }
+    /** A participant's entry in the referee's table, with the hash and number this client saw first. */
+    entryOf(sid) {
+      const entry = this.numbers.read()[sid];
+      if (!entry) return null;
+      const epoch = this.referee.epoch;
+      if (this.pinsEpoch !== epoch) {
+        this.pins.clear();
+        this.pinsEpoch = epoch;
       }
-      return out;
-    }
-    writeTable(table) {
-      const text = asciiJson({ e: this.referee.epoch, m: table });
-      const now = this.core.platform.clock.now();
-      if (text === this.core.get("fd") || text === this.lastWritten && now - this.lastWrittenAt < 1e3) return;
-      this.lastWritten = text;
-      this.lastWrittenAt = now;
-      this.core.set("fd", text);
-    }
-    /** The table the referee builds on: its own last write while that is still on its way, else the mirror. */
-    workingTable() {
-      const mirrored = this.core.get("fd");
-      const inFlight = this.lastWritten !== "" && mirrored !== this.lastWritten && this.core.platform.clock.now() - this.lastWrittenAt < 3e3;
-      return this.parseTable(inFlight ? this.lastWritten : mirrored);
+      const key = `${entry[5]}
+${entry[0]}`;
+      const pin = this.pins.get(key);
+      if (!pin) {
+        this.pins.set(key, [entry[1], entry[2]]);
+        return entry;
+      }
+      if (pin[0] !== entry[1] || pin[1] !== entry[2]) {
+        if (!this.warnedPins.has(key)) {
+          this.warnedPins.add(key);
+          this.core.log("warn", `the referee's table changed the pinned commitment or number of a draw (${entry[0]}); keeping the first one seen`);
+        }
+        return [entry[0], pin[0], pin[1], entry[3], entry[4], entry[5]];
+      }
+      return entry;
     }
     /** Looks at every participant's draw: the referee answers and judges, and everyone reports changes. */
     review() {
       if (this.core.disposed) return;
+      this.reviewDeal();
+      this.restoreDraw();
       if (this.referee.isMe()) this.officiate();
       for (const who of this.presence.list()) {
         const committed = this.presence.extra(who.sid, "fd");
-        const entry = this.table()[who.sid];
+        const entry = this.entryOf(who.sid);
         const label = entry ? entry[0] : Array.isArray(committed) && typeof committed[0] === "string" ? committed[0] : null;
         if (label === null) continue;
         const status = this.drawOf(who.sid, label);
@@ -3156,12 +3590,20 @@ ${status.state}`;
       }
     }
     officiate() {
-      const table = this.workingTable();
+      const table = this.numbers.working();
       let changed = false;
       const now = this.nowSeconds();
+      const clock = this.core.platform.clock.now();
       for (const sid of Object.keys(table)) {
-        if (!this.presence.has(sid)) {
+        if (this.presence.has(sid)) {
+          this.goneSince.delete(sid);
+          continue;
+        }
+        const since = this.goneSince.get(sid) ?? clock;
+        this.goneSince.set(sid, since);
+        if (clock - since >= DRAW_KEEP_MS) {
           delete table[sid];
+          this.goneSince.delete(sid);
           changed = true;
         }
       }
@@ -3170,7 +3612,15 @@ ${status.state}`;
         const entry = table[who.sid];
         if (Array.isArray(committed) && typeof committed[0] === "string" && typeof committed[1] === "string") {
           if (!entry || entry[0] !== committed[0]) {
-            table[who.sid] = [committed[0], committed[1], toBase64(this.crypto.getRandomValues(new Uint8Array(16))), 0, 0];
+            const before = Object.keys(table).find((sid) => {
+              const e = table[sid];
+              return !this.presence.has(sid) && e[5] === who.uid && e[0] === committed[0] && e[1] === committed[1];
+            });
+            if (before !== void 0) {
+              table[who.sid] = table[before];
+              delete table[before];
+              this.goneSince.delete(before);
+            } else table[who.sid] = [committed[0], committed[1], toBase64(this.crypto.getRandomValues(new Uint8Array(16))), 0, 0, who.uid];
             changed = true;
             continue;
           }
@@ -3184,7 +3634,140 @@ ${status.state}`;
           }
         }
       }
-      if (changed) this.writeTable(table);
+      if (changed) this.numbers.write(table);
+    }
+    saveDraw(revealed) {
+      if (!this.drawStore || !this.mySecret) return;
+      try {
+        this.drawStore.set(this.drawKey, JSON.stringify({ e: this.referee.epoch, l: this.mySecret.label, s: this.mySecret.secret, r: revealed ? 1 : 0 }));
+      } catch {
+      }
+    }
+    /**
+     * After a page reload: the secret this device saved comes back once the referee's table (as last mirrored)
+     * still holds this user's entry for it; the commitment (and the reveal, if it was made) is published again and
+     * the referee moves the entry to the new session.
+     */
+    restoreDraw() {
+      const saved = this.restoring;
+      if (!saved || this.mySecret) return;
+      const epoch = this.referee.epoch;
+      if (epoch === 0) return;
+      if (saved.e !== 0 && saved.e !== epoch) {
+        this.restoring = null;
+        return;
+      }
+      const hash = sha256Text(saved.s);
+      const table = this.numbers.read();
+      const mine = Object.keys(table).map((sid) => table[sid]).filter((e) => e[5] === this.core.me.uid);
+      if (mine.some((e) => e[0] === saved.l && e[1] === hash)) {
+        this.restoring = null;
+        this.mySecret = { label: saved.l, secret: saved.s };
+        this.presence.setExtra("fd", [saved.l, hash]);
+        if (saved.r) this.presence.setExtra("fr", [saved.l, saved.s]);
+        this.core.log("info", `the draw '${saved.l}' came back after a reload`);
+      } else if (mine.length) {
+        this.restoring = null;
+      }
+    }
+    // ---- dealt draws ---------------------------------------------------------------------------------------------
+    //
+    //   referee x.dl  {l: label, h: SHA-256(seed), s: [listed session ids], p: 0 committing | 1 revealing, r?: seed}
+    //   player  x.dc  {l: label, h: SHA-256(contribution), c?: contribution}
+    // The runtime answers for every listed player by itself (review), so game code only calls beginDeal, dealDraw,
+    // revealDeal on the referee and verifyDeal anywhere.
+    /** The referee starts a deal under `label` for the players with these session ids. Replaces its previous deal. */
+    beginDeal(label, sids) {
+      if (!this.referee.isMe()) return;
+      const seed = toBase64(this.crypto.getRandomValues(new Uint8Array(16)));
+      this.dealSeed = { label, seed };
+      this.presence.setExtra("dl", { l: label, h: sha256Text(seed), s: sids.slice(), p: 0 });
+      this.review();
+    }
+    /** Where the current referee's deal under `label` stands. */
+    dealState(label) {
+      const deal = this.currentDeal();
+      if (!deal || deal.l !== label) return "none";
+      const seen = this.dealSeen.get(label);
+      if (deal.r !== void 0) return seen && sha256Text(deal.r) === seen.h ? "revealed" : "invalid";
+      if (deal.p === 0) return "committing";
+      return this.contributions(deal) ? "ready" : "revealing";
+    }
+    /**
+     * The referee's deal, once every listed player still present has revealed a contribution (a listed player who
+     * left counts as absent: say so in the game if it matters). Null before that, and on any other client.
+     */
+    dealDraw(label) {
+      const deal = this.currentDeal();
+      if (!this.referee.isMe() || !deal || deal.l !== label || !this.dealSeed || this.dealSeed.label !== label) return null;
+      const parts = this.contributions(deal);
+      return parts ? new Draw(dealSeedOf(this.dealSeed.seed, label, parts)) : null;
+    }
+    /** The referee publishes its seed (after the hand), so that everyone can check the deal. */
+    revealDeal(label) {
+      const deal = this.currentDeal();
+      if (!this.referee.isMe() || !deal || deal.l !== label || !this.dealSeed || this.dealSeed.label !== label) return;
+      this.presence.setExtra("dl", { ...deal, r: this.dealSeed.seed });
+    }
+    /** After revealDeal: the deal, recomputed here from the referee's seed and the contributions this client saw; null if it does not check out. */
+    verifyDeal(label) {
+      const deal = this.currentDeal();
+      if (!deal || deal.l !== label || deal.r === void 0) return null;
+      const seen = this.dealSeen.get(label);
+      if (!seen || sha256Text(deal.r) !== seen.h) return null;
+      const parts = this.contributions(deal);
+      return parts ? new Draw(dealSeedOf(deal.r, label, parts)) : null;
+    }
+    currentDeal() {
+      const ref = this.referee.current();
+      return ref ? parseDeal(this.presence.extra(ref.sid, "dl")) : null;
+    }
+    /** Every listed contribution, revealed and matching its commitment ("-" for a listed player who left); null while one is missing. */
+    contributions(deal) {
+      const seen = this.dealSeen.get(deal.l);
+      if (!seen) return null;
+      const out = [];
+      for (const sid of deal.s) {
+        const part = seen.parts.get(sid);
+        if (part && part.c !== void 0) out.push(part.c);
+        else if (!this.presence.has(sid) && (!part || deal.p === 1)) out.push("-");
+        else return null;
+      }
+      return out;
+    }
+    /** Follows the deal: records what is first seen, answers for the local player, and moves the referee's phase on. */
+    reviewDeal() {
+      const ref = this.referee.current();
+      const deal = this.currentDeal();
+      if (!ref || !deal) return;
+      let seen = this.dealSeen.get(deal.l);
+      if (!seen || seen.refSid !== ref.sid) {
+        seen = { h: deal.h, refSid: ref.sid, parts: /* @__PURE__ */ new Map() };
+        this.dealSeen.set(deal.l, seen);
+        while (this.dealSeen.size > 8) this.dealSeen.delete(this.dealSeen.keys().next().value);
+      }
+      for (const sid of deal.s) {
+        const part = parseContribution(this.presence.extra(sid, "dc"));
+        if (!part || part.l !== deal.l) continue;
+        const known = seen.parts.get(sid);
+        if (!known) seen.parts.set(sid, { h: part.h });
+        const entry = seen.parts.get(sid);
+        if (part.c !== void 0 && entry.c === void 0 && entry.h === part.h && sha256Text(part.c) === entry.h) entry.c = part.c;
+      }
+      const me = this.core.me.sid;
+      if (deal.s.includes(me)) {
+        if (!this.myContribution || this.myContribution.label !== deal.l) {
+          this.myContribution = { label: deal.l, c: toBase64(this.crypto.getRandomValues(new Uint8Array(16))) };
+          this.presence.setExtra("dc", { l: deal.l, h: sha256Text(this.myContribution.c) });
+        } else if (deal.p === 1) {
+          const mine = parseContribution(this.presence.extra(me, "dc"));
+          if (mine && mine.c === void 0) this.presence.setExtra("dc", { ...mine, c: this.myContribution.c });
+        }
+      }
+      if (this.referee.isMe() && deal.p === 0 && this.dealSeed && this.dealSeed.label === deal.l) {
+        const all = deal.s.every((sid) => seen.parts.has(sid) || !this.presence.has(sid));
+        if (all) this.presence.setExtra("dl", { ...deal, p: 1 });
+      }
     }
     // ---- seal / open --------------------------------------------------------------------------------------------
     /** The local public key (raw point, base64url). Empty before `init`. */
@@ -3195,8 +3778,19 @@ ${status.state}`;
      * Makes the local key pair, or loads the one this device saved for this player and instance, so that a page
      * reload can still open what was sealed before it.
      */
-    async init(store, storeKey) {
+    async init(store, storeKey, drawKey = "") {
       const subtle = this.crypto.subtle;
+      if (store && drawKey) {
+        this.drawStore = store;
+        this.drawKey = drawKey;
+        try {
+          const saved = safeParse(store.get(drawKey));
+          if (isRecord(saved) && typeof saved.l === "string" && typeof saved.s === "string") {
+            this.restoring = { e: typeof saved.e === "number" ? saved.e : 0, l: saved.l, s: saved.s, r: saved.r === 1 ? 1 : 0 };
+          }
+        } catch {
+        }
+      }
       if (store) {
         try {
           const saved = safeParse(store.get(storeKey));
@@ -3253,8 +3847,8 @@ ${forSid}`);
       }
       const me = this.core.me;
       if (b.t !== me.sid && b.u !== me.uid) throw new Error("this box is sealed for another player");
-      const sender = this.presence.get(b.f);
-      if (sender && sender.publicKey && sender.publicKey !== b.p) throw new Error("the box does not come from the player it names");
+      const senderKey = this.presence.keyOf(b.f);
+      if (senderKey !== b.p) throw new Error("the box does not come from the player it names");
       const key = await this.sharedKey(b.p);
       const aad = utf8Encode(`${this.core.prefix}
 ${b.f}
@@ -3311,8 +3905,7 @@ all`);
       const me = this.core.me;
       const entry = b.m[me.sid];
       if (!Array.isArray(entry) || typeof entry[0] !== "string" || typeof entry[1] !== "string") return null;
-      const sender = this.presence.get(b.f);
-      if (sender && sender.publicKey && sender.publicKey !== b.p) throw new Error("the bundle does not come from the player it names");
+      if (this.presence.keyOf(b.f) !== b.p) throw new Error("the bundle does not come from the player it names");
       const key = await this.sharedKey(b.p);
       const aad = utf8Encode(`${this.core.prefix}
 ${b.f}
@@ -3326,6 +3919,14 @@ all`);
       }
       const parsed = safeParse(utf8Decode(new Uint8Array(plain)).trimEnd());
       return isRecord(parsed) && "v" in parsed ? decodeValue(parsed.v) : null;
+    }
+    /**
+     * Opens a box sealed for the local player and says who sealed it (a session id whose announced key the box was
+     * sealed with). A game that takes a dealt value as authority checks that the sender is the referee.
+     */
+    async openWithSender(box) {
+      const value = await this.open(box);
+      return { value, from: String(safeParse(box).f) };
     }
     /** True when `box` names the local player as its reader. */
     isForMe(box) {
@@ -3349,6 +3950,11 @@ all`);
   };
   function hashOpening(opening) {
     return sha256Text(opening.s + "\n" + canonicalJson(opening.v));
+  }
+  function dealSeedOf(seed, label, parts) {
+    return toHex(sha256(utf8Encode(`${seed}
+${label}
+${parts.join("\n")}`)));
   }
   function drawSeed(secret, number, label) {
     return toHex(sha256(utf8Encode(`${secret}
@@ -3851,11 +4457,12 @@ ${label}`)));
     "uiToggle",
     "heldTrigger",
     "heldPrimary",
-    "heldSecondary"
+    "heldSecondary",
+    "field"
   ];
   var MAX_EARLY_EVENTS = 256;
   var GameInstance = class {
-    constructor(platform, game2, bindings, element, inst) {
+    constructor(platform, game2, bindings, element, inst, shared = {}) {
       __publicField(this, "platform");
       __publicField(this, "game");
       __publicField(this, "bindings");
@@ -3901,6 +4508,10 @@ ${label}`)));
       __publicField(this, "abilitiesOff", /* @__PURE__ */ new Set());
       __publicField(this, "blocksOn", /* @__PURE__ */ new Set());
       __publicField(this, "poses", null);
+      __publicField(this, "triggerAt", [-Infinity, -Infinity]);
+      __publicField(this, "lastClickSide", null);
+      __publicField(this, "vr", null);
+      __publicField(this, "reachOverride", /* @__PURE__ */ new Map());
       __publicField(this, "position", null);
       __publicField(this, "startKindValue", "idle");
       __publicField(this, "lastClockAsk", -Infinity);
@@ -3908,6 +4519,9 @@ ${label}`)));
       __publicField(this, "randomView");
       __publicField(this, "debugView");
       __publicField(this, "inputView");
+      /** The page-wide object every instance of this game shares (GameRuntime.shared). */
+      __publicField(this, "shared");
+      this.shared = shared;
       this.platform = platform;
       this.game = game2;
       this.bindings = bindings;
@@ -3964,7 +4578,8 @@ ${label}`)));
           return platform.random();
         },
         Range: (min, max) => min + (max - min) * platform.random(),
-        RangeInt: (min, max) => Math.floor(min) + Math.floor((Math.floor(max) - Math.floor(min)) * platform.random())
+        RangeInt: (min, max) => Math.floor(min) + Math.floor((Math.floor(max) - Math.floor(min)) * platform.random()),
+        Bytes: (n) => platform.crypto.getRandomValues(new Uint8Array(Math.max(0, Math.floor(n))))
       };
       const say = (level) => (message) => this.core.log(level, typeof message === "string" ? message : String(message));
       this.debugView = { Log: say("info"), LogWarning: say("warn"), LogError: say("error") };
@@ -3981,6 +4596,13 @@ ${label}`)));
           return owner.position ? owner.position.clone() : null;
         },
         Haptic: (side, strength, seconds) => platform.haptic(side, strength, seconds),
+        get LastClickSide() {
+          return owner.lastClickSide;
+        },
+        get IsVR() {
+          return owner.vr;
+        },
+        InReach: (point, metres) => !(metres > 0) || this.nearestDistance(point) <= metres,
         TeleportTo: (position, yDegrees, stopMovement = true) => {
           this.position = position.clone();
           platform.teleport(position, yDegrees, stopMovement);
@@ -4013,6 +4635,7 @@ ${label}`)));
           })
         );
         core.own(platform.onPose((poses) => this.onPose(poses)));
+        void platform.isVR().then((vr) => this.vr = vr, () => this.vr = false);
         core.own(platform.onInput((event) => this.onInput(event)));
         core.own(platform.onStateError(core.prefix + ".", (path, code, final) => this.onRefusedPath(path.slice(core.prefix.length + 1), code, final)));
         await this.loadKit();
@@ -4022,7 +4645,8 @@ ${label}`)));
         if (!snapshot) core.log("warn", "no full state snapshot arrived in time; starting from what is mirrored");
         await this.askClock(true);
         if (core.disposed) return;
-        const publicKey = await this.secrets.init(platform.storage, storagePrefix(core.slug, core.inst, core.me.uid) + "ecdh");
+        const saved = storagePrefix(core.slug, core.inst, core.me.uid);
+        const publicKey = await this.secrets.init(platform.storage, saved + "ecdh", saved + "draw");
         if (core.disposed) return;
         this.players.on((kind, player) => this.onPlayer(kind, player));
         this.referee.on((now, before) => this.onReferee(now?.sid ?? null, before?.sid ?? null));
@@ -4181,6 +4805,7 @@ ${label}`)));
       this.commands.review();
       for (const early of this.earlyGraphEvents.splice(0)) this.onGraphEvent(early.name, early.args);
       this.scheduler.start(() => this.tick());
+      this.tick();
       let extra = {};
       if (this.game.debug) core.guard("debug hooks", () => extra = this.game.debug(this));
       this.platform.expose(relayKey(core.slug, core.inst), {
@@ -4267,6 +4892,9 @@ ${label}`)));
         input: this.inputView,
         protectedValues: this.protectedValues,
         player,
+        instanceKey: this.inst,
+        shared: this.shared,
+        reach: this.reachOverride,
         requestSerialization() {
           if (player) {
             if (player.isLocal) instance.perUser.requestSerialization(behaviour);
@@ -4364,9 +4992,9 @@ ${label}`)));
         this.deliverJoin(player);
         return;
       }
-      if (this.rule === "anyone" && !this.referee.current()) {
+      if (!this.referee.current()) {
         this.pendingLeaves.push(player);
-        this.scheduler.after(5e3, () => this.flushLeaves());
+        if (this.rule === "anyone") this.scheduler.after(5e3, () => this.flushLeaves());
         return;
       }
       this.deliverLeave(player);
@@ -4472,16 +5100,42 @@ ${label}`)));
     // ---- events from objects, graphs and input ------------------------------------------------------------------
     wireEvents() {
       const explicit = /* @__PURE__ */ new Set();
+      const mine = (id) => () => this.playerBehaviourMap.get(this.core.me.sid)?.get(id) ?? null;
       for (const event of this.bindings.events) {
         if (!event.behaviour || !event.method) continue;
-        const behaviour = this.byId.get(event.behaviour);
-        if (!behaviour) continue;
+        const ordinary = this.byId.get(event.behaviour);
+        const perPlayer = !ordinary && this.templates.some((t) => t.binding.id === event.behaviour);
+        if (!ordinary && !perPlayer) continue;
+        const target = ordinary ?? mine(event.behaviour);
         if (event.kind === "graph") {
-          this.addGraphHandler(event.name ?? "", behaviour, event.method);
+          this.addGraphHandler(event.name ?? "", target, event.method);
           continue;
         }
         explicit.add(`${event.object}/${event.kind}/${event.behaviour}`);
-        this.addObjectHandler(event.object, event.kind, (detail) => this.callBound(behaviour, event, detail));
+        this.addObjectHandler(event.object, event.kind, (detail) => {
+          const behaviour = typeof target === "function" ? target() : target;
+          if (behaviour) this.callBound(behaviour, event, detail);
+        });
+      }
+      for (const template of this.templates) {
+        const key = template.binding.object;
+        const object = key ? this.bindings.objects[key] : void 0;
+        if (!key || !object) continue;
+        const id = template.binding.id;
+        const proto = template.cls.prototype;
+        const base = Behaviour.prototype;
+        if (object.click && proto.Interact !== base.Interact && !explicit.has(`${key}/click/${id}`)) {
+          this.addObjectHandler(key, "click", (detail) => {
+            const behaviour = mine(id)();
+            if (behaviour && this.withinReach(behaviour, void 0, template.cls.interactReach ?? 0, detail)) this.core.guard(`${id}.Interact`, () => behaviour.Interact());
+          });
+        }
+        if (object.grab && proto.OnPickup !== base.OnPickup && !explicit.has(`${key}/grab/${id}`)) {
+          this.addObjectHandler(key, "grab", () => mine(id)()?.OnPickup());
+        }
+        if (object.grab && proto.OnDrop !== base.OnDrop && !explicit.has(`${key}/drop/${id}`)) {
+          this.addObjectHandler(key, "drop", () => mine(id)()?.OnDrop());
+        }
       }
       for (const behaviour of this.ordinary) {
         const key = behaviour.gameObject.key;
@@ -4491,7 +5145,7 @@ ${label}`)));
         const cls = behaviour.constructor;
         if (object.click && this.overrides(behaviour, "Interact") && !explicit.has(`${key}/click/${id}`)) {
           this.addObjectHandler(key, "click", (detail) => {
-            if (this.withinReach(behaviour, cls.interactReach ?? 0, detail)) this.core.guard(`${id}.Interact`, () => behaviour.Interact());
+            if (this.withinReach(behaviour, void 0, cls.interactReach ?? 0, detail)) this.core.guard(`${id}.Interact`, () => behaviour.Interact());
           });
         }
         if (object.grab && this.overrides(behaviour, "OnPickup") && !explicit.has(`${key}/grab/${id}`)) {
@@ -4504,7 +5158,7 @@ ${label}`)));
     }
     callBound(behaviour, event, detail) {
       const cls = behaviour.constructor;
-      if (event.kind === "click" && !this.withinReach(behaviour, event.reach ?? cls.interactReach ?? 0, detail)) return;
+      if (event.kind === "click" && !this.withinReach(behaviour, event.reach, cls.interactReach ?? 0, detail)) return;
       const fn = behaviour[event.method];
       if (typeof fn !== "function") {
         this.core.log("warn", `${event.behaviour} has no method '${event.method}' (bound to ${event.kind} of ${event.object})`);
@@ -4513,17 +5167,40 @@ ${label}`)));
       let argument = detail;
       if (event.kind === "uiSlider") argument = Number(detail.arg ?? "0");
       else if (event.kind === "uiToggle") argument = detail.arg === "1" || detail.arg === "true" || detail.arg === "True";
+      else if (event.kind === "field") argument = detail.arg ?? "";
       this.core.guard(`${event.behaviour}.${event.method}`, () => fn.call(behaviour, argument));
     }
-    /** True when a click is close enough to count. With no head pose reported yet, every click counts. */
-    withinReach(behaviour, classReach, detail) {
-      const reach = classReach > 0 ? classReach : this.game.interactReach ?? 0;
+    /**
+     * True when a click is close enough to count: measured from the nearest of the local head and hands. The reach is
+     * the behaviour's own (InteractReach), else the binding's, else the class's, else the game's. With no pose
+     * reported yet, every click counts.
+     */
+    withinReach(behaviour, eventReach, classReach, detail) {
+      const own = this.reachOverride.get(behaviour);
+      const reach = own !== void 0 ? own : eventReach !== void 0 ? eventReach : classReach > 0 ? classReach : this.game.interactReach ?? 0;
       if (!(reach > 0)) return true;
-      const head = this.poses?.head.position ?? this.position;
       const transform = behaviour.gameObject.transform;
       const point = detail.point ?? (transform.known ? transform.position : null);
-      if (!head || !point) return true;
-      return Vector3.Distance(head, point) <= reach;
+      if (!point) return true;
+      return this.nearestDistance(point) <= reach;
+    }
+    /** Metres from `point` to the nearest of the local head and hands; 0 when no pose or position is known. */
+    nearestDistance(point) {
+      const poses = this.poses;
+      const from = poses ? [poses.head.position, poses.leftHand.position, poses.rightHand.position] : this.position ? [this.position] : [];
+      if (!from.length) return 0;
+      let nearest = Infinity;
+      for (const p of from) nearest = Math.min(nearest, Vector3.Distance(p, point));
+      return nearest;
+    }
+    /** The hand that clicked: the one whose trigger went down in the last second, else the one nearest the point. */
+    clickSide(point) {
+      const now = this.platform.clock.now();
+      const [left, right] = this.triggerAt;
+      const recent = Math.max(left, right);
+      if (now - recent <= 1e3) return right >= left ? 1 : 0;
+      if (!this.poses || !point) return null;
+      return Vector3.Distance(this.poses.rightHand.position, point) <= Vector3.Distance(this.poses.leftHand.position, point) ? 1 : 0;
     }
     addObjectHandler(objKey, kind, handler) {
       let kinds = this.objectHandlers.get(objKey);
@@ -4541,6 +5218,13 @@ ${label}`)));
     /** Delivers an object's event to what is bound to it. Also the entry point for events a graph raised. */
     dispatchObject(objKey, kind, detail) {
       if (!this.started || this.core.disposed) return;
+      if (kind === "click") {
+        if (detail.side === void 0) {
+          const side = this.clickSide(detail.point);
+          if (side !== null) detail.side = side;
+        }
+        this.lastClickSide = detail.side === 0 || detail.side === 1 ? detail.side : null;
+      }
       const handlers = this.objectHandlers.get(objKey)?.get(kind);
       if (!handlers || !handlers.length) return;
       const run = () => {
@@ -4569,15 +5253,24 @@ ${label}`)));
       if (OBJECT_EVENTS.indexOf(name) >= 0) {
         const key = this.keyOfTarget(args[0] ?? "");
         if (!key) return;
-        const detail = { arg: args[1] };
-        if (args[1] === "left") detail.side = 0;
-        else if (args[1] === "right") detail.side = 1;
+        const detail = { arg: args[1], args: args.slice(1) };
+        if (name.startsWith("collision") || name.startsWith("trigger")) {
+          const n = args.slice(2, 8).map(Number);
+          if (args[1] !== void 0) detail.otherName = args[1];
+          if (n.length >= 3 && n.slice(0, 3).every(Number.isFinite)) detail.point = new Vector3(n[0], n[1], n[2]);
+          if (n.length >= 6 && n.slice(3, 6).every(Number.isFinite)) detail.normal = new Vector3(n[3], n[4], n[5]);
+        }
+        if (name.startsWith("held") && args[1] === "left") detail.side = 0;
+        else if (name.startsWith("held") && args[1] === "right") detail.side = 1;
         this.dispatchObject(key, name, detail);
         return;
       }
       const handlers = this.graphHandlers.get(name);
       if (!handlers) return;
-      for (const { behaviour, method } of handlers.slice()) {
+      for (const handler of handlers.slice()) {
+        const behaviour = typeof handler.behaviour === "function" ? handler.behaviour() : handler.behaviour;
+        const method = handler.method;
+        if (!behaviour) continue;
         const fn = behaviour[method];
         if (typeof fn === "function") this.core.guard(`${this.idOf(behaviour)}.${method}`, () => fn.apply(behaviour, args));
       }
@@ -4600,6 +5293,7 @@ ${label}`)));
       if (this.core.disposed) return;
       if (event.type === "button") {
         const id = `${event.side}/${event.button}`;
+        if (event.pressed && event.button === 0) this.triggerAt[event.side] = this.platform.clock.now();
         if (event.pressed) this.buttons.add(id);
         else this.buttons.delete(id);
         const { button, side } = event;
@@ -4717,6 +5411,8 @@ ${label}`)));
       __publicField(this, "bindings");
       /** Running instances by instance key. */
       __publicField(this, "instances", /* @__PURE__ */ new Map());
+      /** One object for every instance of this game on the page (Behaviour.Shared): page memory, not synced or saved. */
+      __publicField(this, "shared", {});
       __publicField(this, "stopped", false);
       __publicField(this, "unsubs", []);
       this.platform = platform;
@@ -4758,7 +5454,7 @@ ${label}`)));
       }
       for (const [key, element] of wanted) {
         if (this.instances.has(key)) continue;
-        const instance = new GameInstance(this.platform, this.game, this.bindings, element, key);
+        const instance = new GameInstance(this.platform, this.game, this.bindings, element, key, this.shared);
         this.instances.set(key, instance);
         void instance.start();
       }
@@ -6288,6 +6984,8 @@ ${label}`)));
     }
   };
   __publicField(Piece, "synced", ["_state", "_active"]);
+  /** Sent to every player by the mover (Piece.OnDrop, PiecePlacer.PlaceAt): the move and capture sounds. */
+  __publicField(Piece, "networkCallable", ["PieceMovedAudio", "PieceCapturedAudio"]);
 
   // src/PiecePlacer.ts
   function placerSquare(at) {
@@ -12674,6 +13372,13 @@ ${label}`)));
       this.observer = observer;
     }
     // ---- the local player ---------------------------------------------------------------------------------------
+    async isVR() {
+      try {
+        return await this.scene.IsVR() === true;
+      } catch {
+        return false;
+      }
+    }
     async raycast(origin, direction, maxDistance, layerMask) {
       const BS = this.env.BS;
       const reply = await this.scene.Raycast(toBs3(BS, origin), toBs3(BS, direction), maxDistance, layerMask);
@@ -12741,6 +13446,7 @@ ${label}`)));
       __publicField(this, "seat");
       __publicField(this, "watchers", []);
       __publicField(this, "watching", false);
+      __publicField(this, "attached", null);
       this.platform = platform;
       this.key = key;
       this.path = path;
@@ -12838,6 +13544,42 @@ ${label}`)));
     }
     stand() {
       if (this.seat) this.platform.attempt("Stand", () => this.seat.Stand());
+    }
+    /** UNVERIFIED in Play mode: BS.AttachedObject added to a kit object, attachment point set, then Attach(local user id). */
+    attachToHand(side, position, rotation) {
+      const BS = this.platform.api;
+      const uid = this.platform.local().uid;
+      void (async () => {
+        try {
+          if (!this.attached) {
+            this.attached = await this.go.AddComponent(
+              new BS.AttachedObject({
+                uid,
+                attachmentPosition: new BS.Vector3(position.x, position.y, position.z),
+                attachmentRotation: new BS.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w),
+                attachmentType: 1,
+                // NonPhysics
+                attachmentPoint: side === 0 ? 1 : 2,
+                // LeftHand, RightHand
+                autoSync: false,
+                jointAvatar: false
+              })
+            );
+          } else {
+            this.attached.attachmentPoint = side === 0 ? 1 : 2;
+            this.attached.attachmentPosition = new BS.Vector3(position.x, position.y, position.z);
+            this.attached.attachmentRotation = new BS.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
+          }
+          await this.attached.Attach(uid);
+        } catch (error) {
+          this.platform.log("warn", `AttachedObject on ${this.path}: ${String(error)}`);
+        }
+      })();
+    }
+    detach() {
+      if (!this.attached) return;
+      const uid = this.platform.local().uid;
+      this.platform.attempt("Detach", () => this.attached.Detach(uid));
     }
     releaseGrab() {
       this.platform.attempt("ReleaseGrab", () => this.go.ReleaseGrab());

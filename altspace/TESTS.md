@@ -3,6 +3,17 @@
 Everything here ran on 2026-11-24 on Windows, Unity 6000.3.21f1, Creator SDK 4.0.29, in the Unity editor. Nothing ran
 in the Altspace app, on a Quest, or with controllers (rung 5: not run; worlds stay Private).
 
+**Re-run on the fixed kit (portkit c7abead..1118ef0), 2026-11-24.** `portkit/tools/sync.sh chess-table` mirrored the
+runtime into `ts/portkit` and the Unity package. Changes for the game: `Piece.networkCallable = ["PieceMovedAudio",
+"PieceCapturedAudio"]` (the only methods chess reaches by `SendCustomNetworkEvent`, from `Piece.OnDrop` and
+`PiecePlacer.PlaceAt`; chess sends no `SendCommand`), and the key-budget test (acks and draw numbers moved to the
+referee's user state: 3 space leaves per table, not 5). Without the list, the fool's-mate scenario fails on the
+refused sound events. Every rung below was run again and passes; the numbers are from that run. One fix on the way:
+`ChessKitBuilder` rewrote its materials from fresh ones without URP's validation, so a rebuild kept every material's
+motion-vector pass (and the transparent ones' depth and shadow passes) and the Windows bundle grew 25% (2,683 KiB);
+it now runs URP's `BaseShaderGUI.SetMaterialKeywords` on them, and the materials come out identical to the ones
+verified before.
+
 How to run each rung again:
 
 ```
@@ -83,26 +94,32 @@ ok 11 - End Game while a promotion is open on the other page closes it there, an
 ok 12 - manual clock: anyone may set time and switch it; the raised button switches, the lowered one does nothing
 ```
 
-Every scenario ends with all clients holding the same state digest (`world.agree()`) and no error logged. The table
-costs 5 space-state leaves per copy (one sync group for the whole table) and no user state.
+Every scenario ends with all clients holding the same state digest (`world.agree()`) and no error logged (a refused
+network event is logged, so a missing `networkCallable` entry fails the run). The table costs 3 space-state leaves per
+copy (`ref`, and one sync group for the whole table: its owner and value leaves) and no user state of its own (the
+referee's command acknowledgements live in its user state).
 
 ## Rung 2: the kit in edit mode (`PortKit/Kit/Check`)
 
 ```
 PASS graphs: the SDK's check found 0 nodes the app will not run
-PASS chess-table bindings: 223 objects resolve by path; hash matches
-PASS chess-table android bundle: PASS Kind=Pass Reasons=[] Reports=[] Stats=files 1 (format 22), scenes 0, objects 454/1789, behaviours 443, scripts 11, ...
+PASS chess-table bindings: 223 objects resolve by path; hash matches (ec156bc0565c701559fee99e289c187132131af8)
+PASS chess-table android bundle: PASS Kind=Pass Reasons=[] Reports=[] Stats=files 1 (format 22), scenes 0, objects 454/1789, behaviours 443, scripts 11, calls 0, animation events 0, graph blobs 7 (293 KiB), ...
 PASS chess-table windows bundle: PASS Kind=Pass Reasons=[] Reports=[] ...
 DONE
 ```
 
-Graph members used: relay 36 and spin 3, all on the SDK allow list of 29,061. Final bundles: Android 1,606 KiB, Windows
-2,152 KiB, each with the third-party notices inside.
+Graph members used: relay 49 (the kit's relay graph now carries the new standard ops: audio pitch, volume and scaled,
+animator enabled, uGUI toggle and slider, scale, rigidbody velocity and kinematic, spawn, despawn; 519 units) and
+spin 3, all on the SDK allow list of 29,061. Bindings unchanged (`ec156bc0...`; chess has no text field, so no `field`
+events). Final bundles: Android 1,624 KiB, Windows 2,164 KiB (before the re-sync 1,606 and 2,152: the bigger relay
+graph), each with the third-party notices inside.
 
-Artifacts (`PortKit/Kit/Export Artifacts`, `altspace/dist/`, not committed): `android/chess-table`,
-`windows/chess-table`, `pk-chess-table.js` (GPL-3.0 header), `chess-table.jpg`, `chess-table.snippet.html` (with the
-game's settings and `position="0 0.75 0"`), `manifest.json` (checks android PASS, windows PASS, bindings
-`ec156bc0565c701559fee99e289c187132131af8`).
+Artifacts (`PortKit/Kit/Export Artifacts`, `altspace/dist/`, not committed): `android/chess-table` (sha1 `b49ee3c4...`),
+`windows/chess-table` (`384b3cf1...`), `pk-chess-table.js` (GPL-3.0 header, 457,401 bytes, `6fc3334e...`),
+`chess-table.jpg`, `chess-table.snippet.html` (with the game's settings and `position="0 0.75 0"`), `manifest.json`
+(checks android PASS, windows PASS, bindings `ec156bc0565c701559fee99e289c187132131af8`). The bundles and script the
+Play-mode rungs below loaded are these files (same sha1).
 
 ## Rung 3: Play mode, one player (`playtest/single.json`)
 
@@ -110,8 +127,9 @@ A hand-written `<bs-snippet name="chess-table" ... auto-timer="true" clock="600"
 from the test's local server (`?v=<sha1>` on the bundle addresses), and `Assets/WebRoot/playtest/chess-playtest.js`,
 which drives the table through the SDK's desktop player with portkit's InputSim (a mouse of the test's own: the SDK casts
 its own rays and raises click, grab and drop) and reads Unity back with the `probe` command. One player holds both
-sides (F7). **RESULT 22 passed, 0 failed; 0 console error lines**, on the exported bundles (`playtest/evidence_single.txt`, screenshot
-`playtest/evidence_single_mate.jpg`).
+sides (F7). **RESULT 22 passed, 0 failed; 0 console error lines**, on the exported bundles, before the re-sync and again
+after it (`playtest/evidence_single.txt` and screenshot `playtest/evidence_single_mate.jpg` are from the run on the
+fixed kit; the test server served the Windows bundle once and the script once).
 
 ```
 PASS the kit loads from a hand-written bs-snippet and the instance starts
@@ -120,7 +138,7 @@ PASS a fresh table takes the element's settings: auto-timer true, clock 600
 PASS Join White and Join Black reach the script (UI colliders, real mouse): white Main Editor, black Main Editor
 PASS the panel's name text reached Unity (relay op text): Main Editor
 PASS Start Game sets up the 32 pieces: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
-PASS the e2 pawn stands on e2 (positions read back from Unity): square 0.031 0.832 0.594, piece 0.031 0.831 0.594
+PASS the e2 pawn stands on e2 (positions read back from Unity): square 0.031 0.482 0.444, piece 0.031 0.481 0.444
 PASS White's pieces are on the Grabbable layer, Black's on the UI layer
 PASS the automated clock starts with White's time
 PASS f2f3 is played (grabbed and let go (in place, then the square clicked: see TESTS.md))
@@ -133,14 +151,14 @@ PASS the banner shows
 PASS the checked king's square is red (D3 fixed): 1.000 0.000 0.000 0.600
 PASS nothing can be picked up after the result (D9)
 PASS the clock switched at every move: MOVES 005: 005
-PASS the clock is frozen at the result and shows HH:MM:SS (LCD digits): 00:09:55 499, then 00:09:55 499
+PASS the clock is frozen at the result and shows HH:MM:SS (LCD digits): 00:09:52 593, then 00:09:52 593
 PASS End Game clears the board (the pieces are switched off in Unity): 8/8/8/8/8/8/8/8, pawn0 active False
 PASS the credits panel opens and closes: True, False
 ```
 
 **A quick click on a piece on the Grabbable layer** reached the page as a grab and a drop (which chooses the piece) in
 one run and as nothing at all in another. The test then does what a player would: hold the button a moment and let go
-in place. In the final run the quick click registered. Clicks on the UI layer (squares, the opponent's pieces, the
+in place. In the run on the fixed kit the quick click on g2 registered nothing and the fallback made the move. Clicks on the UI layer (squares, the opponent's pieces, the
 panel's buttons) registered every time.
 
 **What "grabbed" means here.** The desktop grab works: the page hears `grab` when the button goes down and `drop`
@@ -157,26 +175,29 @@ the drop mapping, but **not by Play mode**.
 The main editor and a Multiplayer Play Mode clone (`PortKit/Multiplayer/Activate Player 2`) open the same page. The
 player whose session id sorts first takes White, the other Black; they follow each other through the table's state and
 exchange state digests at checkpoints as one-shots (which the runtime ignores). After the fourth move Black reloads its
-page. **RESULT 28 passed, 0 failed**, twice, the second time on the exported bundles (`playtest/evidence_multi.txt`).
+page. **RESULT 28 passed, 0 failed** (main 11, Player 2 17), twice before the re-sync, the second time on the exported
+bundles, and again on the fixed kit's exported bundles (`playtest/evidence_multi.txt`, that run: 0 console error lines
+in the main editor). In that run the session ids sorted the other way, so the main editor played White and Player 2
+(the clone) played Black and reloaded:
 
 ```
-[main] PASS one player holds White, the other Black, and the game starts: white Player 2, black Main Editor
-[main] PASS Black cannot pick up or choose White's pieces: layer 5, rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
-[vp-...] PASS e2e4 played by White          [main] PASS e2e4 arrives at the other player
-[main]   PASS e7e5 played by Black          [vp-...] PASS e7e5 arrives at the other player
-[vp-...] PASS g1f3 played by White          [main] PASS g1f3 arrives at the other player
-[main]   PASS b8c6 played by Black          [vp-...] PASS b8c6 arrives at the other player
-[main] (Black reloads its page)
-[main] PASS the kit loads from a hand-written bs-snippet and the instance starts
-[main] PASS after reloading its page Black sees the position (late join): r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R
-[main] PASS Black is still Black after the reload (sides are user ids): Main Editor / Main Editor
-[vp-...] PASS Black's page, reloaded, holds the same state as White's (digest): 3fac22d2 / 3fac22d2
-[vp-...] PASS f1c4 played by White          [main] PASS f1c4 arrives at the other player
-[main]   PASS g8f6 played by Black          [vp-...] PASS g8f6 arrives at the other player
-[main] PASS both pages reach the same state digest after the last move: ebb0521b / ebb0521b
+[main] PASS one player holds White, the other Black, and the game starts: white Main Editor, black Player 2
+[vp-...] PASS Black cannot pick up or choose White's pieces: layer 5, rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
+[main]   PASS e2e4 played by White          [vp-...] PASS e2e4 arrives at the other player
+[vp-...] PASS e7e5 played by Black          [main]   PASS e7e5 arrives at the other player
+[main]   PASS g1f3 played by White          [vp-...] PASS g1f3 arrives at the other player
+[vp-...] PASS b8c6 played by Black          [main]   PASS b8c6 arrives at the other player
+[vp-...] (Black reloads its page)
+[vp-...] PASS the kit loads from a hand-written bs-snippet and the instance starts
+[vp-...] PASS after reloading its page Black sees the position (late join): r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R
+[vp-...] PASS Black is still Black after the reload (sides are user ids): Player 2 / Player 2
+[main]   PASS Black's page, reloaded, holds the same state as White's (digest): 36d4ce14 / 36d4ce14
+[main]   PASS f1c4 played by White          [vp-...] PASS f1c4 arrives at the other player
+[vp-...] PASS g8f6 played by Black          [main]   PASS g8f6 arrives at the other player
+[vp-...] PASS both pages reach the same state digest after the last move: 4bf39d3d / 4bf39d3d
 ```
 
-The final run (on the exported bundles) had one error line in the main editor's console, an earlier run two, all the SDK's: a `NullReferenceException` in `BS.BSScene.Click`
+Before the re-sync, the final run (on the exported bundles) had one error line in the main editor's console, an earlier run two, all the SDK's: a `NullReferenceException` in `BS.BSScene.Click`
 (`BSScene.cs`) when the bystander check let go of a long press on a piece on the UI layer (nothing happened, as the
 check wanted; it looks like the desktop controller calling Click with no object), and "Failed to load after 25 seconds
 ... (state SCENE_START): no component is still loading" while Black's page reloaded (the page then loaded and passed).

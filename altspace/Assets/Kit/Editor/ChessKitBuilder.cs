@@ -348,6 +348,16 @@ namespace ChessTable
                 ["Board"] = Lit(lit, "Board", Color.white, 0.536f, Checker(boardMesh)),
                 ["SquareTint"] = Transparent(Save(new Material(unlit) { name = "SquareTint" }, new Color(0f, 0f, 0f, 0f)), null),
             };
+            // URP's own validation (what its material inspector and import postprocessor run): keywords, blend mode, which
+            // passes a material keeps. Save() rewrites an existing material from a fresh one, which drops that state, and
+            // without it every material kept its motion-vector pass (and the transparent ones their depth and shadow
+            // passes): more shader variants, a Windows bundle 25% larger.
+            foreach (var m in made.Values)
+            {
+                if (m.shader == lit) BaseShaderGUI.SetMaterialKeywords(m, UnityEditor.Rendering.Universal.ShaderGUI.LitGUI.SetMaterialKeywords);
+                else BaseShaderGUI.SetMaterialKeywords(m);
+                EditorUtility.SetDirty(m);
+            }
             AssetDatabase.SaveAssets();
             return made;
         }
