@@ -59,6 +59,10 @@ namespace PortKit
         public virtual string Description => Summary;
         /// <summary>single="true": only for a game that takes over a world.</summary>
         public virtual bool Single => false;
+        /// <summary>The markup's position attribute: where the kit sits when somebody adds the snippet (a table-top game: on a table).</summary>
+        public virtual string SnippetPosition => "0 0 0";
+        /// <summary>The game's own settings, as attributes of the markup with their defaults (the snippet's Inspector shows them).</summary>
+        public virtual IReadOnlyList<(string name, string value)> SnippetSettings => Array.Empty<(string, string)>();
 
         /// <summary>Put the kit together under stage.Root and say what the script needs (stage.Object, Ref, Behaviour, Event, AddGraph).</summary>
         protected abstract void Compose(KitStage stage);

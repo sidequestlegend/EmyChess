@@ -76,8 +76,9 @@ namespace PortKit
             return $"<bs-snippet name=\"{kit.Slug}\" title=\"{Xml(kit.Title)}\"{(kit.Single ? " single=\"true\"" : "")}\n" +
                    $"  description=\"{Xml(kit.Summary)}\"\n" +
                    $"  script=\"{ScriptPlaceholder}\"\n" +
-                   "  position=\"0 0 0\"\n" +
-                   "  rotation=\"0 0 0\">\n" +
+                   $"  position=\"{Xml(kit.SnippetPosition)}\"\n" +
+                   "  rotation=\"0 0 0\"" +
+                   string.Concat(kit.SnippetSettings.Select(s => $"\n  {s.name}=\"{Xml(s.value)}\"")) + ">\n" +
                    "  <bs-gizmo type=\"position\" attribute=\"position\"/>\n" +
                    $"  <bs-gizmo type=\"box\" attribute=\"position\" size=\"{size}\"/>\n" +
                    "</bs-snippet>\n";

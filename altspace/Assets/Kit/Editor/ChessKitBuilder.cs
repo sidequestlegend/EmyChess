@@ -41,6 +41,14 @@ namespace ChessTable
             "Pick pieces up and put them down, or click a piece and then a square. A port of EmyChess by emymin " +
             "(https://github.com/emymin/EmyChess): code GPL-3.0, art CC BY-SA 4.0; the credits panel on the board lists every licence.";
 
+        /// <summary>A table-top set: the base of the board at table height.</summary>
+        public override string SnippetPosition => "0 0.75 0";
+        /// <summary>PORT.md 8.1: what a fresh table starts with (room: two elements with the same room share one game).</summary>
+        public override IReadOnlyList<(string name, string value)> SnippetSettings => new[]
+        {
+            ("room", ""), ("mode", "standard"), ("auto-timer", "false"), ("clock", "0"), ("input", "auto"), ("allow-anarchy", "true"), ("sound", "true"),
+        };
+
         // what Compose found, for Finishing
         GameObject set;
         TMP_FontAsset lcdFont;

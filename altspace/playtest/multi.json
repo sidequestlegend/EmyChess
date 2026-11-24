@@ -5,6 +5,6 @@
   "elements": [
     "<script>window.__chessPlan = \"multi\";</script>",
     "<script src=\"{SERVER}/web/playtest/chess-playtest.js\"></script>",
-    "<bs-snippet name=\"chess-table\" title=\"Chess Table\" script=\"{SERVER}/web/pk-chess-table.js\" position=\"0 0.8 0.75\" rotation=\"0 180 0\" windows=\"{SERVER}/kits/windows/chess-table\" android=\"{SERVER}/kits/android/chess-table\"></bs-snippet>"
+    "<bs-snippet name=\"chess-table\" title=\"Chess Table\" script=\"{SERVER}/web/pk-chess-table.js\" position=\"0 0.45 0.6\" rotation=\"0 180 0\" windows=\"{SERVER}/kits/windows/chess-table\" android=\"{SERVER}/kits/android/chess-table\"></bs-snippet>"
   ]
 }

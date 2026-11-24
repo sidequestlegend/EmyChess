@@ -1,0 +1,265 @@
+play.1 acquired by chess-table
+armed 'chess-multi': 3 elements, test server http://localhost:42300 (running), page port 42200
+2026-11-24T18:03:26.4160720+04:00 play -> entering play mode
+local: script and bundles from the test server http://localhost:42300
+[main] INFO main in Play, page port 42200
+[main] PASS the kit loads from a hand-written bs-snippet and the instance starts:
+[main] CMD k1 probe pk1:chess-table:0 exists .
+[main] REPLY k1 True
+[main] CMD k2 probe pk1:chess-table:0 active EmyChess/ChessSet/Board/pieces_parent/pawn0
+[main] REPLY k2 False
+[main] CMD k3 probe pk1:chess-table:0 active EmyChess/ChessSet/UIHolder/Canvas/MainMenu
+[main] REPLY k3 True
+[main] PASS the kit is in the scene: pieces in their pools, the main menu showing: holder True, pawn0 active False, main menu True
+[main] PASS two players in the room: [{"id":1,"name":"Main Editor","sid":"rsess_a62ee550-11d6-40a3-bc67-4b7451bc5cc6"},{"id":2,"name":"Player 2","sid":"rsess_7fe2f131-b5d3-4a8c-83e5-df61aef1fd2d"}]
+[main] INFO Black is Main Editor
+[main] CMD k4 probe pk1:chess-table:0 pos EmyChess/ChessSet/UIHolder/Canvas/MainMenu/BlackJoin
+[main] REPLY k4 -0.422 0.467 0.641
+[main] CMD k5 look -0.422 0.467 0.641
+[main] REPLY k5 ok camera at 0.00,1.60,0.00
+[main] CMD k6 click -0.422 0.467 0.641
+[main] REPLY k6 ok screen 643,421 of 1285x842
+[main] INFO click Join Black: ok screen 643,421 of 1285x842
+[main] PASS one player holds White, the other Black, and the game starts: white Player 2, black Main Editor
+[main] CMD k7 probe pk1:chess-table:0 layer EmyChess/ChessSet/Board/pieces_parent/pawn12
+[main] REPLY k7 5
+[main] CMD k8 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn12
+[main] REPLY k8 0.031 0.504 0.444
+[main] CMD k9 look 0.031 0.504 0.444
+[main] REPLY k9 ok camera at 0.00,1.60,0.00
+[main] CMD k10 press 0.031 0.504 0.444
+[main] REPLY k10 ok screen 643,421 of 1285x842
+[main] CMD k11 wait 10
+[main] REPLY k11 ok
+[main] CMD k12 release
+[main] REPLY k12 ok
+[main] PASS Black cannot pick up or choose White's pieces: layer 5, rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
+[main] PASS e2e4 arrives at the other player: rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR
+[main] CMD k13 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn4
+[main] REPLY k13 0.031 0.504 0.756
+[main] CMD k14 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/e7
+[main] REPLY k14 0.031 0.482 0.756
+[main] INFO e7e5 raw: listening (layer 20)
+[main] CMD k15 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/e7
+[main] REPLY k15 0.031 0.482 0.756
+[main] CMD k16 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/e5
+[main] REPLY k16 0.031 0.482 0.631
+[main] CMD k17 look 0.031 0.482 0.631
+[main] REPLY k17 ok camera at 0.00,1.60,0.00
+[main] INFO e7e5 press @16643
+[main] CMD k18 press 0.031 0.5172 0.756
+[main] REPLY k18 ok screen 639,491 of 1285x842
+[main] CMD k19 wait 20
+[main] REPLY k19 ok
+[main] INFO e7e5 carry @16788
+[main] CMD k20 pointer 0.031 0.5172 0.631
+[main] REPLY k20 ok screen 643,431 of 1285x842
+[main] CMD k21 wait 20
+[main] REPLY k21 ok
+[main] CMD k22 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn4
+[main] REPLY k22 0.031 0.504 0.756
+[main] INFO e7e5 held at 0.031 0.504 0.756 @16889
+[main] CMD k23 release
+[main] REPLY k23 ok
+[main] INFO e7e5 released @16906
+[main] INFO e7e5 raw events: ["grab pawn4 @16703","drop pawn4 @16916"]
+[main] INFO e7e5 trace: ["pickup pawn 4,6 grabbable true","drop pawn 4,6 held true picked true at (0.03125001, 0.48125, 0.75625)"] frame a1 (0, 0)
+[main] INFO e7e5: the piece came down on its own square and is chosen; finishing by clicking e5
+[main] CMD k24 click 0.031 0.482 0.631
+[main] REPLY k24 ok screen 643,421 of 1285x842
+[main] INFO e7e5 (grab): press ok screen 639,491 of 1285x842; carry ok screen 643,431 of 1285x842
+[main] PASS e7e5 played by Black: rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR
+[main] PASS g1f3 arrives at the other player: rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R
+[main] CMD k25 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/knight0
+[main] REPLY k25 -0.156 0.512 0.818
+[main] CMD k26 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/b8
+[main] REPLY k26 -0.156 0.482 0.819
+[main] CMD k27 look -0.156 0.53 0.818
+[main] REPLY k27 ok camera at 0.00,1.60,0.00
+[main] CMD k28 click -0.156 0.53 0.818
+[main] REPLY k28 ok screen 643,421 of 1285x842
+[main] INFO b8c6 click piece: ok screen 643,421 of 1285x842 raw listening (layer 20)
+[main] INFO b8c6: the quick click on b8 registered nothing; holding it and letting go in place
+[main] CMD k29 press -0.156 0.53 0.818
+[main] REPLY k29 ok screen 643,421 of 1285x842
+[main] CMD k30 wait 20
+[main] REPLY k30 ok
+[main] CMD k31 release
+[main] REPLY k31 ok
+[main] CMD k32 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/c6
+[main] REPLY k32 -0.094 0.482 0.694
+[main] CMD k33 click -0.094 0.482 0.694
+[main] REPLY k33 ok screen 663,346 of 1285x842
+[main] INFO b8c6 (click): chosen true; trace ["pickup pawn 4,6 grabbable true","drop pawn 4,6 held true picked true at (0.03125001, 0.48125, 0.75625)","pickup knight 1,7 grabbable true","drop knight 1,7 held true picked true at (-0.15625, 0.48125, 0.81875)"]
+[main] PASS b8c6 played by Black: r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R
+[main] INFO Black reloads its page
+[main] PASS the kit loads from a hand-written bs-snippet and the instance starts:
+[main] CMD k1 probe pk1:chess-table:0 exists .
+[main] REPLY k1 True
+[main] CMD k2 probe pk1:chess-table:0 active EmyChess/ChessSet/Board/pieces_parent/pawn0
+[main] REPLY k2 False
+[main] CMD k3 probe pk1:chess-table:0 active EmyChess/ChessSet/UIHolder/Canvas/MainMenu
+[main] REPLY k3 True
+[main] PASS the kit is in the scene again: holder True, pawn0 active False, main menu True
+[main] PASS two players in the room: [{"id":2,"name":"Player 2","sid":"rsess_7fe2f131-b5d3-4a8c-83e5-df61aef1fd2d"},{"id":3,"name":"Main Editor","sid":"rsess_0ffd64a3-49e9-4ef5-8a7d-c5371951bb5f"}]
+[main] INFO Black is Main Editor (back after a reload)
+[main] PASS after reloading its page Black sees the position (late join): r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R
+[main] PASS Black is still Black after the reload (sides are user ids): Main Editor / Main Editor
+[main] PASS f1c4 arrives at the other player: r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R
+[main] CMD k4 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/knight1
+[main] REPLY k4 0.156 0.512 0.818
+[main] CMD k5 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g8
+[main] REPLY k5 0.156 0.482 0.819
+[main] INFO g8f6 raw: listening (layer 20)
+[main] CMD k6 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g8
+[main] REPLY k6 0.156 0.482 0.819
+[main] CMD k7 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/f6
+[main] REPLY k7 0.094 0.482 0.694
+[main] CMD k8 look 0.094 0.482 0.694
+[main] REPLY k8 ok camera at 0.00,1.60,0.00
+[main] INFO g8f6 press @14141
+[main] CMD k9 press 0.156 0.53 0.818
+[main] REPLY k9 ok screen 667,495 of 1285x842
+[main] CMD k10 wait 20
+[main] REPLY k10 ok
+[main] INFO g8f6 carry @14263
+[main] CMD k11 pointer 0.094 0.53 0.694
+[main] REPLY k11 ok screen 643,436 of 1285x842
+[main] CMD k12 wait 20
+[main] REPLY k12 ok
+[main] CMD k13 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/knight1
+[main] REPLY k13 0.156 0.512 0.818
+[main] INFO g8f6 held at 0.156 0.512 0.818 @14380
+[main] CMD k14 release
+[main] REPLY k14 ok
+[main] INFO g8f6 released @14401
+[main] INFO g8f6 raw events: ["grab knight1 @14166","drop knight1 @14408"]
+[main] INFO g8f6 trace: ["pickup knight 6,7 grabbable true","drop knight 6,7 held true picked true at (0.15625, 0.48125, 0.81875)"] frame a1 (0, 0)
+[main] INFO g8f6: the piece came down on its own square and is chosen; finishing by clicking f6
+[main] CMD k15 click 0.094 0.482 0.694
+[main] REPLY k15 ok screen 643,421 of 1285x842
+[main] INFO g8f6 (grab): press ok screen 667,495 of 1285x842; carry ok screen 643,436 of 1285x842
+[main] PASS g8f6 played by Black: r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R
+[main] PASS both pages reach the same state digest after the last move: ebb0521b / ebb0521b
+[main] INFO page result 8 passed, 0 failed
+[main] DONE
+[vp-mppma3ee0803] INFO vp-mppma3ee0803 in Play, page port 42200
+[vp-mppma3ee0803] PASS the kit loads from a hand-written bs-snippet and the instance starts:
+[vp-mppma3ee0803] CMD k1 probe pk1:chess-table:0 exists .
+[vp-mppma3ee0803] REPLY k1 True
+[vp-mppma3ee0803] CMD k2 probe pk1:chess-table:0 active EmyChess/ChessSet/Board/pieces_parent/pawn0
+[vp-mppma3ee0803] REPLY k2 False
+[vp-mppma3ee0803] CMD k3 probe pk1:chess-table:0 active EmyChess/ChessSet/UIHolder/Canvas/MainMenu
+[vp-mppma3ee0803] REPLY k3 True
+[vp-mppma3ee0803] PASS the kit is in the scene: pieces in their pools, the main menu showing: holder True, pawn0 active False, main menu True
+[vp-mppma3ee0803] PASS two players in the room: [{"id":1,"name":"Main Editor","sid":"rsess_a62ee550-11d6-40a3-bc67-4b7451bc5cc6"},{"id":2,"name":"Player 2","sid":"rsess_7fe2f131-b5d3-4a8c-83e5-df61aef1fd2d"}]
+[vp-mppma3ee0803] INFO White is Player 2
+[vp-mppma3ee0803] CMD k4 probe pk1:chess-table:0 pos EmyChess/ChessSet/UIHolder/Canvas/MainMenu/WhiteJoin
+[vp-mppma3ee0803] REPLY k4 -0.422 0.467 0.561
+[vp-mppma3ee0803] CMD k5 look -0.422 0.467 0.561
+[vp-mppma3ee0803] REPLY k5 ok camera at 0.00,1.60,0.00
+[vp-mppma3ee0803] CMD k6 click -0.422 0.467 0.561
+[vp-mppma3ee0803] REPLY k6 ok screen 1280,351 of 2560x702
+[vp-mppma3ee0803] INFO click Join White: ok screen 1280,351 of 2560x702
+[vp-mppma3ee0803] CMD k7 probe pk1:chess-table:0 pos EmyChess/ChessSet/UIHolder/Canvas/MainMenu/StartButton
+[vp-mppma3ee0803] REPLY k7 -0.391 0.497 0.600
+[vp-mppma3ee0803] CMD k8 look -0.391 0.497 0.600
+[vp-mppma3ee0803] REPLY k8 ok camera at 0.00,1.60,0.00
+[vp-mppma3ee0803] CMD k9 click -0.391 0.497 0.600
+[vp-mppma3ee0803] REPLY k9 ok screen 1280,351 of 2560x702
+[vp-mppma3ee0803] INFO click Start Game: ok screen 1280,351 of 2560x702
+[vp-mppma3ee0803] PASS one player holds White, the other Black, and the game starts: white Player 2, black Main Editor
+[vp-mppma3ee0803] CMD k10 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn12
+[vp-mppma3ee0803] REPLY k10 0.031 0.504 0.444
+[vp-mppma3ee0803] CMD k11 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/e2
+[vp-mppma3ee0803] REPLY k11 0.031 0.482 0.444
+[vp-mppma3ee0803] INFO e2e4 raw: listening (layer 20)
+[vp-mppma3ee0803] CMD k12 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/e2
+[vp-mppma3ee0803] REPLY k12 0.031 0.482 0.444
+[vp-mppma3ee0803] CMD k13 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/e4
+[vp-mppma3ee0803] REPLY k13 0.031 0.482 0.569
+[vp-mppma3ee0803] CMD k14 look 0.031 0.482 0.569
+[vp-mppma3ee0803] REPLY k14 ok camera at 0.00,1.60,0.00
+[vp-mppma3ee0803] INFO e2e4 press @9593
+[vp-mppma3ee0803] CMD k15 press 0.031 0.5172 0.444
+[vp-mppma3ee0803] REPLY k15 ok screen 1284,301 of 2560x702
+[vp-mppma3ee0803] CMD k16 wait 20
+[vp-mppma3ee0803] REPLY k16 ok
+[vp-mppma3ee0803] INFO e2e4 carry @9764
+[vp-mppma3ee0803] CMD k17 pointer 0.031 0.5172 0.569
+[vp-mppma3ee0803] REPLY k17 ok screen 1280,359 of 2560x702
+[vp-mppma3ee0803] CMD k18 wait 20
+[vp-mppma3ee0803] REPLY k18 ok
+[vp-mppma3ee0803] CMD k19 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn12
+[vp-mppma3ee0803] REPLY k19 0.031 0.504 0.444
+[vp-mppma3ee0803] INFO e2e4 held at 0.031 0.504 0.444 @9890
+[vp-mppma3ee0803] CMD k20 release
+[vp-mppma3ee0803] REPLY k20 ok
+[vp-mppma3ee0803] INFO e2e4 released @9913
+[vp-mppma3ee0803] INFO e2e4 raw events: ["grab pawn12 @9655","drop pawn12 @9910"]
+[vp-mppma3ee0803] INFO e2e4 trace: ["pickup pawn 4,1 grabbable true","drop pawn 4,1 held true picked true at (0.03124999, 0.48125, 0.44375)"] frame a1 (0, 0)
+[vp-mppma3ee0803] INFO e2e4: the piece came down on its own square and is chosen; finishing by clicking e4
+[vp-mppma3ee0803] CMD k21 click 0.031 0.482 0.569
+[vp-mppma3ee0803] REPLY k21 ok screen 1280,351 of 2560x702
+[vp-mppma3ee0803] INFO e2e4 (grab): press ok screen 1284,301 of 2560x702; carry ok screen 1280,359 of 2560x702
+[vp-mppma3ee0803] PASS e2e4 played by White: rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR
+[vp-mppma3ee0803] PASS e7e5 arrives at the other player: rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR
+[vp-mppma3ee0803] CMD k22 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/knight3
+[vp-mppma3ee0803] REPLY k22 0.156 0.512 0.382
+[vp-mppma3ee0803] CMD k23 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g1
+[vp-mppma3ee0803] REPLY k23 0.156 0.482 0.381
+[vp-mppma3ee0803] CMD k24 look 0.156 0.53 0.382
+[vp-mppma3ee0803] REPLY k24 ok camera at 0.00,1.60,0.00
+[vp-mppma3ee0803] CMD k25 click 0.156 0.53 0.382
+[vp-mppma3ee0803] REPLY k25 ok screen 1280,351 of 2560x702
+[vp-mppma3ee0803] INFO g1f3 click piece: ok screen 1280,351 of 2560x702 raw listening (layer 20)
+[vp-mppma3ee0803] CMD k26 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/f3
+[vp-mppma3ee0803] REPLY k26 0.094 0.482 0.506
+[vp-mppma3ee0803] CMD k27 click 0.094 0.482 0.506
+[vp-mppma3ee0803] REPLY k27 ok screen 1228,385 of 2560x702
+[vp-mppma3ee0803] INFO g1f3 (click): chosen true; trace ["pickup pawn 4,1 grabbable true","drop pawn 4,1 held true picked true at (0.03124999, 0.48125, 0.44375)","pickup knight 6,0 grabbable true","drop knight 6,0 held true picked true at (0.15625, 0.48125, 0.38125)"]
+[vp-mppma3ee0803] PASS g1f3 played by White: rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R
+[vp-mppma3ee0803] PASS b8c6 arrives at the other player: r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R
+[vp-mppma3ee0803] PASS Black's page, reloaded, holds the same state as White's (digest): 3fac22d2 / 3fac22d2
+[vp-mppma3ee0803] CMD k28 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/bishop3
+[vp-mppma3ee0803] REPLY k28 0.094 0.518 0.381
+[vp-mppma3ee0803] CMD k29 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/f1
+[vp-mppma3ee0803] REPLY k29 0.094 0.482 0.381
+[vp-mppma3ee0803] INFO f1c4 raw: listening (layer 20)
+[vp-mppma3ee0803] CMD k30 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/f1
+[vp-mppma3ee0803] REPLY k30 0.094 0.482 0.381
+[vp-mppma3ee0803] CMD k31 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/c4
+[vp-mppma3ee0803] REPLY k31 -0.094 0.482 0.569
+[vp-mppma3ee0803] CMD k32 look -0.094 0.482 0.569
+[vp-mppma3ee0803] REPLY k32 ok camera at 0.00,1.60,0.00
+[vp-mppma3ee0803] INFO f1c4 press @35825
+[vp-mppma3ee0803] CMD k33 press 0.094 0.5396000000000001 0.381
+[vp-mppma3ee0803] REPLY k33 ok screen 1365,260 of 2560x702
+[vp-mppma3ee0803] CMD k34 wait 20
+[vp-mppma3ee0803] REPLY k34 ok
+[vp-mppma3ee0803] INFO f1c4 carry @35952
+[vp-mppma3ee0803] CMD k35 pointer -0.094 0.5396000000000001 0.569
+[vp-mppma3ee0803] REPLY k35 ok screen 1280,364 of 2560x702
+[vp-mppma3ee0803] CMD k36 wait 20
+[vp-mppma3ee0803] REPLY k36 ok
+[vp-mppma3ee0803] CMD k37 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/bishop3
+[vp-mppma3ee0803] REPLY k37 0.094 0.518 0.381
+[vp-mppma3ee0803] INFO f1c4 held at 0.094 0.518 0.381 @36071
+[vp-mppma3ee0803] CMD k38 release
+[vp-mppma3ee0803] REPLY k38 ok
+[vp-mppma3ee0803] INFO f1c4 released @36089
+[vp-mppma3ee0803] INFO f1c4 raw events: ["drop knight3 @19585","grab bishop3 @35868","drop bishop3 @36086"]
+[vp-mppma3ee0803] INFO f1c4 trace: ["pickup knight 6,0 grabbable true","drop knight 6,0 held true picked true at (0.15625, 0.48125, 0.38125)","pickup bishop 5,0 grabbable true","drop bishop 5,0 held true picked true at (0.09374998, 0.48125, 0.38125)"] frame a1 (0, 0)
+[vp-mppma3ee0803] INFO f1c4: the piece came down on its own square and is chosen; finishing by clicking c4
+[vp-mppma3ee0803] CMD k39 click -0.094 0.482 0.569
+[vp-mppma3ee0803] REPLY k39 ok screen 1280,351 of 2560x702
+[vp-mppma3ee0803] INFO f1c4 (grab): press ok screen 1365,260 of 2560x702; carry ok screen 1280,364 of 2560x702
+[vp-mppma3ee0803] PASS f1c4 played by White: r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R
+[vp-mppma3ee0803] PASS g8f6 arrives at the other player: r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R
+[vp-mppma3ee0803] INFO page result 11 passed, 0 failed
+[vp-mppma3ee0803] DONE
+served: /web/pk-chess-table.js x3, /web/playtest/chess-playtest.js x3, HEAD /kits/windows/chess-table x3
+console (main editor): 1 error lines
+   [Exception] NullReferenceException: Object reference not set to an instance of an object | BS.BSScene.Click (UnityEngine.GameObject obj, UnityEngine.Vector3 point, UnityEngine.Vector3 normal) (at ./Library/PackageCache/com.sidequest.creator-sdk@79f1d7b79f67/Runtime/Scripts/Scene/BSScene.cs:443)
+RESULT 28 passed, 0 failed
+DONE

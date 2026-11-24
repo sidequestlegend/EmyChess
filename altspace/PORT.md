@@ -1109,6 +1109,42 @@ Other changes, and why:
 - **Manual clock at zero:** a side whose time has run out cannot be switched (upstream's count stopped a hair above
   zero and could still switch).
 
+### 10.6 Checklist status (the 91 features of section 2)
+
+All 91 are in the port: **74 as upstream, 17 changed on purpose, none left out**. Evidence: N = Node (fake room or
+golden vectors, `ts/test`), P = editor Play mode (rung 3, `playtest/evidence_single.txt`), M = two Local Multiplayer
+players (rung 4, `playtest/evidence_multi.txt`).
+
+| Features | Status | Evidence |
+|---|---|---|
+| F1-F15 lobby, sides, start (menus, labels, join/leave, replace, one player both sides, Start rules, mode, timer toggle, start position, coordinates) | as upstream | N, P (F1-F3, F7, F8, F13, F14), M (F3, F5) |
+| F16 Start with the automated clock running | **changed** (D15: stops it and starts White's) | N |
+| F17, F18 currently moving, End Game | as upstream | N, P |
+| F19 the game ends when the turn passes to a side nobody holds | **changed**: a player who left holds the side 60 s ("away") | N |
+| F20-F35 moving pieces, sounds, captures, scores, tints, legal moves of every piece | as upstream | N (vectors: every move list), P (F20, F23, F27-F30) |
+| F36 castling | **changed** (D1: standard rule) | N (vectors) |
+| F37-F41 king safety, promotion picker, choices, empty pool, others see a pawn | as upstream | N |
+| F42 promotion counters | **changed** (D4 fixed: they show the pools) | N |
+| F43 check | **changed** (D3: the red square shows, for everyone) | N, P |
+| F44, F45, F48, F49 checkmate, stalemate, game stays on after a result, what upstream does not have | as upstream | N, P (F44) |
+| F46 king against king | **changed** (D2: a draw, as are the other dead positions) | N (vectors) |
+| F47 the banner turns | **changed** (90 degrees a second, a graph; D24) | P (banner shows) |
+| F50-F56, F59-F62 Anarchy: free drops, many moves, END TURN, no tints, deleting, placer types and counts, spawned pieces, console reset, clock | as upstream | N (vectors F50, F54; scenario) |
+| F57, F58 where the ghost piece lands | **changed** (D5, D6) | N (vectors) |
+| F63-F71 clock display and buttons, manual clock, MOVES, anyone may press | as upstream | N, P (F63, F68) |
+| F72 TIME'S UP | **changed** (called by the referee from the synced clock, D13) | N |
+| F73 the clock stops at a result (automated) | as upstream (frozen on every client at once) | N, P |
+| F74 manual clock at zero | **changed** slightly (a side at zero cannot be switched) | N |
+| F75 hours | **changed** (D14: total hours) | N (vectors) |
+| F76 who computes the running time | **changed** (C1: every client, from the synced clock) | N |
+| F77-F80, F84, F86 what is shared, late joiners, spectators, trust | as upstream (late joiners get every field at once: D20, D21 gone) | N, M (F78 by reload) |
+| F81-F83 a registered player leaves | **changed** (60 s grace; then the other player or the referee ends the game and frees the side: D11, D12) | N |
+| F85 nothing is saved | **changed** slightly: the room keeps the table for 24 h; a referee who finds a table whose players are all away resets it (C4) | N |
+| F87-F91 presentation | as upstream, remade for URP (6.2, 10.5) | P (screenshot) |
+
+Additions (not in upstream): click-to-move, dead-position draws, the credits panel, snippet settings, two tables in one
+room (each its own `room`).
+
 ---
 
 ## 11. Not determined

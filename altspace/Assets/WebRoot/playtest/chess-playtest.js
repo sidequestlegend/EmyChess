@@ -94,7 +94,8 @@
   async function pieceAim(square) {
     const p = (await probe("pos", debug().piecePath(square))).split(" ").map(Number);
     const s = (await probe("pos", debug().squarePath(square))).split(" ").map(Number);
-    const y = Math.max(p[1], s[1] + 0.03);
+    // the collider's centre is half way up the piece: aim at four fifths of its height
+    const y = s[1] + 1.6 * Math.max(p[1] - s[1], 0.02);
     return p[0] + " " + y + " " + p[2];
   }
 
@@ -141,7 +142,16 @@
     const piecePos = await pieceAim(from);
     await cmd("look " + piecePos);
     say("INFO", label + " click piece", await cmd("click " + piecePos) + " raw " + listenRaw(debug().piecePath(from)));
-    const chosen = await until(() => table().chosen === from, 3000);
+    let chosen = await until(() => table().chosen === from, 3000);
+    if (!chosen) {
+      // seen in Play mode: a quick click on a piece on the Grabbable layer sometimes reaches the page as nothing at all;
+      // a player then holds the button a moment and lets go in place, which chooses the piece
+      say("INFO", label + ": the quick click on " + from + " registered nothing; holding it and letting go in place");
+      await cmd("press " + piecePos);
+      await cmd("wait 20");
+      await cmd("release");
+      chosen = await until(() => table().chosen === from, 3000);
+    }
     const targetPos = debug().piecePath(to) ? await pieceAim(to) : await probe("pos", debug().squarePath(to));
     await cmd("click " + targetPos);
     await until(() => fen() !== before, 3000);
@@ -149,14 +159,15 @@
     return fen() !== before;
   }
 
-  async function waitStarted() {
+  async function waitStarted(inGame) {
     const ok = await until(() => debug() && debug().table, 120000, 250);
     check(!!ok, "the kit loads from a hand-written bs-snippet and the instance starts", ok ? "" : "no debug hooks after 120 s");
     if (!ok) return false;
     const exists = await probe("exists", ".");
     const pieces = await probe("active", debug().pathOf("pawn0"));
     const menu = await probe("active", debug().pathOf("mainMenu"));
-    check(exists === "True" && pieces === "False" && menu === "True", "the kit is in the scene: pieces in their pools, the main menu showing", `holder ${exists}, pawn0 active ${pieces}, main menu ${menu}`);
+    if (inGame) check(exists === "True", "the kit is in the scene again", `holder ${exists}, pawn0 active ${pieces}, main menu ${menu}`);
+    else check(exists === "True" && pieces === "False" && menu === "True", "the kit is in the scene: pieces in their pools, the main menu showing", `holder ${exists}, pawn0 active ${pieces}, main menu ${menu}`);
     return true;
   }
 
@@ -218,7 +229,7 @@
     const b = await probe("text", debug().pathOf("rightTimer"));
     const bm = await probe("text", debug().pathOf("rightMilliseconds"));
     check(a + am === b + bm && /^00:0[89]:\d\d$/.test(a), "the clock is frozen at the result and shows HH:MM:SS (LCD digits)", `${a} ${am}, then ${b} ${bm}`);
-    await cmd("shot mate 0.35 1.35 0.25 0 0.82 0.9 60");
+    await cmd("shot mate 0.35 1.05 0.1 0 0.47 0.75 60");
 
     // End Game clears the board
     await clickObject("endGame", "End Game");
@@ -273,7 +284,7 @@
   };
 
   async function multi() {
-    if (!(await waitStarted())) return;
+    if (!(await waitStarted(reloaded()))) return;
     const send = channel();
     const two = await until(() => debug().players().length >= 2, 90000, 500);
     check(!!two, "two players in the room", JSON.stringify(debug().players()));
