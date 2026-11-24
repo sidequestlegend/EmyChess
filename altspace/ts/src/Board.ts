@@ -298,7 +298,12 @@ export class Board extends Behaviour {
   private ReadFrame(): void {
     const [a1, h1, a8] = [0, 7 * 8, 7].map((i) => this.squareRenderers[i]?.gameObject.transform);
     if (!a1?.known || !h1?.known || !a8?.known) return;
-    this.frame = { a1: a1.position, ux: h1.position.sub(a1.position).scale(1 / 7), uy: a8.position.sub(a1.position).scale(1 / 7) };
+    const ux = h1.position.sub(a1.position).scale(1 / 7);
+    const uy = a8.position.sub(a1.position).scale(1 / 7);
+    // squares reported on top of each other (a host that has no pose yet answers zeros): not a frame; a drop then finds
+    // no square (Piece.OnDrop) rather than NaN
+    if (ux.sqrMagnitude < 1e-12 || uy.sqrMagnitude < 1e-12) return;
+    this.frame = { a1: a1.position, ux, uy };
   }
 
   /**

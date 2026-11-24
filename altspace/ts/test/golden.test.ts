@@ -99,6 +99,7 @@ class Table {
     this.board.PawnThatDidADoublePushLastRound = ep === "-" ? null : this.board.GetPiece(Math.floor(Number(ep) / 8), Number(ep) % 8);
     this.cm.currentSide = side === "w";
     this.cm.inProgress = true;
+    this.cm.promotionSquare = -1;
     this.cm.anarchy = this.rules.anarchy = false;
     this.cm.whiteScore = this.cm.blackScore = 0;
     this.gom.gameOverState = 0;
@@ -180,12 +181,42 @@ class Table {
 
 const table = new Table();
 
-/** A castling move the port refuses and upstream allows (D1): the king in check, or crossing an attacked square. */
+/**
+ * A castling move the port refuses and upstream allows (D1): a king on its own rank moving two files, while it is in
+ * check or across an attacked square. Worked out here from the position key alone, with an attack test of the test's
+ * own, so the excuse does not rest on the port's rules (it used to call the port's own CastlesThroughCheck).
+ */
 function refusedCastle(key: string, at: string, upstreamMove: string): boolean {
-  table.load(key);
-  const king = table.board.GetPiece(at.charCodeAt(0) - 97, Number(at[1]) - 1);
-  if (!king || king.type !== "king" || Math.abs(upstreamMove.charCodeAt(0) - at.charCodeAt(0)) !== 2) return false;
-  return table.rules.CastlesThroughCheck(king, new Vector2(upstreamMove.charCodeAt(0) - 97, Number(upstreamMove[1]) - 1), table.board);
+  const squares = key.split("|")[0]!;
+  const kx = at.charCodeAt(0) - 97;
+  const ky = Number(at[1]) - 1;
+  const tx = upstreamMove.charCodeAt(0) - 97;
+  const ty = Number(upstreamMove[1]) - 1;
+  const king = squares[kx * 8 + ky]!;
+  if (king.toLowerCase() !== "k" || ty !== ky || Math.abs(tx - kx) !== 2) return false;
+  const white = king === "K";
+  if (ky !== (white ? 0 : 7) || kx !== 4) return false;
+  return attacked(squares, kx, ky, !white) || attacked(squares, kx + Math.sign(tx - kx), ky, !white);
+}
+
+/** Whether a piece of colour `byWhite` attacks square (x, y), from the position key's 64 squares (index x * 8 + y). */
+function attacked(squares: string, x: number, y: number, byWhite: boolean): boolean {
+  const at = (i: number, j: number) => (i >= 0 && i < 8 && j >= 0 && j < 8 ? squares[i * 8 + j]! : null);
+  const mine = (c: string | null, letter: string) => c !== null && c !== "." && c.toLowerCase() === letter && (c === c.toUpperCase()) === byWhite;
+  const forward = byWhite ? 1 : -1;
+  if (mine(at(x - 1, y - forward), "p") || mine(at(x + 1, y - forward), "p")) return true;
+  for (const [dx, dy] of [[1, 2], [2, 1], [-1, 2], [-2, 1], [1, -2], [2, -1], [-1, -2], [-2, -1]] as const) if (mine(at(x + dx, y + dy), "n")) return true;
+  for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) if ((dx || dy) && mine(at(x + dx, y + dy), "k")) return true;
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]] as const) {
+    const sliders = dx && dy ? ["b", "q"] : ["r", "q"];
+    for (let i = x + dx, j = y + dy; at(i, j) !== null; i += dx, j += dy) {
+      const c = at(i, j)!;
+      if (c === ".") continue;
+      if (sliders.some((s) => mine(c, s))) return true;
+      break;
+    }
+  }
+  return false;
 }
 
 test("the state byte reads and writes as upstream's", () => {
@@ -220,10 +251,11 @@ test("isCaptureFeasible agrees for 6 types x 64 x 64 squares", () => {
 
 for (const suite of vectors.suites) {
   test(`positions and moves agree with upstream: ${suite.name}`, () => {
-    const expected = new Set<string>();
     let castles = 0;
     let deadDraws = 0;
     for (const [key, up] of Object.entries(suite.positions)) {
+      // the castlings this position's refusals excuse (per position: one excused elsewhere excuses nothing here)
+      const expected = new Set<string>();
       const { entry: mine } = table.entry(key);
       assert.equal(mine.check, up.check, `${key}: check`);
       assert.deepEqual(mine.pseudo, up.pseudo, `${key}: pseudo-legal moves`);
@@ -245,11 +277,16 @@ for (const suite of vectors.suites) {
         }
       }
       const mineMoves = new Map(mine.moves.map((m) => [m.split(":")[0]!, m]));
+      assert.equal(mineMoves.size, mine.moves.length, `${key}: the port lists a move twice`);
+      const upNames = new Set(up.moves.map((m) => m.split(":")[0]!));
+      for (const name of mineMoves.keys()) assert.ok(upNames.has(name), `${key}: the port plays ${name}, upstream does not`);
+      let skipped = 0;
       for (const move of up.moves) {
         const name = move.split(":")[0]!;
         const ours = mineMoves.get(name);
         if (ours === undefined) {
           assert.ok(expected.has(name), `${key}: upstream plays ${name}, the port does not`);
+          skipped++;
           continue;
         }
         if (ours === move) continue;
@@ -259,7 +296,7 @@ for (const suite of vectors.suites) {
         assert.ok(capU === capM && hashU === hashM && overM === "4" && overU !== "4", `${key}: ${move} against ${ours}`);
         deadDraws++;
       }
-      assert.equal(mine.moves.length + [...expected].filter((m) => up.moves.some((u) => u.startsWith(m + ":"))).length >= up.moves.length, true);
+      assert.equal(mine.moves.length, up.moves.length - skipped, `${key}: the port's moves are upstream's less the refused castlings`);
     }
     if (castles || deadDraws) console.log(`# ${suite.name}: ${castles} castling moves refused by the port (D1), ${deadDraws} results that are draws by dead position (D2)`);
   });

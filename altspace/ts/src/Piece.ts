@@ -2,8 +2,10 @@
 //
 // A piece's whole state is one byte, as upstream: bits 7-5 x, 4-2 y, 1 white, 0 hasMoved. The port adds whether the
 // piece is on the board (`_active`), which upstream kept in VRChat's object pool. Both are synced in the "table" group
-// with every other synced field of the game, so a move arrives as one change and is applied whole before anything reacts
-// (upstream's D20 and D21 go away).
+// with every synced field of the game but the clock's, so a move arrives as one change and is applied whole before
+// anything reacts (upstream's D20 and D21 go away). The runtime writes everything one action changed once, and sends the
+// action's network events (the move sound) after that write (portkit 9b7c447; before it, the sound sent first made a
+// move two writes, and a spectator's click between them let the mover move twice: review finding 1).
 //
 // Differences from upstream (PORT.md 10.1): pick-up is switched by moving the piece between the Grabbable and the UI layer
 // (no `pickupable` here); a piece is never grabbable while a result shows or a promotion is open (D9); drops while no game
@@ -104,7 +106,7 @@ export class Piece extends Behaviour {
     this.shownActive = active;
     if (!active && this.held) {
       this.held = false;
-      this.gameObject.host?.releaseGrab();
+      this.gameObject.ReleaseGrab();
     }
     this.gameObject.SetActive(active);
   }
@@ -170,7 +172,7 @@ export class Piece extends Behaviour {
   _Capture(): void {
     if (this.held) {
       this.held = false;
-      this.gameObject.host?.releaseGrab();
+      this.gameObject.ReleaseGrab();
     }
     this._ReturnToPool();
     this.board.chessManager.AddScore(this.GetValue(), !this.white);
@@ -245,7 +247,7 @@ export class Piece extends Behaviour {
     void this.board.RefreshFrame();
     if (!this.grabbable) {
       // grabbed in the instant its layer was changing: let go, and the drop puts it back
-      this.gameObject.host?.releaseGrab();
+      this.gameObject.ReleaseGrab();
       return;
     }
     this.PiecePicked();
@@ -260,15 +262,19 @@ export class Piece extends Behaviour {
     this.legalMoves = null;
 
     if (moveResult !== 0) {
-      if (moveResult === 1) this.SendCustomNetworkEvent(NetworkEventTarget.All, "PieceMovedAudio");
-      else if (moveResult === 2) this.SendCustomNetworkEvent(NetworkEventTarget.All, "PieceCapturedAudio");
       if (!rules.anarchy) {
-        if (this.type === "pawn" && (this.white ? this.y === 7 : this.y === 0)) this.board.chessManager.picker.Setup(this);
+        // a promotion choice is pending: synced (ChessManager.promotionSquare), so a reload reopens the picker (upstream:
+        // local only, and a reload left a pawn on the last rank with the turn still the promoter's)
+        if (this.type === "pawn" && (this.white ? this.y === 7 : this.y === 0)) this.board.chessManager._PromotionPending(this);
         else this.board.chessManager._EndTurn();
       }
     } else this.board._SetPiecesGrabbable(this.Networking.LocalPlayer, this.white);
     this.board._ClearIndicators();
     this.board.chessManager._RefreshCheck();
+    // the sound last, after every write of the move (upstream sent it first; the review saw a move go out as two writes
+    // then, and a spectator's click between them let the mover move twice: the kit now sends events after the turn too)
+    if (moveResult === 1) this.SendCustomNetworkEvent(NetworkEventTarget.All, "PieceMovedAudio");
+    else if (moveResult === 2) this.SendCustomNetworkEvent(NetworkEventTarget.All, "PieceCapturedAudio");
   }
 
   override OnDrop(): void {
@@ -287,7 +293,12 @@ export class Piece extends Behaviour {
     }
     const at = this.board.WorldToSquare(this.transform.position);
     if (at === null) {
+      // the board's position is not known yet: nothing moves, and the pick-up's tints and locks go (as a refused move)
+      this.legalMoves = null;
       this._UpdateState();
+      this.board._ClearIndicators();
+      this.board._SetPiecesGrabbable(manager.GetPlayer(manager.currentSide), manager.currentSide);
+      manager._RefreshCheck();
       return;
     }
     const movex = at.x;

@@ -106,6 +106,27 @@ export async function grabMove(world: TestWorld, c: FakeClient, uci: string, ins
   return true;
 }
 
+/**
+ * A move that must be made: the piece is picked up and let go on the square, and then, on the mover's page, the piece
+ * stands there (as the promoted type when the move names one), its square is empty, and the turn has passed (Standard,
+ * unless a promotion choice is left open by a move that names none). Fails the test otherwise.
+ */
+export async function playMove(world: TestWorld, c: FakeClient, uci: string, inst = "0"): Promise<void> {
+  const piece = pieceAt(world, c, uci.slice(0, 2), inst);
+  assert.ok(piece, `${c.name}: no piece on ${uci.slice(0, 2)}`);
+  const { white, type } = piece;
+  const m = manager(world, c, inst);
+  const side = m.currentSide;
+  const anarchy = m.anarchy;
+  assert.ok(await grabMove(world, c, uci, inst), `${c.name}: cannot pick up the piece on ${uci.slice(0, 2)} for ${uci}`);
+  const landed = pieceAt(world, c, uci.slice(2, 4), inst);
+  const promoted = uci.length > 4 ? { q: "queen", r: "rook", b: "bishop", n: "knight", p: "pawn" }[uci[4]!]! : type;
+  assert.ok(landed && landed.white === white && landed.type === promoted, `${c.name}: ${uci} was not made (${uci.slice(2, 4)} holds ${landed ? `${landed.white ? "white" : "black"} ${landed.type}` : "nothing"})`);
+  assert.equal(pieceAt(world, c, uci.slice(0, 2), inst), null, `${c.name}: ${uci}: ${uci.slice(0, 2)} is not empty`);
+  const choiceOpen = type === "pawn" && uci.length === 4 && sq(uci.slice(2, 4))[1] === (white ? 7 : 0);
+  if (!anarchy) assert.equal(manager(world, c, inst).currentSide, choiceOpen ? side : !side, `${c.name}: ${uci}: the turn`);
+}
+
 /** Click-to-move: clicks the piece (or, when it sits on the Grabbable layer, picks it up and lets go in place), then the square. */
 export async function clickMove(world: TestWorld, c: FakeClient, uci: string, inst = "0"): Promise<void> {
   const piece = pieceAt(world, c, uci.slice(0, 2), inst);

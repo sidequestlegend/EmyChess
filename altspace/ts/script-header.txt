@@ -8,7 +8,8 @@ License as published by the Free Software Foundation, version 3 of the License (
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
 warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details:
-https://www.gnu.org/licenses/gpl-3.0.html
+https://www.gnu.org/licenses/gpl-3.0.html (the full text also ships in this snippet's kit bundle, as GPL-3.0.txt, and
+in the source, as LICENSE).
 
 Upstream source: https://github.com/emymin/EmyChess
 Source of this script (corresponding source, TypeScript): https://github.com/sidequestlegend/EmyChess (branch altspace,
@@ -16,4 +17,5 @@ folder altspace/ts; build with npm run build)
 
 This file bundles the portkit runtime (MIT License, Copyright (c) 2026 the portkit authors); as a whole it is GPL-3.0.
 The kit it loads (models, materials, sounds, fonts) carries its own notices: CC BY-SA 4.0 (EmyChess art), CC0 (wood
-texture, sounds), SIL Open Font License 1.1 (Liberation Sans, DSEG7 Classic). See THIRD-PARTY-NOTICES.md in the source.
+texture, sounds), SIL Open Font License 1.1 (Liberation Sans, DSEG7 Classic); THIRD-PARTY-NOTICES.md and the full
+licence texts are inside the kit bundle and in the source.

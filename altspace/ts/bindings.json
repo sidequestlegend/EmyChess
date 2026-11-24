@@ -2162,7 +2162,7 @@
           "$beh": "b82"
         }
       },
-      "group": "table",
+      "group": "clock",
       "id": "b80",
       "object": "timer",
       "type": "Timer"

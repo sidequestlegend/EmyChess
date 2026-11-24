@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { leafBudget, Vector3 } from "../portkit/src/index.ts";
 import {
-  board, clickMove, COUNTER_KEY, fen, gameOver, grabMove, manager, newWorld, pieceAt, placeSquares, press, promote, seatAndStart, shown, STEP, settle, SLUG, timer,
+  board, clickMove, COUNTER_KEY, fen, gameOver, grabMove, manager, newWorld, pieceAt, placeSquares, playMove, press, promote, seatAndStart, shown, STEP, settle, SLUG, timer,
 } from "./helpers.ts";
 import game from "../src/index.ts";
 
@@ -39,10 +39,10 @@ test("two players play a whole game (fool's mate); a watcher sees it all and can
   assert.equal(fen(world, cat), START);
   assert.equal(manager(world, ann).currentSide, true);
 
-  assert.ok(await grabMove(world, ann, "f2f3"));
-  assert.ok(await grabMove(world, bob, "e7e5"));
-  assert.ok(await grabMove(world, ann, "g2g4"));
-  assert.ok(await grabMove(world, bob, "d8h4"));
+  await playMove(world, ann, "f2f3");
+  await playMove(world, bob, "e7e5");
+  await playMove(world, ann, "g2g4");
+  await playMove(world, bob, "d8h4");
   await world.run(500);
 
   for (const c of [ann, bob, cat]) {
@@ -100,9 +100,9 @@ test("promotion through the picker: only the promoting player sees it, every cho
   await settle(world);
   for (const c of [ann, bob]) placeSquares(c);
   await seatAndStart(world, ann, bob);
-  for (const [i, m] of ["h2h4", "g7g5", "h4g5", "g8f6", "g5g6", "a7a6", "g6g7", "a6a5"].entries()) assert.ok(await grabMove(world, i % 2 ? bob : ann, m), m);
+  for (const [i, m] of ["h2h4", "g7g5", "h4g5", "g8f6", "g5g6", "a7a6", "g6g7", "a6a5"].entries()) await playMove(world, i % 2 ? bob : ann, m);
   // White pawn on g7 takes on h8 and promotes: the picker opens on Ann's page only, and the turn waits
-  assert.ok(await grabMove(world, ann, "g7h8"));
+  await playMove(world, ann, "g7h8");
   assert.equal(shown(ann, "pieces"), true, "Ann's picker is open");
   assert.equal(shown(bob, "pieces"), false, "Bob sees no picker");
   assert.equal(manager(world, bob).currentSide, true, "the turn has not passed");
@@ -124,12 +124,12 @@ test("the referee leaves mid-game: play goes on, nothing is reset", async () => 
   for (const c of [ann, bob]) placeSquares(c);
   await seatAndStart(world, ann, bob);
   assert.ok(world.instance(ref).networking.IsReferee, "the first player is the referee");
-  assert.ok(await grabMove(world, ann, "e2e4"));
+  await playMove(world, ann, "e2e4");
   world.leave(ref);
   await world.run(8000);
   assert.ok(world.instance(ann).networking.IsReferee || world.instance(bob).networking.IsReferee, "a new referee");
-  assert.ok(await grabMove(world, bob, "e7e5"));
-  assert.ok(await grabMove(world, ann, "g1f3"));
+  await playMove(world, bob, "e7e5");
+  await playMove(world, ann, "g1f3");
   assert.equal(fen(world, bob), "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R");
   assert.ok(manager(world, ann).inProgress);
   assert.ok(world.agree());
@@ -148,8 +148,8 @@ test("two tables in one room stay separate", async () => {
   }
   await seatAndStart(world, ann, bob, "north");
   await seatAndStart(world, bob, ann, "south");
-  assert.ok(await grabMove(world, ann, "e2e4", "north"));
-  assert.ok(await grabMove(world, bob, "d2d4", "south"));
+  await playMove(world, ann, "e2e4", "north");
+  await playMove(world, bob, "d2d4", "south");
   assert.equal(fen(world, bob, "north"), "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR");
   assert.equal(fen(world, ann, "south"), "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR");
   assert.equal(manager(world, ann, "north").GetPlayer(true)?.displayName, "Ann");
@@ -172,7 +172,7 @@ test("automated clock: it switches with every move, and the referee calls time o
   await seatAndStart(world, ann, bob);
   assert.ok(timer(world, bob).running);
   await world.run(1000);
-  assert.ok(await grabMove(world, ann, "e2e4"));
+  await playMove(world, ann, "e2e4");
   assert.equal(timer(world, bob).isCurrentSideWhite, false, "Black's clock runs");
   const whiteLeft = timer(world, bob).TimeLeft(true);
   // White's clock ran from the start until the drop was handled: 0.5 + 1.0 + 0.12 + about one second of the move
@@ -198,7 +198,7 @@ test("a registered player who leaves keeps the side for a minute, then the game 
   await settle(world);
   for (const c of [ann, bob]) placeSquares(c);
   await seatAndStart(world, ann, bob);
-  assert.ok(await grabMove(world, ann, "e2e4"));
+  await playMove(world, ann, "e2e4");
   world.leave(bob);
   await world.run(10000);
   assert.equal(manager(world, ann).inProgress, true, "the game waits for Bob");
@@ -217,7 +217,7 @@ test("a player who comes back within the minute keeps the side", async () => {
   await settle(world);
   for (const c of [ann, bob]) placeSquares(c);
   await seatAndStart(world, ann, bob);
-  assert.ok(await grabMove(world, ann, "e2e4"));
+  await playMove(world, ann, "e2e4");
   world.leave(bob);
   await world.run(20000);
   const back = world.join({ name: "Bob", uid: "bob-uid" });
@@ -225,7 +225,7 @@ test("a player who comes back within the minute keeps the side", async () => {
   placeSquares(back);
   await world.run(60000);
   assert.equal(manager(world, ann).inProgress, true);
-  assert.ok(await grabMove(world, back, "e7e5"), "Bob moves again");
+  await playMove(world, back, "e7e5");
   assert.equal(fen(world, ann), "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR");
   assert.ok(world.agree());
 });
@@ -240,10 +240,10 @@ test("anarchy: free moves, placing pieces with the ghost, deleting by dropping o
   assert.equal(manager(world, bob).anarchy, true);
   await seatAndStart(world, ann, bob);
   // any drop is a move: the e2 pawn to e6, taking Black's pawn on e7? no: e6 is empty
-  assert.ok(await grabMove(world, ann, "e2e6"));
+  await playMove(world, ann, "e2e6");
   assert.equal(pieceAt(world, bob, "e6")?.type, "pawn");
   // a second move in the same turn, onto an enemy piece: it is captured, White scores 1
-  assert.ok(await grabMove(world, ann, "e6d7"));
+  await playMove(world, ann, "e6d7");
   assert.equal(manager(world, bob).whiteScore, 1);
   // the turn passes only by END TURN, and only for the side to move
   assert.equal(bob.click(SLUG, "0", "endTurnButton"), true);
@@ -276,8 +276,8 @@ test("the game's state fits the room's key budget", () => {
     const cls = game.behaviours[type];
     return cls ? { synced: (cls.synced ?? []).length, perPlayer: cls.perPlayer === true } : null;
   });
-  assert.equal(budget.slots, 1, "one sync group: the whole table is one slot");
-  assert.equal(budget.spaceLeaves, 3, "ref, and the table's owner and value leaves (acks and draw numbers live in the referee's user state)");
+  assert.equal(budget.slots, 2, "two sync groups: the table (board, pieces, players, result) and the clock, as upstream's Timer is its own object");
+  assert.equal(budget.spaceLeaves, 5, "ref, and an owner and a value leaf for each group (acks and draw numbers live in the referee's user state)");
   assert.ok(budget.userLeavesPerPlayer <= 2);
 });
 
@@ -288,7 +288,7 @@ test("End Game while a promotion is open on the other page closes it there, and 
   await settle(world);
   for (const c of [ann, bob]) placeSquares(c);
   await seatAndStart(world, ann, bob);
-  for (const [i, m] of ["h2h4", "g7g5", "h4g5", "g8f6", "g5g6", "a7a6", "g6g7", "a6a5", "g7h8"].entries()) assert.ok(await grabMove(world, i % 2 ? bob : ann, m), m);
+  for (const [i, m] of ["h2h4", "g7g5", "h4g5", "g8f6", "g5g6", "a7a6", "g6g7", "a6a5", "g7h8"].entries()) await playMove(world, i % 2 ? bob : ann, m);
   assert.equal(shown(ann, "pieces"), true, "Ann's picker is open");
   await press(world, bob, "_EndGame");
   assert.equal(manager(world, ann).inProgress, false);

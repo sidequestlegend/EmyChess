@@ -137,8 +137,11 @@ namespace ChessTable
 
             // ---- every upstream script becomes a behaviour, with what the script needs beyond the stand-in's fields ----
             stage.BehavioursFromStandIns();
-            foreach (var type in new[] { "ChessManager", "Board", "DefaultRules", "GameOverMessage", "Timer", "PlayerHolder", "Piece" })
+            foreach (var type in new[] { "ChessManager", "Board", "DefaultRules", "GameOverMessage", "PlayerHolder", "Piece" })
                 stage.GroupType(type, "table");                                                       // one leaf, one owner, applied as a whole
+            // the clock is its own group, as upstream's Timer is its own object: anyone may press its buttons, and a press
+            // at the moment of a move must not take the table's ownership and undo the move (found by the race test)
+            stage.GroupType("Timer", "clock");
 
             Color white = new Color(1f, 1f, 1f), black = new Color(0.189f, 0.189f, 0.189f);
             stage.Behaviour(boardBehaviour, extra: new JObject

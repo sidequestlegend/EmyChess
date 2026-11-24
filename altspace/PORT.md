@@ -979,7 +979,7 @@ frame time on Quest with 12 canvases and 52 texts; clock text rate; hover feedba
 | C2 | A side is a user id. A user who is not in the room holds nothing | There is no object ownership to borrow, and upstream's version hands the side to a stranger (D11) |
 | C3 | The referee ends the game or frees a side when a registered player leaves and no registered player is left to do it | D12 |
 | C4 | A table whose registered players are all absent when a referee is elected is reset | Space state lasts 24 hours after the room empties; a VRChat instance does not |
-| C5 | All writes of one action go in one batch, and a client applies a whole change set before reacting | Removes D20 and D21 and keeps within the write budget |
+| C5 | All writes of one action go in one batch, and a client applies a whole change set before reacting. The board, pieces, sides and result are one sync group ("table"); the clock is a second one ("clock"), as upstream's Timer is its own object | Removes D20 and D21 and keeps within the write budget. Until portkit 9b7c447 a network event sent mid-handler flushed the state first, so a move (whose sound went out before `_EndTurn`) was two writes, and a spectator's click between them let the mover move twice (review finding 1); the kit now sends events after the turn's one write, and the sound is sent last. With the clock in the table's group, a clock press at the moment of a move took the group's ownership and undid the move (found by the race test); a separate clock group leaves the move alone |
 | C6 | The pawn open to en passant is part of the shared state | D8 |
 | C7 | Pieces are locked whenever a result is showing; drops are ignored when no game is in progress; the picker closes on every client when the game stops | D9, D10, D23 |
 | C8 | Promotion counters work | D4; the code's intent is plain |
@@ -1065,7 +1065,7 @@ they allow):
 | D6 | A ghost let go off the board adds nothing | clamped onto an edge square |
 | D14 | The clock shows total hours, 00 to 99 | `TimeSpan.Hours`: wraps at 24 |
 
-Bugs fixed (not rules), each tested in `ts/test/scenarios.test.ts` or by the Play-mode test:
+Bugs fixed (not rules), each tested in `ts/test/scenarios.test.ts`, `ts/test/review.test.ts` or by the Play-mode test:
 
 | # | Fix |
 |---|---|
@@ -1075,13 +1075,14 @@ Bugs fixed (not rules), each tested in `ts/test/scenarios.test.ts` or by the Pla
 | D8 | The pawn open to en passant is synced (`Board.doublePushIndex`) instead of guessed on each client |
 | D9 | No piece can be picked up while a result shows or a promotion is open |
 | D10 | The promotion picker closes on every client when the game stops, and a click on it afterwards does nothing |
-| D11, D12 | A side is a user id. A player who leaves is shown "(away)" and keeps the side 60 s; then the other registered player, or the referee if none is left, ends the game and frees the side |
+| D11, D12 | A side is a user id. A player who leaves is shown "(away)" and keeps the side 60 s from their latest departure (one who comes back and leaves again has a whole minute again); then the other registered player, or the referee if none is left, ends the game and frees the side |
 | D13 | The clock is a stored time plus the shared-clock moment its count began; every client works it out; only the referee calls TIME'S UP |
 | D15 | Start Game with a running automated clock stops it (keeping both times) and starts White's; upstream reset it to zero, so it never started |
-| D20, D21 | Gone by design: the whole table is one sync group (one leaf), applied as a whole before any behaviour reacts |
+| D20, D21 | Gone by design: the table (board, pieces, sides, result) is one sync group (one leaf), applied as a whole before any behaviour reacts; the clock is its own group |
 | D22 | A missing winner reads "-" |
 | D23 | A piece let go while no game is on, or after it was captured, goes back to its square; nothing else happens |
 | D24 | The banner turns at 90 degrees a second (a small graph), not one degree a frame |
+| D25 | A pending promotion is shared state (`ChessManager.promotionSquare`): while it is pending nobody can move, and the promoter's picker opens again after a reload. Upstream kept it in the promoter's page only, so a reload (or a crash) left a pawn on the last rank with the promoter free to move another piece (review finding 2) |
 
 Other changes, and why:
 
@@ -1123,7 +1124,7 @@ players (rung 4, `playtest/evidence_multi.txt`).
 | F19 the game ends when the turn passes to a side nobody holds | **changed**: a player who left holds the side 60 s ("away") | N |
 | F20-F35 moving pieces, sounds, captures, scores, tints, legal moves of every piece | as upstream | N (vectors: every move list), P (F20, F23, F27-F30) |
 | F36 castling | **changed** (D1: standard rule) | N (vectors) |
-| F37-F41 king safety, promotion picker, choices, empty pool, others see a pawn | as upstream | N |
+| F37-F41 king safety, promotion picker, choices, empty pool, others see a pawn | as upstream, but a pending promotion is shared and survives a reload (D25) | N |
 | F42 promotion counters | **changed** (D4 fixed: they show the pools) | N |
 | F43 check | **changed** (D3: the red square shows, for everyone) | N, P |
 | F44, F45, F48, F49 checkmate, stalemate, game stays on after a result, what upstream does not have | as upstream | N, P (F44) |
@@ -1137,13 +1138,45 @@ players (rung 4, `playtest/evidence_multi.txt`).
 | F74 manual clock at zero | **changed** slightly (a side at zero cannot be switched) | N |
 | F75 hours | **changed** (D14: total hours) | N (vectors) |
 | F76 who computes the running time | **changed** (C1: every client, from the synced clock) | N |
-| F77-F80, F84, F86 what is shared, late joiners, spectators, trust | as upstream (late joiners get every field at once: D20, D21 gone) | N, M (F78 by reload) |
+| F77-F80, F84, F86 what is shared, late joiners, spectators, trust | as upstream (late joiners get every field at once: D20, D21 gone; trust in 10.7) | N, M (F78 by reload) |
 | F81-F83 a registered player leaves | **changed** (60 s grace; then the other player or the referee ends the game and frees the side: D11, D12) | N |
 | F85 nothing is saved | **changed** slightly: the room keeps the table for 24 h; a referee who finds a table whose players are all away resets it (C4) | N |
 | F87-F91 presentation | as upstream, remade for URP (6.2, 10.5) | P (screenshot) |
 
 Additions (not in upstream): click-to-move, dead-position draws, the credits panel, snippet settings, two tables in one
 room (each its own `room`).
+
+### 10.7 Trust: what a modified client can do
+
+Chess has no hidden information and no server. Upstream trusts every client (F86): the mover's client decides whether
+a move is legal and writes the result, and any client can take ownership of any object (`Networking.SetOwner`; EmyChess
+has no `OnOwnershipRequest`) and write its synced variables. The port is the same in kind:
+
+- **Closed or narrowed here.** A remote client can name only two methods by network event, `PieceMovedAudio` and
+  `PieceCapturedAudio` (`Piece.networkCallable`), so the most a forged event does is play a move or capture sound; the
+  game sends no commands. Debugging hooks (`window.__pk1.debug`) exist only on test pages, never in the published script.
+  A value written by a client that does not own its slot is ignored by every client (portkit's ownership rule).
+- **Still open, as upstream.** The table's state is public space state, and any client may claim a slot's ownership and
+  then write it: a modified page can rewrite the board, the side to move, the sides' holders, scores, the result, the
+  pending promotion and the clock, play for either side or out of turn, or end a game. Under the referee rule
+  `"anyone"` it can also make itself referee and so decide TIME'S UP and the freeing of an absent player's side. Every
+  honest client applies such writes (they are legal writes by the slot's owner), so it is visible to all, as it is in
+  VRChat. Nothing it can do outlives the room's state (24 hours after the room empties), and no score or unlock depends
+  on it. Closing this would need a server that checks moves; the platform has none.
+
+### 10.8 Review findings (2026-11-25) and what became of them
+
+| # | Finding | Fix | Test (failed before the fix) |
+|---|---|---|---|
+| 1 | A move was two state writes (the sound event went out first and the kit flushed state before each event); a spectator's clock click between them let the mover move twice | portkit 9b7c447 (events after the turn's one write); the sound is now sent after `_EndTurn` / `_PromotionPending`; the clock is its own sync group so a clock press cannot undo a move either | `review.test.ts`: five races (+1m in the same tick, 50, 150, 300 ms later; RESET in the same tick), the automated-clock RESET race, and "a move is one state write" (old code and kit: 7 of 7 fail; old code on the new kit: the same-tick races still fail, the move undone) |
+| 2 | A reload during promotion let the promoter move again with a pawn left on the last rank | D25: `promotionSquare` synced; pieces locked while it is set; the picker reopens on the promoter's page | "a reload while the promotion choice is open ...", "a late joiner during a pending promotion ..." |
+| 3 | GPL-3.0 text not shipped; OFL texts not bundled | `Assets/Kit/Licenses/` holds `GPL-3.0.txt`, `CC-BY-SA-4.0.txt`, `OFL-DSEG.txt` (the kit adds Liberation Sans's OFL); notices name each font's copyright line; the script header says where the GPL text is | bundle listing (`Logs/portkit_bundles.txt`, TESTS.md) |
+| 4 | Loose tests: the castling excuse used the port's own `CastlesThroughCheck`; a `>=` move count; `grabMove` only said the piece was grabbed | The golden test works out refused castlings with an attack test of its own, per position, and requires exactly upstream's moves less those; `playMove` checks the move was made and the turn passed; race and promotion-reload tests added | With `CastlesThroughCheck` made to refuse every castling, the old golden test failed 1 test (perft only), the new one 8 |
+| 5 | A return within 60 s did not cancel the seat-free timer | Per-side deadline from the latest departure, dropped on return | "a player who comes back within the minute and leaves again has a whole minute again" |
+| 6 | A drop before the board's position is known left tints and locks | That drop now clears tints and unlocks the side's pieces; a degenerate frame (squares all reported at one point) is not taken as the board's position | "a drop before the board's position is known ..." (fails on the old `Piece.ts`) |
+| 7 | `gameObject.host?.releaseGrab()` instead of `GameObject.ReleaseGrab()` | Uses `ReleaseGrab()` (the same call underneath: no change in behaviour, so no test can fail before it) | "End Game while a piece is held lets go of it" covers the path |
+
+Known issues left: none from the review.
 
 ---
 

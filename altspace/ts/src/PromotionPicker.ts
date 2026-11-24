@@ -2,7 +2,8 @@
 //
 // Local to the promoting player, as upstream. Differences: the buttons are the PromotionButton behaviours themselves
 // (upstream took the first UdonBehaviour of each child, which was a stray Piece, so the counters never showed: D4);
-// the picker closes on every client when the game stops (D10, ChessManager._RefreshUI).
+// the picker closes on every client when the game stops (D10, ChessManager._RefreshUI); a pending promotion is synced
+// (ChessManager.promotionSquare), so the promoter's picker opens again after a reload (D25).
 
 import { Behaviour, type GameObject, Quaternion, Vector3 } from "../portkit/src/index.ts";
 import type { Board } from "./Board.ts";
@@ -17,8 +18,14 @@ export class PromotionPicker extends Behaviour {
   private open = false;
 
   override Start(): void {
-    this.promotionButtons = this.FindBehavioursOfType<PromotionButton>("PromotionButton");
-    this.piecesButtonsParent.SetActive(false);
+    this.Buttons();
+    // (open already when the manager's Start reopened a pending promotion first: D25)
+    this.piecesButtonsParent.SetActive(this.open);
+  }
+
+  private Buttons(): PromotionButton[] {
+    if (!this.promotionButtons.length) this.promotionButtons = this.FindBehavioursOfType<PromotionButton>("PromotionButton");
+    return this.promotionButtons;
   }
 
   IsOpen(): boolean {
@@ -32,7 +39,7 @@ export class PromotionPicker extends Behaviour {
     this.transform.localPosition = new Vector3(-(piece.x + 0.5), 0, -(piece.y + 0.5));
     this.transform.localRotation = piece.white ? Quaternion.identity : Quaternion.identity.mul(Quaternion.Euler(0, 180, 0));
     this.piecesButtonsParent.SetActive(true);
-    for (const button of this.promotionButtons) button._RefreshCounter();
+    for (const button of this.Buttons()) button._RefreshCounter();
   }
 
   _PromotionDone(): void {

@@ -3,9 +3,11 @@
 // Differences from upstream (PORT.md 10.1):
 //   - a side is a user id (PlayerHolder); a player who leaves keeps the side for 60 seconds ("away"), then the other
 //     registered player, or the referee when nobody registered is left, ends the game and frees the side (D11, D12, C2, C3);
+//     the minute counts from the latest departure: a player who comes back and leaves again has a whole minute again;
 //   - the red square for a king in check is shown, on every client (D3: upstream set it and cleared it in one call);
 //   - pieces stay locked while a result shows or a promotion is open (D9); the promotion picker closes on every client
-//     when the game stops (D10);
+//     when the game stops (D10); a pending promotion is synced (`promotionSquare`), so the promoter's picker comes back
+//     after a reload and nobody can move meanwhile (upstream kept it in the promoter's page only: D25);
 //   - "disabled" buttons are shown by colour (no DisableInteractive or Button.interactable from the page, C16);
 //   - Start Game with a running automated clock stops it and starts White's (D15);
 //   - a fresh table takes the snippet's settings (mode, auto-timer, clock), set by the referee: upstream reset the clock and
@@ -15,6 +17,7 @@ import { Behaviour, Color, type ComponentRef, type DeserializationResult, type G
 import type { Board } from "./Board.ts";
 import type { ClickToMove } from "./ClickToMove.ts";
 import type { GameOverMessage } from "./GameOverMessage.ts";
+import type { Piece } from "./Piece.ts";
 import type { PiecePlacer } from "./PiecePlacer.ts";
 import type { PlayerHolder, SideHolder } from "./PlayerHolder.ts";
 import type { PromotionPicker } from "./PromotionPicker.ts";
@@ -29,7 +32,7 @@ const END_TURN_ON = new Color(0.95, 0.25, 0.2, 1);
 const END_TURN_OFF = new Color(0.45, 0.32, 0.32, 1);
 
 export class ChessManager extends Behaviour {
-  static override synced = ["isWhiteRegistered", "isBlackRegistered", "inProgress", "currentSide", "anarchy", "whiteScore", "blackScore", "automatedTimer"];
+  static override synced = ["isWhiteRegistered", "isBlackRegistered", "inProgress", "currentSide", "anarchy", "whiteScore", "blackScore", "automatedTimer", "promotionSquare"];
 
   board!: Board;
   timer!: Timer;
@@ -47,6 +50,8 @@ export class ChessManager extends Behaviour {
   blackScore = 0;
   /** The clock switches at every end of turn, and running out of time ends the game. */
   automatedTimer = false;
+  /** The square (x * 8 + y) of a pawn waiting for its promotion choice, or -1. Synced (the port's, D25). */
+  promotionSquare = -1;
 
   whitePlayerLabel!: TextRef;
   blackPlayerLabel!: TextRef;
@@ -76,6 +81,8 @@ export class ChessManager extends Behaviour {
   clickToMove: ClickToMove | null = null;
 
   private consolesShown: boolean | null = null;
+  /** The next _CheckAbsentPlayers is the resumed table's: sides away with no deadline are freed at once (as before). */
+  private resumedCheck = false;
 
   // ---- settings of the snippet element ---------------------------------------------------------------------------
 
@@ -93,9 +100,9 @@ export class ChessManager extends Behaviour {
     return this.setting("allow-anarchy") !== "false";
   }
 
-  /** Pieces may be picked up only while no result shows and no promotion is open (D9). */
+  /** Pieces may be picked up only while no result shows and no promotion is open or pending (D9, D25). */
   CanMovePieces(): boolean {
-    return this.gameOverMessage.gameOverState === 0 && !this.picker.IsOpen();
+    return this.gameOverMessage.gameOverState === 0 && !this.picker.IsOpen() && this.promotionSquare < 0;
   }
 
   // ---- the panel -----------------------------------------------------------------------------------------------
@@ -142,8 +149,13 @@ export class ChessManager extends Behaviour {
     this.whitePiecePlacer.SetEnabled(isPlayerWhite && this.currentSide && this.inProgress);
     this.whitePiecePlacer._Refresh();
 
-    // D10: a promotion still open on this client when the game stopped (or someone else moved) closes
-    if (!this.inProgress || !isPlayerTurn) this.picker._Hide();
+    // D10: a promotion still open on this client when the game stopped (or someone else moved) closes; D25: one that is
+    // pending for this player (a reload during the choice) opens again
+    if (!this.inProgress || !isPlayerTurn || this.promotionSquare < 0) this.picker._Hide();
+    else if (!this.picker.IsOpen()) {
+      const pawn = this.board.GetPiece(this.promotionSquare >> 3, this.promotionSquare & 7);
+      if (pawn !== null && pawn._active) this.picker.Setup(pawn);
+    }
     if (!this.inProgress || !isPlayerTurn || !this.CanMovePieces()) this.clickToMove?.Clear(false);
 
     this.board._ClearIndicators();
@@ -185,7 +197,11 @@ export class ChessManager extends Behaviour {
 
   override OnInstanceStart(kind: StartKind): void {
     if (kind === "fresh") this.ApplyFreshSettings();
-    else if (kind === "resumed") this.SendCustomEventDelayedSeconds("_CheckAbsentPlayers", 5);
+    else if (kind === "resumed") {
+      // a table kept from earlier (whenEmpty "keep" or a referee change): sides whose players are not here are freed soon
+      this.resumedCheck = true;
+      this.SendCustomEventDelayedSeconds("_CheckAbsentPlayers", 5);
+    }
   }
 
   /**
@@ -206,7 +222,8 @@ export class ChessManager extends Behaviour {
   }
 
   override OnDeserialization(_result: DeserializationResult): void {
-    // the whole table arrives at once (one sync group): make sure the board's picture is current before redrawing
+    // the whole table arrives at once (one sync group; the clock is its own): make sure the board's picture is current
+    // before redrawing
     this.board._RegenerateGrid();
     this.board._RefreshKings();
     this._RefreshUI();
@@ -290,8 +307,17 @@ export class ChessManager extends Behaviour {
     this.logText.text = text;
   }
 
+  /** A pawn reached the last rank: the turn waits for the mover's choice (PromotionPicker), on any page they load. */
+  _PromotionPending(pawn: Piece): void {
+    this.Networking.SetOwner(this.Networking.LocalPlayer, this.gameObject);
+    this.promotionSquare = pawn.x * 8 + pawn.y;
+    this.picker.Setup(pawn);
+    this.RequestSerialization();
+  }
+
   _EndTurn(): void {
     this.Networking.SetOwner(this.Networking.LocalPlayer, this.gameObject);
+    this.promotionSquare = -1;
     this.currentSide = !this.currentSide;
     if (this.GetPlayer(this.currentSide) === null) this._EndGame();
     if (this.automatedTimer) this.timer._SwitchSide();
@@ -330,6 +356,7 @@ export class ChessManager extends Behaviour {
     this.inProgress = true;
     this.whiteScore = this.blackScore = 0;
     this.currentSide = true;
+    this.promotionSquare = -1;
     this.board._ResetBoard();
     this.whiteScore = this.blackScore = 0; // (the board's clearing captured the pieces of the last game)
     this.gameOverMessage._Reset();
@@ -348,6 +375,7 @@ export class ChessManager extends Behaviour {
     this.Debug.Log("[ChessManager] Game Stopped");
     this.Networking.SetOwner(this.Networking.LocalPlayer, this.gameObject);
     this.inProgress = false;
+    this.promotionSquare = -1;
     this.board._ClearBoard();
     if (this.automatedTimer) this.timer._ResetTimer(0);
     this.gameOverMessage._Reset();
@@ -379,22 +407,55 @@ export class ChessManager extends Behaviour {
 
   // ---- players leaving and coming back ---------------------------------------------------------------------------
 
+  /**
+   * When (this page's Time.time) each away side may be freed. Set when its player leaves (AWAY_SECONDS on), dropped when
+   * they are back, so a check left over from an earlier departure frees nobody (the review: back within the minute,
+   * away again, and the first departure's check freed the side at once).
+   */
+  private readonly freeAt = new Map<boolean, number>();
+
   override OnPlayerLeft(player: Player): void {
     // upstream acted at once; here the side waits AWAY_SECONDS for its player to come back
+    for (const white of [true, false]) {
+      if ((white ? this.isWhiteRegistered : this.isBlackRegistered) && same(this.GetPlayer(white), player)) this.freeAt.set(white, this.Time.time + AWAY_SECONDS);
+    }
     if (this.isRegistered(player)) this.SendCustomEventDelayedSeconds("_CheckAbsentPlayers", AWAY_SECONDS);
     this._RefreshUI();
   }
 
   override OnPlayerJoined(_player: Player): void {
+    this.ForgetReturned();
     this._RefreshUI();
   }
 
+  /** Sides whose player is here again, or that nobody holds now, have no deadline. */
+  private ForgetReturned(): void {
+    for (const white of [true, false]) {
+      const holder = (white ? this.isWhiteRegistered : this.isBlackRegistered) ? this.GetPlayer(white) : null;
+      if (holder === null || holder.present) this.freeAt.delete(white);
+    }
+  }
+
   /**
-   * A registered player who is still away: the game ends (if one is on) and the side is freed. Done by the other
-   * registered player if they are here (as upstream), else by the referee (D12).
+   * A registered player away AWAY_SECONDS since they last left: the game ends (if one is on) and the side is freed. Done
+   * by the other registered player if they are here (as upstream), else by the referee (D12). An away side with no
+   * deadline on this page (away before this page knew: the check came from a resumed start or a change of referee) is
+   * freed now on a resumed start's check, else gets a whole minute from now.
    */
   _CheckAbsentPlayers(): void {
-    const away = [true, false].filter((white) => (white ? this.isWhiteRegistered : this.isBlackRegistered) && this.GetPlayer(white)?.present === false);
+    this.ForgetReturned();
+    const now = this.Time.time;
+    const away: boolean[] = [];
+    let next = Infinity;
+    for (const white of [true, false]) {
+      if (!(white ? this.isWhiteRegistered : this.isBlackRegistered) || this.GetPlayer(white)?.present !== false) continue;
+      if (!this.freeAt.has(white)) this.freeAt.set(white, this.resumedCheck ? now : now + AWAY_SECONDS);
+      const at = this.freeAt.get(white)!;
+      if (at <= now + 0.06) away.push(white); // (within a tick)
+      else next = Math.min(next, at - now);
+    }
+    this.resumedCheck = false;
+    if (next !== Infinity) this.SendCustomEventDelayedSeconds("_CheckAbsentPlayers", next);
     if (!away.length) return;
     const local = this.Networking.LocalPlayer;
     const someoneRegisteredHere = [true, false].some((white) => this.GetPlayer(white)?.present === true);
@@ -405,13 +466,21 @@ export class ChessManager extends Behaviour {
       this.Networking.SetOwner(local, this.gameObject);
       if (white) this.isWhiteRegistered = false;
       else this.isBlackRegistered = false;
+      this.freeAt.delete(white);
     }
     this._RefreshUI();
     this.RequestSerialization();
   }
 
-  /** The turn passed to a side nobody holds (upstream: _EndTurn ends the game then). Used by _EndTurn through GetPlayer. */
+  /**
+   * A change of referee: the new one may never have seen a side's player leave (it joined later), so every side away now
+   * without a deadline on this page gets a minute from now, and then the check runs.
+   */
   override OnMasterTransferred(_newMaster: Player | null): void {
+    const now = this.Time.time;
+    for (const white of [true, false]) {
+      if ((white ? this.isWhiteRegistered : this.isBlackRegistered) && this.GetPlayer(white)?.present === false && !this.freeAt.has(white)) this.freeAt.set(white, now + AWAY_SECONDS);
+    }
     this.SendCustomEventDelayedSeconds("_CheckAbsentPlayers", AWAY_SECONDS);
   }
 }
