@@ -1,5 +1,3 @@
-play.1 acquired by chess-table
-armed 'chess-single': 3 elements, test server http://localhost:42300 (running), page port 42200
 local: script and bundles from the test server http://localhost:42300
 [main] INFO main in Play, page port 42200
 [main] PASS the kit loads from a hand-written bs-snippet and the instance starts:
@@ -40,14 +38,14 @@ local: script and bundles from the test server http://localhost:42300
 [main] CMD k14 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/e2
 [main] REPLY k14 0.031 0.482 0.444
 [main] CMD k15 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn12
-[main] REPLY k15 0.031 0.481 0.444
-[main] PASS the e2 pawn stands on e2 (positions read back from Unity): square 0.031 0.482 0.444, piece 0.031 0.481 0.444
+[main] REPLY k15 0.031 0.504 0.444
+[main] PASS the e2 pawn stands on e2 (positions read back from Unity): square 0.031 0.482 0.444, piece 0.031 0.504 0.444
 [main] CMD k16 probe pk1:chess-table:0 layer EmyChess/ChessSet/Board/pieces_parent/pawn12
 [main] REPLY k16 20
 [main] CMD k17 probe pk1:chess-table:0 layer EmyChess/ChessSet/Board/pieces_parent/pawn4
 [main] REPLY k17 5
 [main] PASS White's pieces are on the Grabbable layer, Black's on the UI layer:
-[main] PASS the automated clock starts with White's time: {"running":true,"white":599.9578001499176,"black":600,"moves":1,"whiteRunning":true}
+[main] PASS the automated clock starts with White's time: {"running":true,"white":599.9591999053955,"black":600,"moves":1,"whiteRunning":true}
 [main] CMD k18 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn13
 [main] REPLY k18 0.094 0.504 0.444
 [main] CMD k19 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/f2
@@ -59,180 +57,385 @@ local: script and bundles from the test server http://localhost:42300
 [main] REPLY k21 0.094 0.482 0.506
 [main] CMD k22 look 0.094 0.482 0.506
 [main] REPLY k22 ok camera at 0.00,1.60,0.00
-[main] INFO f2f3 press @8564
+[main] INFO f2f3 press @8420
 [main] CMD k23 press 0.094 0.5172 0.444
 [main] REPLY k23 ok screen 650,396 of 1285x842
 [main] CMD k24 wait 20
 [main] REPLY k24 ok
-[main] INFO f2f3 carry @8668
+[main] INFO f2f3 carry @8524
 [main] CMD k25 pointer 0.094 0.5172 0.506
 [main] REPLY k25 ok screen 642,430 of 1285x842
 [main] CMD k26 wait 20
 [main] REPLY k26 ok
 [main] CMD k27 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn13
 [main] REPLY k27 0.094 0.504 0.444
-[main] INFO f2f3 held at 0.094 0.504 0.444 @8738
+[main] INFO f2f3 held at 0.094 0.504 0.444 @8598
 [main] CMD k28 release
 [main] REPLY k28 ok
-[main] INFO f2f3 released @8751
-[main] INFO f2f3 raw events: ["grab pawn13 @8610","drop pawn13 @8766"]
+[main] INFO f2f3 released @8610
+[main] INFO f2f3 raw events: ["grab pawn13 @8461","drop pawn13 @8618"]
 [main] INFO f2f3 trace: ["pickup pawn 5,1 grabbable true","drop pawn 5,1 held true picked true at (0.09374999, 0.48125, 0.44375)"] frame a1 (0, 0)
 [main] INFO f2f3: the piece came down on its own square and is chosen; finishing by clicking f3
-[main] CMD k29 click 0.094 0.482 0.506
-[main] REPLY k29 ok screen 642,421 of 1285x842
+[main] CMD k29 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/f3
+[main] REPLY k29 0.094 0.482 0.506
+[main] CMD k30 look 0.094 0.482 0.506
+[main] REPLY k30 ok camera at 0.00,1.60,0.00
+[main] CMD k31 click 0.094 0.482 0.506
+[main] REPLY k31 ok screen 642,421 of 1285x842
 [main] INFO f2f3 (grab): press ok screen 650,396 of 1285x842; carry ok screen 642,430 of 1285x842
+[main] CMD k32 probe pk1:chess-table:0 audioplaying EmyChess/ChessSet/Board/pieces_parent/pawn13
+[main] REPLY k32 False
+[main] CMD k33 probe pk1:chess-table:0 audioplaying EmyChess/ChessSet/Board/pieces_parent/pawn13
+[main] REPLY k33 False
+[main] CMD k34 probe pk1:chess-table:0 audioplaying EmyChess/ChessSet/Board/pieces_parent/pawn13
+[main] REPLY k34 False
+[main] CMD k35 probe pk1:chess-table:0 audioplaying EmyChess/ChessSet/Board/pieces_parent/pawn13
+[main] REPLY k35 True
+[main] PASS the move sound plays on the moved piece (sent after the move's write): True
 [main] PASS f2f3 is played (grabbed and let go (in place, then the square clicked: see TESTS.md)): rnbqkbnr/pppppppp/8/8/8/5P2/PPPPP1PP/RNBQKBNR
-[main] CMD k30 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn4
-[main] REPLY k30 0.031 0.504 0.756
-[main] CMD k31 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/e7
-[main] REPLY k31 0.031 0.482 0.756
+[main] CMD k36 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn4
+[main] REPLY k36 0.031 0.504 0.756
+[main] CMD k37 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/e7
+[main] REPLY k37 0.031 0.482 0.756
 [main] INFO e7e5 raw: listening (layer 20)
-[main] CMD k32 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/e7
-[main] REPLY k32 0.031 0.482 0.756
-[main] CMD k33 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/e5
-[main] REPLY k33 0.031 0.482 0.631
-[main] CMD k34 look 0.031 0.482 0.631
-[main] REPLY k34 ok camera at 0.00,1.60,0.00
-[main] INFO e7e5 press @12630
-[main] CMD k35 press 0.031 0.5172 0.756
-[main] REPLY k35 ok screen 639,491 of 1285x842
-[main] CMD k36 wait 20
-[main] REPLY k36 ok
-[main] INFO e7e5 carry @12708
-[main] CMD k37 pointer 0.031 0.5172 0.631
-[main] REPLY k37 ok screen 643,431 of 1285x842
-[main] CMD k38 wait 20
-[main] REPLY k38 ok
-[main] CMD k39 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn4
-[main] REPLY k39 0.031 0.504 0.756
-[main] INFO e7e5 held at 0.031 0.504 0.756 @12772
-[main] CMD k40 release
-[main] REPLY k40 ok
-[main] INFO e7e5 released @12783
-[main] INFO e7e5 raw events: ["grab pawn4 @12664","drop pawn4 @12785"]
+[main] CMD k38 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/e7
+[main] REPLY k38 0.031 0.482 0.756
+[main] CMD k39 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/e5
+[main] REPLY k39 0.031 0.482 0.631
+[main] CMD k40 look 0.031 0.482 0.631
+[main] REPLY k40 ok camera at 0.00,1.60,0.00
+[main] INFO e7e5 press @12643
+[main] CMD k41 press 0.031 0.5172 0.756
+[main] REPLY k41 ok screen 639,491 of 1285x842
+[main] CMD k42 wait 20
+[main] REPLY k42 ok
+[main] INFO e7e5 carry @12721
+[main] CMD k43 pointer 0.031 0.5172 0.631
+[main] REPLY k43 ok screen 643,431 of 1285x842
+[main] CMD k44 wait 20
+[main] REPLY k44 ok
+[main] CMD k45 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn4
+[main] REPLY k45 0.031 0.504 0.756
+[main] INFO e7e5 held at 0.031 0.504 0.756 @12814
+[main] CMD k46 release
+[main] REPLY k46 ok
+[main] INFO e7e5 released @12829
+[main] INFO e7e5 raw events: ["grab pawn4 @12676","drop pawn4 @12839"]
 [main] INFO e7e5 trace: ["pickup pawn 5,1 grabbable true","drop pawn 5,1 held true picked true at (0.09374999, 0.48125, 0.44375)","pickup pawn 4,6 grabbable true","drop pawn 4,6 held true picked true at (0.03125001, 0.48125, 0.75625)"] frame a1 (0, 0)
 [main] INFO e7e5: the piece came down on its own square and is chosen; finishing by clicking e5
-[main] CMD k41 click 0.031 0.482 0.631
-[main] REPLY k41 ok screen 643,421 of 1285x842
+[main] CMD k47 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/e5
+[main] REPLY k47 0.031 0.482 0.631
+[main] CMD k48 look 0.031 0.482 0.631
+[main] REPLY k48 ok camera at 0.00,1.60,0.00
+[main] CMD k49 click 0.031 0.482 0.631
+[main] REPLY k49 ok screen 643,421 of 1285x842
 [main] INFO e7e5 (grab): press ok screen 639,491 of 1285x842; carry ok screen 643,431 of 1285x842
 [main] PASS e7e5 is played (grabbed and let go (in place, then the square clicked: see TESTS.md)): rnbqkbnr/pppp1ppp/8/4p3/8/5P2/PPPPP1PP/RNBQKBNR
-[main] CMD k42 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn14
-[main] REPLY k42 0.156 0.504 0.444
-[main] CMD k43 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g2
-[main] REPLY k43 0.156 0.482 0.444
-[main] CMD k44 look 0.156 0.5172 0.444
-[main] REPLY k44 ok camera at 0.00,1.60,0.00
-[main] CMD k45 click 0.156 0.5172 0.444
-[main] REPLY k45 ok screen 642,421 of 1285x842
+[main] CMD k50 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn14
+[main] REPLY k50 0.156 0.504 0.444
+[main] CMD k51 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g2
+[main] REPLY k51 0.156 0.482 0.444
+[main] CMD k52 look 0.156 0.5172 0.444
+[main] REPLY k52 ok camera at 0.00,1.60,0.00
+[main] CMD k53 click 0.156 0.5172 0.444
+[main] REPLY k53 ok screen 642,421 of 1285x842
 [main] INFO g2g4 click piece: ok screen 642,421 of 1285x842 raw listening (layer 20)
 [main] INFO g2g4: the quick click on g2 registered nothing; holding it and letting go in place
-[main] CMD k46 press 0.156 0.5172 0.444
-[main] REPLY k46 ok screen 642,421 of 1285x842
-[main] CMD k47 wait 20
-[main] REPLY k47 ok
-[main] CMD k48 release
-[main] REPLY k48 ok
-[main] CMD k49 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g4
-[main] REPLY k49 0.156 0.482 0.569
-[main] CMD k50 click 0.156 0.482 0.569
-[main] REPLY k50 ok screen 619,475 of 1285x842
+[main] CMD k54 press 0.156 0.5172 0.444
+[main] REPLY k54 ok screen 642,421 of 1285x842
+[main] CMD k55 wait 20
+[main] REPLY k55 ok
+[main] CMD k56 release
+[main] REPLY k56 ok
+[main] CMD k57 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g4
+[main] REPLY k57 0.156 0.482 0.569
+[main] CMD k58 click 0.156 0.482 0.569
+[main] REPLY k58 ok screen 619,475 of 1285x842
 [main] INFO g2g4 (click): chosen true; trace ["pickup pawn 4,6 grabbable true","drop pawn 4,6 held true picked true at (0.03125001, 0.48125, 0.75625)","pickup pawn 6,1 grabbable true","drop pawn 6,1 held true picked true at (0.15625, 0.48125, 0.44375)"]
 [main] PASS g2g4 is played (click a piece, click a square): rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR
-[main] CMD k51 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/queen0
-[main] REPLY k51 -0.031 0.527 0.819
-[main] CMD k52 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/d8
-[main] REPLY k52 -0.031 0.482 0.819
+[main] CMD k59 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/queen0
+[main] REPLY k59 -0.031 0.527 0.819
+[main] CMD k60 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/d8
+[main] REPLY k60 -0.031 0.482 0.819
 [main] INFO d8h4 raw: listening (layer 20)
-[main] CMD k53 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/d8
-[main] REPLY k53 -0.031 0.482 0.819
-[main] CMD k54 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/h4
-[main] REPLY k54 0.219 0.482 0.569
-[main] CMD k55 look 0.219 0.482 0.569
-[main] REPLY k55 ok camera at 0.00,1.60,0.00
-[main] INFO d8h4 press @20788
-[main] CMD k56 press -0.031 0.554 0.819
-[main] REPLY k56 ok screen 458,512 of 1285x842
-[main] CMD k57 wait 20
-[main] REPLY k57 ok
-[main] INFO d8h4 carry @20877
-[main] CMD k58 pointer 0.219 0.554 0.569
-[main] REPLY k58 ok screen 643,442 of 1285x842
-[main] CMD k59 wait 20
-[main] REPLY k59 ok
-[main] CMD k60 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/queen0
-[main] REPLY k60 -0.031 0.527 0.819
-[main] INFO d8h4 held at -0.031 0.527 0.819 @20974
-[main] CMD k61 release
-[main] REPLY k61 ok
-[main] INFO d8h4 released @20992
-[main] INFO d8h4 raw events: ["grab pawn14 @19764","drop pawn14 @19824","grab queen0 @20824","drop queen0 @20985"]
+[main] CMD k61 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/d8
+[main] REPLY k61 -0.031 0.482 0.819
+[main] CMD k62 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/h4
+[main] REPLY k62 0.219 0.482 0.569
+[main] CMD k63 look 0.219 0.482 0.569
+[main] REPLY k63 ok camera at 0.00,1.60,0.00
+[main] INFO d8h4 press @20909
+[main] CMD k64 press -0.031 0.554 0.819
+[main] REPLY k64 ok screen 458,512 of 1285x842
+[main] CMD k65 wait 20
+[main] REPLY k65 ok
+[main] INFO d8h4 carry @20999
+[main] CMD k66 pointer 0.219 0.554 0.569
+[main] REPLY k66 ok screen 643,442 of 1285x842
+[main] CMD k67 wait 20
+[main] REPLY k67 ok
+[main] CMD k68 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/queen0
+[main] REPLY k68 -0.031 0.527 0.819
+[main] INFO d8h4 held at -0.031 0.527 0.819 @21073
+[main] CMD k69 release
+[main] REPLY k69 ok
+[main] INFO d8h4 released @21089
+[main] INFO d8h4 raw events: ["grab pawn14 @19877","drop pawn14 @19938","grab queen0 @20937","drop queen0 @21097"]
 [main] INFO d8h4 trace: ["pickup pawn 6,1 grabbable true","drop pawn 6,1 held true picked true at (0.15625, 0.48125, 0.44375)","pickup queen 3,7 grabbable true","drop queen 3,7 held true picked true at (-0.03124998, 0.48125, 0.81875)"] frame a1 (0, 0)
 [main] INFO d8h4: the piece came down on its own square and is chosen; finishing by clicking h4
-[main] CMD k62 click 0.219 0.482 0.569
-[main] REPLY k62 ok screen 643,421 of 1285x842
+[main] CMD k70 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/h4
+[main] REPLY k70 0.219 0.482 0.569
+[main] CMD k71 look 0.219 0.482 0.569
+[main] REPLY k71 ok camera at 0.00,1.60,0.00
+[main] CMD k72 click 0.219 0.482 0.569
+[main] REPLY k72 ok screen 643,421 of 1285x842
 [main] INFO d8h4 (grab): press ok screen 458,512 of 1285x842; carry ok screen 643,442 of 1285x842
 [main] PASS d8h4 is played (grabbed and let go (in place, then the square clicked: see TESTS.md)): rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR
 [main] PASS fool's mate is checkmate, Black wins: state 1
-[main] CMD k63 probe pk1:chess-table:0 text EmyChess/ChessSet/Board/additional_transforms/GameOverMessage/GameOver/Image/GameOverText
-[main] REPLY k63 CHECKMATE! Winner: Main Editor
+[main] CMD k73 probe pk1:chess-table:0 text EmyChess/ChessSet/Board/additional_transforms/GameOverMessage/GameOver/Image/GameOverText
+[main] REPLY k73 CHECKMATE! Winner: Main Editor
 [main] PASS the banner's text reached Unity: CHECKMATE! Winner: Main Editor
-[main] CMD k64 probe pk1:chess-table:0 active EmyChess/ChessSet/Board/additional_transforms/GameOverMessage/GameOver
-[main] REPLY k64 True
+[main] CMD k74 probe pk1:chess-table:0 active EmyChess/ChessSet/Board/additional_transforms/GameOverMessage/GameOver
+[main] REPLY k74 True
 [main] PASS the banner shows:
-[main] CMD k65 probe pk1:chess-table:0 color EmyChess/ChessSet/Board/squares/e1 _BaseColor
-[main] REPLY k65 1.000 0.000 0.000 0.600
+[main] CMD k75 probe pk1:chess-table:0 color EmyChess/ChessSet/Board/squares/e1 _BaseColor
+[main] REPLY k75 1.000 0.000 0.000 0.600
 [main] PASS the checked king's square is red (D3 fixed): 1.000 0.000 0.000 0.600
-[main] CMD k66 probe pk1:chess-table:0 layer EmyChess/ChessSet/Board/pieces_parent/pawn12
-[main] REPLY k66 5
+[main] CMD k76 probe pk1:chess-table:0 layer EmyChess/ChessSet/Board/pieces_parent/pawn12
+[main] REPLY k76 5
 [main] PASS nothing can be picked up after the result (D9):
-[main] CMD k67 probe pk1:chess-table:0 text EmyChess/Timer/TimerScreen/Canvas/MovesCounter
-[main] REPLY k67 005
+[main] CMD k77 probe pk1:chess-table:0 text EmyChess/Timer/TimerScreen/Canvas/MovesCounter
+[main] REPLY k77 005
 [main] PASS the clock switched at every move: MOVES 005: 005
-[main] CMD k68 probe pk1:chess-table:0 text EmyChess/Timer/TimerScreen/Canvas/RightTimer
-[main] REPLY k68 00:09:52
-[main] CMD k69 probe pk1:chess-table:0 text EmyChess/Timer/TimerScreen/Canvas/RightTimer/RightMilliseconds
-[main] REPLY k69 593
-[main] CMD k70 probe pk1:chess-table:0 text EmyChess/Timer/TimerScreen/Canvas/RightTimer
-[main] REPLY k70 00:09:52
-[main] CMD k71 probe pk1:chess-table:0 text EmyChess/Timer/TimerScreen/Canvas/RightTimer/RightMilliseconds
-[main] REPLY k71 593
-[main] PASS the clock is frozen at the result and shows HH:MM:SS (LCD digits): 00:09:52 593, then 00:09:52 593
-[main] CMD k72 shot mate 0.35 1.05 0.1 0 0.47 0.75 60
-[main] REPLY k72 Library/PortKit/shots/chess-single_mate.jpg
-[main] CMD k73 probe pk1:chess-table:0 pos EmyChess/ChessSet/UIHolder/Canvas/GameMenu/endGame
-[main] REPLY k73 -0.419 0.469 0.416
-[main] CMD k74 look -0.419 0.469 0.416
-[main] REPLY k74 ok camera at 0.00,1.60,0.00
-[main] CMD k75 click -0.419 0.469 0.416
-[main] REPLY k75 ok screen 643,421 of 1285x842
+[main] CMD k78 probe pk1:chess-table:0 text EmyChess/Timer/TimerScreen/Canvas/RightTimer
+[main] REPLY k78 00:09:52
+[main] CMD k79 probe pk1:chess-table:0 text EmyChess/Timer/TimerScreen/Canvas/RightTimer/RightMilliseconds
+[main] REPLY k79 454
+[main] CMD k80 probe pk1:chess-table:0 text EmyChess/Timer/TimerScreen/Canvas/RightTimer
+[main] REPLY k80 00:09:52
+[main] CMD k81 probe pk1:chess-table:0 text EmyChess/Timer/TimerScreen/Canvas/RightTimer/RightMilliseconds
+[main] REPLY k81 454
+[main] PASS the clock is frozen at the result and shows HH:MM:SS (LCD digits): 00:09:52 454, then 00:09:52 454
+[main] CMD k82 shot mate 0.35 1.05 0.1 0 0.47 0.75 60
+[main] REPLY k82 Library/PortKit/shots/chess-single_mate.jpg
+[main] CMD k83 probe pk1:chess-table:0 pos EmyChess/ChessSet/UIHolder/Canvas/GameMenu/endGame
+[main] REPLY k83 -0.419 0.469 0.416
+[main] CMD k84 look -0.419 0.469 0.416
+[main] REPLY k84 ok camera at 0.00,1.60,0.00
+[main] CMD k85 click -0.419 0.469 0.416
+[main] REPLY k85 ok screen 643,421 of 1285x842
 [main] INFO click End Game: ok screen 643,421 of 1285x842
-[main] CMD k76 probe pk1:chess-table:0 active EmyChess/ChessSet/Board/pieces_parent/pawn0
-[main] REPLY k76 True
-[main] CMD k77 probe pk1:chess-table:0 active EmyChess/ChessSet/Board/pieces_parent/pawn0
-[main] REPLY k77 False
+[main] CMD k86 probe pk1:chess-table:0 active EmyChess/ChessSet/Board/pieces_parent/pawn0
+[main] REPLY k86 False
 [main] PASS End Game clears the board (the pieces are switched off in Unity): 8/8/8/8/8/8/8/8, pawn0 active False
-[main] CMD k78 probe pk1:chess-table:0 pos EmyChess/ChessSet/UIHolder/Canvas/CreditsButton
-[main] REPLY k78 -0.430 0.458 0.378
-[main] CMD k79 look -0.430 0.458 0.378
-[main] REPLY k79 ok camera at 0.00,1.60,0.00
-[main] CMD k80 click -0.430 0.458 0.378
-[main] REPLY k80 ok screen 643,421 of 1285x842
+[main] CMD k87 probe pk1:chess-table:0 pos EmyChess/ChessSet/UIHolder/Canvas/CreditsButton
+[main] REPLY k87 -0.430 0.458 0.378
+[main] CMD k88 look -0.430 0.458 0.378
+[main] REPLY k88 ok camera at 0.00,1.60,0.00
+[main] CMD k89 click -0.430 0.458 0.378
+[main] REPLY k89 ok screen 643,421 of 1285x842
 [main] INFO click Credits: ok screen 643,421 of 1285x842
-[main] CMD k81 probe pk1:chess-table:0 active EmyChess/ChessSet/UIHolder/Canvas/CreditsPanel
-[main] REPLY k81 True
-[main] CMD k82 probe pk1:chess-table:0 pos EmyChess/ChessSet/UIHolder/Canvas/CreditsPanel
-[main] REPLY k82 -0.391 0.497 0.600
-[main] CMD k83 look -0.391 0.497 0.600
-[main] REPLY k83 ok camera at 0.00,1.60,0.00
-[main] CMD k84 click -0.391 0.497 0.600
-[main] REPLY k84 ok screen 643,421 of 1285x842
+[main] CMD k90 probe pk1:chess-table:0 active EmyChess/ChessSet/UIHolder/Canvas/CreditsPanel
+[main] REPLY k90 False
+[main] CMD k91 probe pk1:chess-table:0 active EmyChess/ChessSet/UIHolder/Canvas/CreditsPanel
+[main] REPLY k91 True
+[main] CMD k92 probe pk1:chess-table:0 pos EmyChess/ChessSet/UIHolder/Canvas/CreditsPanel
+[main] REPLY k92 -0.391 0.497 0.600
+[main] CMD k93 look -0.391 0.497 0.600
+[main] REPLY k93 ok camera at 0.00,1.60,0.00
+[main] CMD k94 click -0.391 0.497 0.600
+[main] REPLY k94 ok screen 643,421 of 1285x842
 [main] INFO click the credits panel: ok screen 643,421 of 1285x842
-[main] CMD k85 probe pk1:chess-table:0 active EmyChess/ChessSet/UIHolder/Canvas/CreditsPanel
-[main] REPLY k85 False
+[main] CMD k95 probe pk1:chess-table:0 active EmyChess/ChessSet/UIHolder/Canvas/CreditsPanel
+[main] REPLY k95 True
+[main] CMD k96 probe pk1:chess-table:0 active EmyChess/ChessSet/UIHolder/Canvas/CreditsPanel
+[main] REPLY k96 False
 [main] PASS the credits panel opens and closes: True, False
-[main] INFO page result 22 passed, 0 failed
+[main] CMD k97 probe pk1:chess-table:0 pos EmyChess/ChessSet/UIHolder/Canvas/MainMenu/StartButton
+[main] REPLY k97 -0.391 0.497 0.600
+[main] CMD k98 look -0.391 0.497 0.600
+[main] REPLY k98 ok camera at 0.00,1.60,0.00
+[main] CMD k99 click -0.391 0.497 0.600
+[main] REPLY k99 ok screen 643,421 of 1285x842
+[main] INFO click Start Game: ok screen 643,421 of 1285x842
+[main] PASS a second game starts: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
+[main] CMD k100 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn15
+[main] REPLY k100 0.219 0.481 0.444
+[main] CMD k101 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/h2
+[main] REPLY k101 0.219 0.482 0.444
+[main] CMD k102 look 0.219 0.514 0.444
+[main] REPLY k102 ok camera at 0.00,1.60,0.00
+[main] CMD k103 click 0.219 0.514 0.444
+[main] REPLY k103 ok screen 642,421 of 1285x842
+[main] INFO h2h4 click piece: ok screen 642,421 of 1285x842 raw listening (layer 20)
+[main] INFO h2h4: the quick click on h2 registered nothing; holding it and letting go in place
+[main] CMD k104 press 0.219 0.514 0.444
+[main] REPLY k104 ok screen 642,421 of 1285x842
+[main] CMD k105 wait 20
+[main] REPLY k105 ok
+[main] CMD k106 release
+[main] REPLY k106 ok
+[main] CMD k107 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/h4
+[main] REPLY k107 0.219 0.482 0.569
+[main] CMD k108 click 0.219 0.482 0.569
+[main] REPLY k108 ok screen 611,472 of 1285x842
+[main] INFO h2h4 (click): chosen true; trace ["pickup queen 3,7 grabbable true","drop queen 3,7 held true picked true at (-0.03124998, 0.48125, 0.81875)","pickup pawn 7,1 grabbable true","drop pawn 7,1 held true picked true at (0.21875, 0.48125, 0.44375)"]
+[main] CMD k109 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn6
+[main] REPLY k109 0.156 0.504 0.756
+[main] CMD k110 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g7
+[main] REPLY k110 0.156 0.482 0.756
+[main] CMD k111 look 0.156 0.5172 0.756
+[main] REPLY k111 ok camera at 0.00,1.60,0.00
+[main] CMD k112 click 0.156 0.5172 0.756
+[main] REPLY k112 ok screen 643,421 of 1285x842
+[main] INFO g7g5 click piece: ok screen 643,421 of 1285x842 raw listening (layer 20)
+[main] CMD k113 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g5
+[main] REPLY k113 0.156 0.482 0.631
+[main] CMD k114 click 0.156 0.482 0.631
+[main] REPLY k114 ok screen 657,353 of 1285x842
+[main] INFO g7g5 (click): chosen true; trace ["pickup pawn 7,1 grabbable true","drop pawn 7,1 held true picked true at (0.21875, 0.48125, 0.44375)","pickup pawn 6,6 grabbable true","drop pawn 6,6 held true picked true at (0.15625, 0.48125, 0.75625)"]
+[main] CMD k115 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn15
+[main] REPLY k115 0.219 0.504 0.569
+[main] CMD k116 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/h4
+[main] REPLY k116 0.219 0.482 0.569
+[main] CMD k117 look 0.219 0.5172 0.569
+[main] REPLY k117 ok camera at 0.00,1.60,0.00
+[main] CMD k118 click 0.219 0.5172 0.569
+[main] REPLY k118 ok screen 643,421 of 1285x842
+[main] INFO h4g5 click piece: ok screen 643,421 of 1285x842 raw listening (layer 20)
+[main] CMD k119 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g5
+[main] REPLY k119 0.156 0.482 0.631
+[main] CMD k120 click 0.14975997784603587 0.482 0.6057599103900553
+[main] REPLY k120 ok screen 598,416 of 1285x842
+[main] INFO h4g5 (click): chosen true; trace ["pickup pawn 6,6 grabbable true","drop pawn 6,6 held true picked true at (0.15625, 0.48125, 0.75625)","pickup pawn 7,3 grabbable true","drop pawn 7,3 held true picked true at (0.21875, 0.48125, 0.56875)"]
+[main] CMD k121 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/knight1
+[main] REPLY k121 0.156 0.512 0.818
+[main] CMD k122 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g8
+[main] REPLY k122 0.156 0.482 0.819
+[main] CMD k123 look 0.156 0.53 0.818
+[main] REPLY k123 ok camera at 0.00,1.60,0.00
+[main] CMD k124 click 0.156 0.53 0.818
+[main] REPLY k124 ok screen 642,421 of 1285x842
+[main] INFO g8f6 click piece: ok screen 642,421 of 1285x842 raw listening (layer 20)
+[main] INFO g8f6: the quick click on g8 registered nothing; holding it and letting go in place
+[main] CMD k125 press 0.156 0.53 0.818
+[main] REPLY k125 ok screen 642,421 of 1285x842
+[main] CMD k126 wait 20
+[main] REPLY k126 ok
+[main] CMD k127 release
+[main] REPLY k127 ok
+[main] CMD k128 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/f6
+[main] REPLY k128 0.094 0.482 0.694
+[main] CMD k129 click 0.094 0.482 0.694
+[main] REPLY k129 ok screen 622,346 of 1285x842
+[main] INFO g8f6 (click): chosen true; trace ["pickup pawn 7,3 grabbable true","drop pawn 7,3 held true picked true at (0.21875, 0.48125, 0.56875)","pickup knight 6,7 grabbable true","drop knight 6,7 held true picked true at (0.15625, 0.48125, 0.81875)"]
+[main] CMD k130 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn15
+[main] REPLY k130 0.156 0.504 0.631
+[main] CMD k131 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g5
+[main] REPLY k131 0.156 0.482 0.631
+[main] CMD k132 look 0.156 0.5172 0.631
+[main] REPLY k132 ok camera at 0.00,1.60,0.00
+[main] CMD k133 click 0.156 0.5172 0.631
+[main] REPLY k133 ok screen 643,421 of 1285x842
+[main] INFO g5g6 click piece: ok screen 643,421 of 1285x842 raw listening (layer 20)
+[main] CMD k134 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g6
+[main] REPLY k134 0.156 0.482 0.694
+[main] CMD k135 click 0.156 0.482 0.694
+[main] REPLY k135 ok screen 634,440 of 1285x842
+[main] INFO g5g6 (click): chosen true; trace ["pickup knight 6,7 grabbable true","drop knight 6,7 held true picked true at (0.15625, 0.48125, 0.81875)","pickup pawn 6,4 grabbable true","drop pawn 6,4 held true picked true at (0.15625, 0.48125, 0.63125)"]
+[main] CMD k136 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn0
+[main] REPLY k136 -0.219 0.504 0.756
+[main] CMD k137 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/a7
+[main] REPLY k137 -0.219 0.482 0.756
+[main] CMD k138 look -0.219 0.5172 0.756
+[main] REPLY k138 ok camera at 0.00,1.60,0.00
+[main] CMD k139 click -0.219 0.5172 0.756
+[main] REPLY k139 ok screen 643,421 of 1285x842
+[main] INFO a7a6 click piece: ok screen 643,421 of 1285x842 raw listening (layer 20)
+[main] INFO a7a6: the quick click on a7 registered nothing; holding it and letting go in place
+[main] CMD k140 press -0.219 0.5172 0.756
+[main] REPLY k140 ok screen 643,421 of 1285x842
+[main] CMD k141 wait 20
+[main] REPLY k141 ok
+[main] CMD k142 release
+[main] REPLY k142 ok
+[main] CMD k143 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/a6
+[main] REPLY k143 -0.219 0.482 0.694
+[main] CMD k144 click -0.219 0.482 0.694
+[main] REPLY k144 ok screen 633,383 of 1285x842
+[main] INFO a7a6 (click): chosen true; trace ["pickup pawn 6,4 grabbable true","drop pawn 6,4 held true picked true at (0.15625, 0.48125, 0.63125)","pickup pawn 0,6 grabbable true","drop pawn 0,6 held true picked true at (-0.21875, 0.48125, 0.75625)"]
+[main] CMD k145 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn15
+[main] REPLY k145 0.156 0.504 0.694
+[main] CMD k146 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g6
+[main] REPLY k146 0.156 0.482 0.694
+[main] CMD k147 look 0.156 0.5172 0.694
+[main] REPLY k147 ok camera at 0.00,1.60,0.00
+[main] CMD k148 click 0.156 0.5172 0.694
+[main] REPLY k148 ok screen 643,421 of 1285x842
+[main] INFO g6g7 click piece: ok screen 643,421 of 1285x842 raw listening (layer 20)
+[main] INFO g6g7: the quick click on g6 registered nothing; holding it and letting go in place
+[main] CMD k149 press 0.156 0.5172 0.694
+[main] REPLY k149 ok screen 643,421 of 1285x842
+[main] CMD k150 wait 20
+[main] REPLY k150 ok
+[main] CMD k151 release
+[main] REPLY k151 ok
+[main] CMD k152 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g7
+[main] REPLY k152 0.156 0.482 0.756
+[main] CMD k153 click 0.156 0.482 0.756
+[main] REPLY k153 ok screen 635,438 of 1285x842
+[main] INFO g6g7 (click): chosen true; trace ["pickup pawn 0,6 grabbable true","drop pawn 0,6 held true picked true at (-0.21875, 0.48125, 0.75625)","pickup pawn 6,5 grabbable true","drop pawn 6,5 held true picked true at (0.15625, 0.48125, 0.69375)"]
+[main] CMD k154 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn0
+[main] REPLY k154 -0.219 0.504 0.694
+[main] CMD k155 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/a6
+[main] REPLY k155 -0.219 0.482 0.694
+[main] CMD k156 look -0.219 0.5172 0.694
+[main] REPLY k156 ok camera at 0.00,1.60,0.00
+[main] CMD k157 click -0.219 0.5172 0.694
+[main] REPLY k157 ok screen 643,421 of 1285x842
+[main] INFO a6a5 click piece: ok screen 643,421 of 1285x842 raw listening (layer 20)
+[main] CMD k158 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/a5
+[main] REPLY k158 -0.219 0.482 0.631
+[main] CMD k159 click -0.219 0.482 0.631
+[main] REPLY k159 ok screen 632,382 of 1285x842
+[main] INFO a6a5 (click): chosen true; trace ["pickup pawn 6,5 grabbable true","drop pawn 6,5 held true picked true at (0.15625, 0.48125, 0.69375)","pickup pawn 0,5 grabbable true","drop pawn 0,5 held true picked true at (-0.21875, 0.48125, 0.69375)"]
+[main] CMD k160 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn15
+[main] REPLY k160 0.156 0.504 0.756
+[main] CMD k161 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g7
+[main] REPLY k161 0.156 0.482 0.756
+[main] CMD k162 look 0.156 0.5172 0.756
+[main] REPLY k162 ok camera at 0.00,1.60,0.00
+[main] CMD k163 click 0.156 0.5172 0.756
+[main] REPLY k163 ok screen 643,421 of 1285x842
+[main] INFO g7g8 click piece: ok screen 643,421 of 1285x842 raw listening (layer 20)
+[main] CMD k164 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g8
+[main] REPLY k164 0.156 0.482 0.819
+[main] CMD k165 click 0.156 0.482 0.819
+[main] REPLY k165 ok screen 636,437 of 1285x842
+[main] INFO g7g8 (click): chosen true; trace ["pickup pawn 0,5 grabbable true","drop pawn 0,5 held true picked true at (-0.21875, 0.48125, 0.69375)","pickup pawn 6,6 grabbable true","drop pawn 6,6 held true picked true at (0.15625, 0.48125, 0.75625)"]
+[main] CMD k166 probe pk1:chess-table:0 active EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces
+[main] REPLY k166 True
+[main] PASS a pawn reaching g8 opens the picker, and the pending promotion is shared state: rnbqkbPr/1ppppp1p/5n2/p7/8/8/PPPPPPP1/RNBQKBNR, promotionSquare 55, picker True
+[main] CMD k167 probe pk1:chess-table:0 layer EmyChess/ChessSet/Board/pieces_parent/knight2
+[main] REPLY k167 5
+[main] CMD k168 probe pk1:chess-table:0 layer EmyChess/ChessSet/Board/pieces_parent/pawn0
+[main] REPLY k168 5
+[main] PASS nothing can be picked up while the choice is pending (b1 and a5 on the UI layer): rnbqkbPr/1ppppp1p/5n2/p7/8/8/PPPPPPP1/RNBQKBNR
+[main] CMD k169 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/queen
+[main] REPLY k169 0.117 0.576 0.819
+[main] CMD k170 look 0.117 0.576 0.819
+[main] REPLY k170 ok camera at 0.00,1.60,0.00
+[main] CMD k171 click 0.117 0.576 0.819
+[main] REPLY k171 ok screen 642,421 of 1285x842
+[main] INFO click the picker's queen: ok screen 642,421 of 1285x842
+[main] CMD k172 probe pk1:chess-table:0 active EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces
+[main] REPLY k172 True
+[main] CMD k173 probe pk1:chess-table:0 active EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces
+[main] REPLY k173 False
+[main] PASS the queen is chosen: g8 is a white queen, the picker closes, Black is to move: rnbqkbQr/1ppppp1p/5n2/p7/8/8/PPPPPPP1/RNBQKBNR
+[main] INFO page result 27 passed, 0 failed
 [main] DONE
-served: /kits/windows/chess-table x1, /web/pk-chess-table.js x1, /web/playtest/chess-playtest.js x1, HEAD /kits/windows/chess-table x1
+served: /web/pk-chess-table.js x1, /web/playtest/chess-playtest.js x1, HEAD /kits/windows/chess-table x1
 console (main editor): 0 error lines
-RESULT 22 passed, 0 failed
+RESULT 27 passed, 0 failed
 DONE

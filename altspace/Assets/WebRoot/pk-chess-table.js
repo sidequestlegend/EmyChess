@@ -44,7 +44,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/* pk-chess-table.js: portkit runtime with the rules of 'chess-table' (protocol pk1, bindings ec156bc0565c701559fee99e289c187132131af8). Built file: do not edit. */
+/* pk-chess-table.js: portkit runtime with the rules of 'chess-table' (protocol pk1, bindings 570f51b07013d2ca2f36dbf48a01db107e487d7d). Built file: do not edit. */
 (() => {
   var __defProp = Object.defineProperty;
   var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
@@ -7733,7 +7733,9 @@ ${label}`)));
           winnerWhite: m.gameOverMessage.winningSide,
           automatedTimer: m.automatedTimer,
           clock: { running: t.running, white: t.TimeLeft(true), black: t.TimeLeft(false), moves: t.moves, whiteRunning: t.isCurrentSideWhite },
-          chosen: m.clickToMove?.chosen ? String.fromCharCode(97 + m.clickToMove.chosen.x) + (m.clickToMove.chosen.y + 1) : null
+          chosen: m.clickToMove?.chosen ? String.fromCharCode(97 + m.clickToMove.chosen.x) + (m.clickToMove.chosen.y + 1) : null,
+          promotionSquare: m.promotionSquare,
+          pickerOpen: m.picker.IsOpen()
         };
       }
     };
@@ -11229,7 +11231,7 @@ ${label}`)));
         object: "creditsPanel"
       }
     ],
-    hash: "ec156bc0565c701559fee99e289c187132131af8",
+    hash: "570f51b07013d2ca2f36dbf48a01db107e487d7d",
     objects: {
       add15m: {
         click: true,

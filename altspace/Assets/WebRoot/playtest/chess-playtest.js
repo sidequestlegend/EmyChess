@@ -2,8 +2,8 @@
 // (InputSim: a mouse of the test's own; the SDK casts its own rays and raises click, grab and drop itself), and checked
 // in Unity with the kit's probe command. Not part of the snippet: the test page loads it before the snippet.
 //
-// window.__chessPlan: "single" (one player holds both sides and plays fool's mate) or "multi" (two Local Multiplayer
-// players; the main editor takes White, Player 2 Black; late join by reload).
+// window.__chessPlan: "single" (one player holds both sides, plays fool's mate, then a game to a promotion) or "multi"
+// (two Local Multiplayer players play to a promotion; Black reloads mid-game, White reloads during its promotion choice).
 (function () {
   "use strict";
   const KEY = "chess-table:0";
@@ -99,6 +99,18 @@
     return p[0] + " " + y + " " + p[2];
   }
 
+  /**
+   * Where to click to move onto a square: its centre, or, when a piece stands there (a capture), the square's edge
+   * nearest the camera, beside the piece. A click on a piece itself never reaches the page in Play mode: every
+   * BS Grababble gets a BSPlayerEvents whose onClick is null, and BSScene.Click throws on it (TESTS.md, kit gaps).
+   */
+  async function targetAim(square) {
+    const s = (await probe("pos", debug().squarePath(square))).split(" ").map(Number);
+    if (!debug().piecePath(square)) return s.join(" ");
+    const d = Math.hypot(s[0], s[2]) || 1; // the desktop camera stands at x 0, z 0
+    return s[0] - (s[0] / d) * 0.026 + " " + s[1] + " " + (s[2] - (s[2] / d) * 0.026);
+  }
+
   /** A move through the desktop grab: press on the piece, carry it over the target square, let go. */
   async function grabMove(uci, label) {
     const from = uci.slice(0, 2);
@@ -127,7 +139,9 @@
       // the grab let go at once (the first grab of a Play session does, RESULTS.md S6) or where it was: the piece is
       // chosen, and a click on the square finishes the move (click-to-move)
       say("INFO", label + ": the piece came down on its own square and is chosen; finishing by clicking " + to);
-      await cmd("click " + toSquare);
+      const aim = await targetAim(to);
+      await cmd("look " + aim);
+      await cmd("click " + aim);
       await until(() => fen() !== before, 3000);
     }
     say("INFO", label + " (grab)", "press " + pressed + "; carry " + moved);
@@ -152,7 +166,7 @@
       await cmd("release");
       chosen = await until(() => table().chosen === from, 3000);
     }
-    const targetPos = debug().piecePath(to) ? await pieceAim(to) : await probe("pos", debug().squarePath(to));
+    const targetPos = await targetAim(to);
     await cmd("click " + targetPos);
     await until(() => fen() !== before, 3000);
     say("INFO", label + " (click)", "chosen " + !!chosen + "; trace " + JSON.stringify(debug().trace().slice(-4)));
@@ -209,6 +223,13 @@
     for (let i = 0; i < plan.length; i++) {
       const [uci, how] = plan[i];
       const ok = await how(uci, uci);
+      if (i === 0) {
+        // the move sound is sent last now (after the turn's write): it still plays, on the moved piece's audio source
+        const path = debug().piecePath(uci.slice(2, 4));
+        let playing = "";
+        for (let k = 0; k < 12 && playing !== "True"; k++) playing = await probe("audioplaying", path);
+        check(playing === "True", "the move sound plays on the moved piece (sent after the move's write)", playing);
+      }
       check(ok && fen() === expect[i], `${uci} is played (${how === grabMove ? "grabbed and let go (in place, then the square clicked: see TESTS.md)" : "click a piece, click a square"})`, fen());
       await sleep(800);
     }
@@ -241,26 +262,81 @@
     }
     check(!table().inProgress && fen() === "8/8/8/8/8/8/8/8" && pawn0 === "False", "End Game clears the board (the pieces are switched off in Unity)", `${fen()}, pawn0 active ${pawn0}`);
     // the credits panel opens and closes for this viewer
+    // (probes run ahead of the relay: poll until the switch has reached Unity)
+    const panelIs = async (want) => {
+      let v = "";
+      for (let i = 0; i < 20 && v !== want; i++) {
+        v = await probe("active", debug().pathOf("creditsPanel"));
+        if (v !== want) await sleep(150);
+      }
+      return v;
+    };
     await clickObject("creditsButton", "Credits");
-    const open = await probe("active", debug().pathOf("creditsPanel"));
+    const open = await panelIs("True");
     await clickObject("creditsPanel", "the credits panel");
-    const closed = await probe("active", debug().pathOf("creditsPanel"));
+    const closed = await panelIs("False");
     check(open === "True" && closed === "False", "the credits panel opens and closes", `${open}, ${closed}`);
+
+    // D25: a pending promotion is shared state and locks every piece until the choice (review finding 2). The reload
+    // during the choice is in the two-player run: a single player's reload empties the room, which resets the table.
+    await clickObject("startButton", "Start Game");
+    const again = await until(() => table().inProgress && fen() === "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", 6000);
+    check(!!again, "a second game starts", fen());
+    if (!again) return;
+    let all = true;
+    for (let i = 0; i < PROMO.length; i++) {
+      if (!(await clickMove(PROMO[i], PROMO[i])) || fen() !== PROMO_AFTER[i]) all = false;
+      await sleep(500);
+    }
+    await until(() => table().pickerOpen, 3000);
+    const pieces = await waitActive(debug().pathOf("pieces"), "True");
+    check(all && table().promotionSquare === PROMO_SQ && pieces === "True" && table().whiteToMove, "a pawn reaching g8 opens the picker, and the pending promotion is shared state", `${fen()}, promotionSquare ${table().promotionSquare}, picker ${pieces}`);
+    const locked = (await probe("layer", debug().piecePath("b1"))) === "5" && (await probe("layer", debug().piecePath("a5"))) === "5";
+    check(locked, "nothing can be picked up while the choice is pending (b1 and a5 on the UI layer)", fen());
+    await clickObject("queen", "the picker's queen");
+    await until(() => !table().whiteToMove, 5000);
+    const after = table();
+    const shut = await waitActive(debug().pathOf("pieces"), "False");
+    check(fen() === PROMO_QUEEN && !after.whiteToMove && after.promotionSquare === -1 && shut === "False", "the queen is chosen: g8 is a white queen, the picker closes, Black is to move", fen());
   }
+
+  /** Polls a kit object's active state until it is `want` (probes run ahead of the relay). */
+  async function waitActive(path, want) {
+    let v = "";
+    for (let i = 0; i < 24 && v !== want; i++) {
+      v = await probe("active", path);
+      if (v !== want) await sleep(250);
+    }
+    return v;
+  }
+
+  // A line to a promotion on an empty square (g8), with one capture (h4xg5, made by clicking beside the captured piece:
+  // targetAim), ending with the pawn on g8 and the choice open. (A capture onto h8 failed: from the desktop camera the
+  // h7 pawn stands in front of h8's near edge.)
+  const PROMO = ["h2h4", "g7g5", "h4g5", "g8f6", "g5g6", "a7a6", "g6g7", "a6a5", "g7g8"];
+  const PROMO_AFTER = [
+    "rnbqkbnr/pppppppp/8/8/7P/8/PPPPPPP1/RNBQKBNR",
+    "rnbqkbnr/pppppp1p/8/6p1/7P/8/PPPPPPP1/RNBQKBNR",
+    "rnbqkbnr/pppppp1p/8/6P1/8/8/PPPPPPP1/RNBQKBNR",
+    "rnbqkb1r/pppppp1p/5n2/6P1/8/8/PPPPPPP1/RNBQKBNR",
+    "rnbqkb1r/pppppp1p/5nP1/8/8/8/PPPPPPP1/RNBQKBNR",
+    "rnbqkb1r/1ppppp1p/p4nP1/8/8/8/PPPPPPP1/RNBQKBNR",
+    "rnbqkb1r/1pppppPp/p4n2/8/8/8/PPPPPPP1/RNBQKBNR",
+    "rnbqkb1r/1pppppPp/5n2/p7/8/8/PPPPPPP1/RNBQKBNR",
+    "rnbqkbPr/1ppppp1p/5n2/p7/8/8/PPPPPPP1/RNBQKBNR",
+  ];
+  const PROMO_QUEEN = "rnbqkbQr/1ppppp1p/5n2/p7/8/8/PPPPPPP1/RNBQKBNR";
+  /** g8: x 6, y 7. */
+  const PROMO_SQ = 6 * 8 + 7;
 
   // ---- two players -------------------------------------------------------------------------------------------
   // Both pages run this. The page whose session id sorts first plays White, the other Black. They follow each other
-  // through the table's own state; checkpoints (each page's state digest) go between them as one-shots, which the
-  // runtime ignores (not its envelope). Black reloads its page after the fourth move and must come back to the same game.
-  const PLY = ["e2e4", "e7e5", "g1f3", "b8c6", "f1c4", "g8f6"];
-  const AFTER = [
-    "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR",
-    "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR",
-    "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R",
-    "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R",
-  ];
+  // through the table's own state; checkpoints (each page's state digest at a version) go between them as one-shots,
+  // which the runtime ignores (not its envelope). They play the promotion line above. Black reloads its page after the
+  // fourth move and must come back to the same game; White reloads its page while its promotion choice is open and
+  // must find the picker open again (D25), choose a queen, and both pages must agree.
+  const PLY = PROMO;
+  const AFTER = PROMO_AFTER;
   const heard = [];
   function channel() {
     const scene = window.BS.Scene.GetInstance();
@@ -275,30 +351,80 @@
     });
     return (message) => scene.OneShot(JSON.stringify(Object.assign({ chessTest: 1 }, message)));
   }
-  const reloaded = () => {
+  /** "black": Black is back after its reload; "white": White is back during its promotion choice; "" otherwise. */
+  const backAs = () => {
     try {
-      return sessionStorage.getItem("chessTestReloaded") === "1";
+      return sessionStorage.getItem("chessTestBack") || "";
     } catch (e) {
-      return false;
+      return "";
     }
   };
+  const reloadAs = async (role) => {
+    try {
+      sessionStorage.setItem("chessTestBack", role);
+    } catch (e) {
+      check(false, "sessionStorage for the reload", String(e));
+      return;
+    }
+    say("INFO", (role === "white" ? "White" : "Black") + " reloads its page");
+    await sleep(500);
+    location.reload();
+    await sleep(60000);
+  };
+
+  /** The page's stamp once its version has held still for a moment (a write in flight moves it). */
+  async function steadyStamp() {
+    let last = debug().stamp();
+    for (let i = 0; i < 20; i++) {
+      await sleep(250);
+      const now = debug().stamp();
+      if (now.version === last.version) return now;
+      last = now;
+    }
+    return last;
+  }
+  /** Compares a stamp heard from the other page with this page's at the same version. */
+  async function sameAs(theirs, what) {
+    const mine = await until(() => theirs && debug().version() === theirs.stamp.version && debug().stamp(), 10000, 100);
+    check(!!theirs && !!mine && theirs.stamp.digest === mine.digest, what, theirs ? `${theirs.stamp.version} ${theirs.stamp.digest} / ${mine ? mine.version + " " + mine.digest : debug().version()}` : "nothing heard");
+  }
 
   async function multi() {
-    if (!(await waitStarted(reloaded()))) return;
+    const back = backAs();
+    try {
+      sessionStorage.removeItem("chessTestBack");
+    } catch (e) {
+      /* nothing */
+    }
+    if (!(await waitStarted(back !== ""))) return;
     const send = channel();
     const two = await until(() => debug().players().length >= 2, 90000, 500);
     check(!!two, "two players in the room", JSON.stringify(debug().players()));
     if (!two) return;
     await sleep(3000);
     const me = debug().me();
-    const back = reloaded();
-    // White: the player who is not coming back from a reload, and whose session sorts first otherwise
+    // White: the page whose session sorts first, unless one of them is coming back from a reload
     const others = debug().players().filter((p) => p.sid !== me.sid);
-    const white = back ? false : me.sid < others[0].sid;
+    const white = back === "white" ? true : back === "black" ? false : me.sid < others[0].sid;
     say("INFO", (white ? "White" : "Black") + " is " + me.name + (back ? " (back after a reload)" : ""));
     const mine = (i) => (i % 2 === 0) === white;
     let start = 0;
-    if (!back) {
+    if (back === "white") {
+      // D25: White reloaded while its promotion choice was open: the picker is open again, nothing else can move
+      const reopened = await until(() => table().inProgress && table().promotionSquare === PROMO_SQ && table().pickerOpen && fen() === AFTER[8], 30000, 250);
+      const shown = await waitActive(debug().pathOf("pieces"), "True");
+      check(!!reopened && shown === "True", "after White's reload during the promotion choice the picker is open again (D25)", `${fen()}, promotionSquare ${table().promotionSquare}, picker ${shown}`);
+      check(table().white === me.name && table().whiteToMove, "White is still White and still to move", `${table().white} / ${me.name}`);
+      check((await probe("layer", debug().piecePath("b1"))) === "5", "White cannot pick up another piece while the choice is pending", "b1 on the UI layer");
+      send({ kind: "whiteBack" });
+      await clickObject("queen", "the picker's queen");
+      const done = await until(() => fen() === PROMO_QUEEN && !table().whiteToMove, 5000, 100);
+      check(!!done && (await waitActive(debug().pathOf("pieces"), "False")) === "False", "White chooses the queen after the reload: g8 is a queen, the picker closes, Black to move", fen());
+      await sleep(1000);
+      send({ kind: "queen", stamp: await steadyStamp() });
+      return;
+    }
+    if (back !== "black") {
       if (white) {
         await clickObject("whiteJoin", "Join White");
         await until(() => table().black !== null, 60000, 250);
@@ -321,11 +447,11 @@
         check(layer === "5" && fen() === "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR" && table().chosen === null, "Black cannot pick up or choose White's pieces", `layer ${layer}, ${fen()}`);
       }
     } else {
-      // after the reload: the same game, the same side (a side is a user id), the same digest as White's
+      // after the reload: the same game, the same side (a side is a user id), the same state as White's
       const rejoined = await until(() => table().inProgress && fen() === AFTER[3], 30000, 250);
       check(!!rejoined, "after reloading its page Black sees the position (late join)", fen());
       check(table().black === me.name, "Black is still Black after the reload (sides are user ids)", `${table().black} / ${me.name}`);
-      send({ kind: "back", digest: debug().digest() });
+      send({ kind: "back", stamp: await steadyStamp() });
       start = 4;
     }
     for (let i = start; i < PLY.length; i++) {
@@ -338,38 +464,33 @@
         const seen = await until(() => fen() === AFTER[i], 60000, 250);
         check(!!seen, `${PLY[i]} arrives at the other player`, fen());
         await sleep(1000);
-        send({ kind: "digest", ply: i, digest: debug().digest() });
+        send({ kind: "digest", ply: i, stamp: await steadyStamp() });
       }
-      if (i === 3 && !white && !back) {
+      if (i === 3 && !white) {
         // Black leaves the page and comes back
         await until(() => heard.some((m) => m.kind === "digest" && m.ply === 3), 10000, 100);
-        try {
-          sessionStorage.setItem("chessTestReloaded", "1");
-        } catch (e) {
-          /* no storage: the reload test cannot run */
-        }
-        say("INFO", "Black reloads its page");
-        await sleep(500);
-        location.reload();
-        await sleep(60000);
+        await reloadAs("black");
         return;
       }
       if (i === 3 && white) {
-        const back = await until(() => heard.find((m) => m.kind === "back"), 90000, 250);
-        check(!!back && back.digest === debug().digest(), "Black's page, reloaded, holds the same state as White's (digest)", back ? `${back.digest} / ${debug().digest()}` : "no word from Black");
+        await sameAs(await until(() => heard.find((m) => m.kind === "back"), 90000, 250), "Black's page, reloaded, holds the same state as White's (digest at the same version)");
       }
     }
-    await sleep(1500);
     const last = PLY.length - 1;
-    if (mine(last)) {
-      const theirs = await until(() => heard.find((m) => m.kind === "digest" && m.ply === last), 20000, 250);
-      check(!!theirs && theirs.digest === debug().digest(), "both pages reach the same state digest after the last move", theirs ? `${theirs.digest} / ${debug().digest()}` : "no digest heard");
+    if (white) {
+      // the pawn stands on g8 and the choice is open here: the picker shows, and White reloads its page
+      const open = await until(() => table().pickerOpen && table().promotionSquare === PROMO_SQ, 5000, 100);
+      check(!!open && (await waitActive(debug().pathOf("pieces"), "True")) === "True", "g7g8: White's picker opens and the pending promotion is shared", `promotionSquare ${table().promotionSquare}`);
+      await sameAs(await until(() => heard.find((m) => m.kind === "digest" && m.ply === last), 20000, 250), "both pages hold the same state with the promotion pending (digest at the same version)");
+      await reloadAs("white");
+      return;
     }
-    try {
-      sessionStorage.removeItem("chessTestReloaded");
-    } catch (e) {
-      /* nothing */
-    }
+    // Black: the promotion is pending on White's page; nothing of Black's can move, and no picker shows here
+    check(table().promotionSquare === PROMO_SQ && !table().pickerOpen && (await probe("active", debug().pathOf("pieces"))) === "False", "Black sees the pending promotion (shared) and no picker", `promotionSquare ${table().promotionSquare}`);
+    check((await probe("layer", debug().piecePath("a5"))) === "5" && table().whiteToMove, "Black cannot move while White's choice is pending", fen());
+    const queen = await until(() => fen() === PROMO_QUEEN && !table().whiteToMove, 120000, 250);
+    check(!!queen, "White's queen (chosen after White's reload) arrives at Black, and it is Black's move", fen());
+    await sameAs(await until(() => heard.find((m) => m.kind === "queen"), 20000, 250), "both pages reach the same state after the promotion (digest at the same version)");
   }
 
   window.__chessRun = async function (plan) {

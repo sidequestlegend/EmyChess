@@ -1,6 +1,6 @@
 {
   "name": "chess-single",
-  "timeout": 400,
+  "timeout": 600,
   "players": 1,
   "elements": [
     "<script>window.__chessPlan = \"single\";</script>",

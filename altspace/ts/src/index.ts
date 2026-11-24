@@ -95,6 +95,8 @@ function debugHooks(instance: GameInstance): Record<string, unknown> {
         automatedTimer: m.automatedTimer,
         clock: { running: t.running, white: t.TimeLeft(true), black: t.TimeLeft(false), moves: t.moves, whiteRunning: t.isCurrentSideWhite },
         chosen: m.clickToMove?.chosen ? String.fromCharCode(97 + m.clickToMove.chosen.x) + (m.clickToMove.chosen.y + 1) : null,
+        promotionSquare: m.promotionSquare,
+        pickerOpen: m.picker.IsOpen(),
       };
     },
   };

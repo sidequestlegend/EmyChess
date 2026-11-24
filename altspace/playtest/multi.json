@@ -1,6 +1,6 @@
 {
   "name": "chess-multi",
-  "timeout": 420,
+  "timeout": 600,
   "players": 2,
   "elements": [
     "<script>window.__chessPlan = \"multi\";</script>",

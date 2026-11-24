@@ -1176,7 +1176,13 @@ has no `OnOwnershipRequest`) and write its synced variables. The port is the sam
 | 6 | A drop before the board's position is known left tints and locks | That drop now clears tints and unlocks the side's pieces; a degenerate frame (squares all reported at one point) is not taken as the board's position | "a drop before the board's position is known ..." (fails on the old `Piece.ts`) |
 | 7 | `gameObject.host?.releaseGrab()` instead of `GameObject.ReleaseGrab()` | Uses `ReleaseGrab()` (the same call underneath: no change in behaviour, so no test can fail before it) | "End Game while a piece is held lets go of it" covers the path |
 
-Known issues left: none from the review.
+Known issues left: none from the review. Found in this pass, outside the game's code: in editor Play mode a click on
+a piece never reaches the page, because the SDK's `BSScene.Click` throws on the `BSPlayerEvents` that every
+BS Grababble gets with a null `onClick` (TESTS.md, rung 3). Squares, buttons and grabs work, and a capture can be made
+by clicking the target square beside the piece; choosing an opponent's piece by clicking it, and `input="click"`
+choosing a piece, do not work there. The fix belongs in the SDK; whether the app is affected is not known (rung 5).
+A game-side workaround (pieces on a layer the pointer passes through, every click going to the square) would rework
+click-to-move and is not made blind.
 
 ---
 
