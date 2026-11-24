@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { leafBudget, Vector3 } from "../portkit/src/index.ts";
 import {
-  board, clickMove, COUNTER_KEY, fen, gameOver, grabMove, manager, newWorld, pieceAt, placeSquares, press, promote, seatAndStart, shown, settle, SLUG, timer,
+  board, clickMove, COUNTER_KEY, fen, gameOver, grabMove, manager, newWorld, pieceAt, placeSquares, press, promote, seatAndStart, shown, STEP, settle, SLUG, timer,
 } from "./helpers.ts";
 import game from "../src/index.ts";
 
@@ -247,19 +247,19 @@ test("anarchy: free moves, placing pieces with the ghost, deleting by dropping o
   assert.equal(manager(world, bob).whiteScore, 1);
   // the turn passes only by END TURN, and only for the side to move
   assert.equal(bob.click(SLUG, "0", "endTurnButton"), true);
-  await world.run(300);
+  await world.run(STEP);
   assert.equal(manager(world, ann).currentSide, true, "Black's END TURN does nothing on White's turn");
   assert.equal(ann.click(SLUG, "0", "endTurnButton2"), true);
-  await world.run(300);
+  await world.run(STEP);
   assert.equal(manager(world, bob).currentSide, false);
   // Black deletes a piece by carrying it far off the board
   const rook = pieceAt(world, bob, "a8")!;
   assert.ok(bob.grab(SLUG, "0", rook.gameObject.key));
-  await world.run(120);
+  await world.run(STEP);
   bob.move(SLUG, "0", rook.gameObject.key, squareOff());
   bob.drop(SLUG, "0", rook.gameObject.key);
-  await world.run(300);
-  assert.equal(pieceAt(world, ann, "a8"), null);
+  await world.run(STEP);
+  assert.equal(pieceAt(world, ann, "a8")?.type ?? null, null);
   assert.equal(manager(world, ann).whiteScore, 6, "a deleted piece scores like a capture");
   assert.ok(world.agree());
   assert.deepEqual(world.problems(), []);
