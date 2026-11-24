@@ -1,0 +1,5213 @@
+{
+  "behaviours": [
+    {
+      "fields": {
+        "PawnThatDidADoublePushLastRound": null,
+        "blackColor": {
+          "$color": [0.189, 0.189, 0.189, 1]
+        },
+        "blackKing": null,
+        "blackPieceMaterial": null,
+        "blackSmoothness": 0.162,
+        "board_renderer": {
+          "$comp": "board",
+          "kind": "Renderer"
+        },
+        "chessManager": {
+          "$beh": "b2"
+        },
+        "currentRules": {
+          "$beh": "b79"
+        },
+        "ghostMaterial": null,
+        "grid": [],
+        "pieceAmounts": [20, 8, 8, 8, 16, 8],
+        "pieceCapturedClip": {
+          "$clip": 1,
+          "on": "board"
+        },
+        "pieceMovedClip": {
+          "$clip": 0,
+          "on": "board"
+        },
+        "piecePrefabs": [null, null, null, null, null, null],
+        "piece_pools": [null, null, null, null, null, null],
+        "pieces_parent": {
+          "$comp": "piecesParent",
+          "kind": "Transform"
+        },
+        "squareRenderers": [
+          {
+            "$comp": "sq_a1",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_a2",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_a3",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_a4",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_a5",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_a6",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_a7",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_a8",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_b1",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_b2",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_b3",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_b4",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_b5",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_b6",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_b7",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_b8",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_c1",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_c2",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_c3",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_c4",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_c5",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_c6",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_c7",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_c8",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_d1",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_d2",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_d3",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_d4",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_d5",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_d6",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_d7",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_d8",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_e1",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_e2",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_e3",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_e4",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_e5",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_e6",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_e7",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_e8",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_f1",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_f2",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_f3",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_f4",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_f5",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_f6",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_f7",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_f8",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_g1",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_g2",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_g3",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_g4",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_g5",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_g6",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_g7",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_g8",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_h1",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_h2",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_h3",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_h4",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_h5",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_h6",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_h7",
+            "kind": "Renderer"
+          },
+          {
+            "$comp": "sq_h8",
+            "kind": "Renderer"
+          }
+        ],
+        "whiteColor": {
+          "$color": [1, 1, 1, 1]
+        },
+        "whiteKing": null,
+        "whitePieceMaterial": null,
+        "whiteSmoothness": 0.5
+      },
+      "group": "table",
+      "id": "b1",
+      "object": "board",
+      "type": "Board"
+    },
+    {
+      "fields": {
+        "anarchy": false,
+        "anarchyButton": {
+          "$obj": "anarchyButton"
+        },
+        "anarchyControl_white": {
+          "$obj": "anarchyControlsWhite"
+        },
+        "anarchyControls_black": {
+          "$obj": "anarchyControlsBlack"
+        },
+        "autoTimerCheckMark": {
+          "$obj": "checkmark"
+        },
+        "automatedTimer": false,
+        "blackJoinLabel": {
+          "$comp": "text2",
+          "kind": "Text"
+        },
+        "blackPiecePlacer": {
+          "$beh": "b86"
+        },
+        "blackPlayerHolder": {
+          "$beh": "b84"
+        },
+        "blackPlayerLabel": {
+          "$comp": "blackPlayerLabel",
+          "kind": "Text"
+        },
+        "blackScore": 0,
+        "blackScoreLabel": {
+          "$comp": "blackScoreLabel",
+          "kind": "Text"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "currentPlayerLabel": {
+          "$comp": "currentMoveLabel",
+          "kind": "Text"
+        },
+        "currentSide": false,
+        "currentSideLabel": {
+          "$comp": "currentSideLabel",
+          "kind": "Text"
+        },
+        "endButton": {
+          "$comp": "endGame",
+          "kind": "Button"
+        },
+        "endTurnButton_black": {
+          "$obj": "endTurnButton"
+        },
+        "endTurnButton_white": {
+          "$obj": "endTurnButton2"
+        },
+        "endTurnRenderer_black": {
+          "$comp": "endTurnButton",
+          "kind": "Renderer"
+        },
+        "endTurnRenderer_white": {
+          "$comp": "endTurnButton2",
+          "kind": "Renderer"
+        },
+        "gameMenu": {
+          "$obj": "gameMenu"
+        },
+        "gameModeLabel": {
+          "$comp": "gameModeText",
+          "kind": "Text"
+        },
+        "gameOverMessage": {
+          "$beh": "b77"
+        },
+        "inProgress": false,
+        "isBlackRegistered": false,
+        "isWhiteRegistered": false,
+        "logText": {
+          "$comp": "logText",
+          "kind": "Text"
+        },
+        "mainMenu": {
+          "$obj": "mainMenu"
+        },
+        "picker": {
+          "$beh": "b71"
+        },
+        "startButton": {
+          "$comp": "startButton",
+          "kind": "Button"
+        },
+        "timer": {
+          "$beh": "b80"
+        },
+        "whiteJoinLabel": {
+          "$comp": "text",
+          "kind": "Text"
+        },
+        "whitePiecePlacer": {
+          "$beh": "b88"
+        },
+        "whitePlayerHolder": {
+          "$beh": "b83"
+        },
+        "whitePlayerLabel": {
+          "$comp": "whitePlayerLabel",
+          "kind": "Text"
+        },
+        "whiteScore": 0,
+        "whiteScoreLabel": {
+          "$comp": "whiteScoreLabel",
+          "kind": "Text"
+        }
+      },
+      "group": "table",
+      "id": "b2",
+      "object": "chessManager",
+      "type": "ChessManager"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn0",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn0",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b3",
+      "object": "pawn0",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn1",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn1",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b4",
+      "object": "pawn1",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn2",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn2",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b5",
+      "object": "pawn2",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn3",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn3",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b6",
+      "object": "pawn3",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn4",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn4",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b7",
+      "object": "pawn4",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn5",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn5",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b8",
+      "object": "pawn5",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn6",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn6",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b9",
+      "object": "pawn6",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn7",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn7",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b10",
+      "object": "pawn7",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn8",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn8",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b11",
+      "object": "pawn8",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn9",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn9",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b12",
+      "object": "pawn9",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn10",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn10",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b13",
+      "object": "pawn10",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn11",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn11",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b14",
+      "object": "pawn11",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn12",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn12",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b15",
+      "object": "pawn12",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn13",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn13",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b16",
+      "object": "pawn13",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn14",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn14",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b17",
+      "object": "pawn14",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn15",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn15",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b18",
+      "object": "pawn15",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn16",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn16",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b19",
+      "object": "pawn16",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn17",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn17",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b20",
+      "object": "pawn17",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn18",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn18",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b21",
+      "object": "pawn18",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "pawn19",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "pawn19",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b89"
+        },
+        "type": "pawn"
+      },
+      "group": "table",
+      "id": "b22",
+      "object": "pawn19",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "bishop0",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "bishop0",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b90"
+        },
+        "type": "bishop"
+      },
+      "group": "table",
+      "id": "b23",
+      "object": "bishop0",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "bishop1",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "bishop1",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b90"
+        },
+        "type": "bishop"
+      },
+      "group": "table",
+      "id": "b24",
+      "object": "bishop1",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "bishop2",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "bishop2",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b90"
+        },
+        "type": "bishop"
+      },
+      "group": "table",
+      "id": "b25",
+      "object": "bishop2",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "bishop3",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "bishop3",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b90"
+        },
+        "type": "bishop"
+      },
+      "group": "table",
+      "id": "b26",
+      "object": "bishop3",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "bishop4",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "bishop4",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b90"
+        },
+        "type": "bishop"
+      },
+      "group": "table",
+      "id": "b27",
+      "object": "bishop4",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "bishop5",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "bishop5",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b90"
+        },
+        "type": "bishop"
+      },
+      "group": "table",
+      "id": "b28",
+      "object": "bishop5",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "bishop6",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "bishop6",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b90"
+        },
+        "type": "bishop"
+      },
+      "group": "table",
+      "id": "b29",
+      "object": "bishop6",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "bishop7",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "bishop7",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b90"
+        },
+        "type": "bishop"
+      },
+      "group": "table",
+      "id": "b30",
+      "object": "bishop7",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "king0",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "king0",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b91"
+        },
+        "type": "king"
+      },
+      "group": "table",
+      "id": "b31",
+      "object": "king0",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "king1",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "king1",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b91"
+        },
+        "type": "king"
+      },
+      "group": "table",
+      "id": "b32",
+      "object": "king1",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "king2",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "king2",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b91"
+        },
+        "type": "king"
+      },
+      "group": "table",
+      "id": "b33",
+      "object": "king2",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "king3",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "king3",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b91"
+        },
+        "type": "king"
+      },
+      "group": "table",
+      "id": "b34",
+      "object": "king3",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "king4",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "king4",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b91"
+        },
+        "type": "king"
+      },
+      "group": "table",
+      "id": "b35",
+      "object": "king4",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "king5",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "king5",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b91"
+        },
+        "type": "king"
+      },
+      "group": "table",
+      "id": "b36",
+      "object": "king5",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "king6",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "king6",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b91"
+        },
+        "type": "king"
+      },
+      "group": "table",
+      "id": "b37",
+      "object": "king6",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "king7",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "king7",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b91"
+        },
+        "type": "king"
+      },
+      "group": "table",
+      "id": "b38",
+      "object": "king7",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "knight0",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "knight0",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b92"
+        },
+        "type": "knight"
+      },
+      "group": "table",
+      "id": "b39",
+      "object": "knight0",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "knight1",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "knight1",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b92"
+        },
+        "type": "knight"
+      },
+      "group": "table",
+      "id": "b40",
+      "object": "knight1",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "knight2",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "knight2",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b92"
+        },
+        "type": "knight"
+      },
+      "group": "table",
+      "id": "b41",
+      "object": "knight2",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "knight3",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "knight3",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b92"
+        },
+        "type": "knight"
+      },
+      "group": "table",
+      "id": "b42",
+      "object": "knight3",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "knight4",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "knight4",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b92"
+        },
+        "type": "knight"
+      },
+      "group": "table",
+      "id": "b43",
+      "object": "knight4",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "knight5",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "knight5",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b92"
+        },
+        "type": "knight"
+      },
+      "group": "table",
+      "id": "b44",
+      "object": "knight5",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "knight6",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "knight6",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b92"
+        },
+        "type": "knight"
+      },
+      "group": "table",
+      "id": "b45",
+      "object": "knight6",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "knight7",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "knight7",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b92"
+        },
+        "type": "knight"
+      },
+      "group": "table",
+      "id": "b46",
+      "object": "knight7",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "queen0",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "queen0",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b93"
+        },
+        "type": "queen"
+      },
+      "group": "table",
+      "id": "b47",
+      "object": "queen0",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "queen1",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "queen1",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b93"
+        },
+        "type": "queen"
+      },
+      "group": "table",
+      "id": "b48",
+      "object": "queen1",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "queen2",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "queen2",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b93"
+        },
+        "type": "queen"
+      },
+      "group": "table",
+      "id": "b49",
+      "object": "queen2",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "queen3",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "queen3",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b93"
+        },
+        "type": "queen"
+      },
+      "group": "table",
+      "id": "b50",
+      "object": "queen3",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "queen4",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "queen4",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b93"
+        },
+        "type": "queen"
+      },
+      "group": "table",
+      "id": "b51",
+      "object": "queen4",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "queen5",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "queen5",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b93"
+        },
+        "type": "queen"
+      },
+      "group": "table",
+      "id": "b52",
+      "object": "queen5",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "queen6",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "queen6",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b93"
+        },
+        "type": "queen"
+      },
+      "group": "table",
+      "id": "b53",
+      "object": "queen6",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "queen7",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "queen7",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b93"
+        },
+        "type": "queen"
+      },
+      "group": "table",
+      "id": "b54",
+      "object": "queen7",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "queen8",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "queen8",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b93"
+        },
+        "type": "queen"
+      },
+      "group": "table",
+      "id": "b55",
+      "object": "queen8",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "queen9",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "queen9",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b93"
+        },
+        "type": "queen"
+      },
+      "group": "table",
+      "id": "b56",
+      "object": "queen9",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "queen10",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "queen10",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b93"
+        },
+        "type": "queen"
+      },
+      "group": "table",
+      "id": "b57",
+      "object": "queen10",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "queen11",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "queen11",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b93"
+        },
+        "type": "queen"
+      },
+      "group": "table",
+      "id": "b58",
+      "object": "queen11",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "queen12",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "queen12",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b93"
+        },
+        "type": "queen"
+      },
+      "group": "table",
+      "id": "b59",
+      "object": "queen12",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "queen13",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "queen13",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b93"
+        },
+        "type": "queen"
+      },
+      "group": "table",
+      "id": "b60",
+      "object": "queen13",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "queen14",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "queen14",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b93"
+        },
+        "type": "queen"
+      },
+      "group": "table",
+      "id": "b61",
+      "object": "queen14",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "queen15",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "queen15",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b93"
+        },
+        "type": "queen"
+      },
+      "group": "table",
+      "id": "b62",
+      "object": "queen15",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "rook0",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "rook0",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b94"
+        },
+        "type": "rook"
+      },
+      "group": "table",
+      "id": "b63",
+      "object": "rook0",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "rook1",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "rook1",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b94"
+        },
+        "type": "rook"
+      },
+      "group": "table",
+      "id": "b64",
+      "object": "rook1",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "rook2",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "rook2",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b94"
+        },
+        "type": "rook"
+      },
+      "group": "table",
+      "id": "b65",
+      "object": "rook2",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "rook3",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "rook3",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b94"
+        },
+        "type": "rook"
+      },
+      "group": "table",
+      "id": "b66",
+      "object": "rook3",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "rook4",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "rook4",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b94"
+        },
+        "type": "rook"
+      },
+      "group": "table",
+      "id": "b67",
+      "object": "rook4",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "rook5",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "rook5",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b94"
+        },
+        "type": "rook"
+      },
+      "group": "table",
+      "id": "b68",
+      "object": "rook5",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "rook6",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "rook6",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b94"
+        },
+        "type": "rook"
+      },
+      "group": "table",
+      "id": "b69",
+      "object": "rook6",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "audioSource": {
+          "$comp": "rook7",
+          "kind": "AudioSource"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "pieceRenderer": {
+          "$comp": "rook7",
+          "kind": "Renderer"
+        },
+        "pool": {
+          "$beh": "b94"
+        },
+        "type": "rook"
+      },
+      "group": "table",
+      "id": "b70",
+      "object": "rook7",
+      "type": "Piece"
+    },
+    {
+      "fields": {
+        "board": {
+          "$beh": "b1"
+        },
+        "piecesButtonsParent": {
+          "$obj": "pieces"
+        },
+        "targetPiece": null
+      },
+      "id": "b71",
+      "object": "promotionPicker",
+      "type": "PromotionPicker"
+    },
+    {
+      "fields": {
+        "availableCountLabel": {
+          "$comp": "availableCount",
+          "kind": "Text"
+        },
+        "picker": {
+          "$beh": "b71"
+        },
+        "promotionType": "pawn"
+      },
+      "id": "b72",
+      "object": "pawn",
+      "type": "PromotionButton"
+    },
+    {
+      "fields": {
+        "availableCountLabel": {
+          "$comp": "availableCount2",
+          "kind": "Text"
+        },
+        "picker": {
+          "$beh": "b71"
+        },
+        "promotionType": "queen"
+      },
+      "id": "b73",
+      "object": "queen",
+      "type": "PromotionButton"
+    },
+    {
+      "fields": {
+        "availableCountLabel": {
+          "$comp": "availableCount3",
+          "kind": "Text"
+        },
+        "picker": {
+          "$beh": "b71"
+        },
+        "promotionType": "knight"
+      },
+      "id": "b74",
+      "object": "knight",
+      "type": "PromotionButton"
+    },
+    {
+      "fields": {
+        "availableCountLabel": {
+          "$comp": "availableCount4",
+          "kind": "Text"
+        },
+        "picker": {
+          "$beh": "b71"
+        },
+        "promotionType": "bishop"
+      },
+      "id": "b75",
+      "object": "bishop",
+      "type": "PromotionButton"
+    },
+    {
+      "fields": {
+        "availableCountLabel": {
+          "$comp": "availableCount5",
+          "kind": "Text"
+        },
+        "picker": {
+          "$beh": "b71"
+        },
+        "promotionType": "rook"
+      },
+      "id": "b76",
+      "object": "rook",
+      "type": "PromotionButton"
+    },
+    {
+      "fields": {
+        "chessManager": {
+          "$beh": "b2"
+        },
+        "gameOverState": 0,
+        "statusMessage": {
+          "$comp": "gameOverText",
+          "kind": "Text"
+        },
+        "uiParent": {
+          "$obj": "gameOver"
+        },
+        "winningSide": false
+      },
+      "group": "table",
+      "id": "b77",
+      "object": "gameOverMessage",
+      "type": "GameOverMessage"
+    },
+    {
+      "fields": {
+        "speed": 1
+      },
+      "id": "b78",
+      "object": "gameOver",
+      "type": "Spin"
+    },
+    {
+      "fields": {
+        "anarchy": false,
+        "legalMovesEndMarker": {
+          "$v2": [0, 0]
+        },
+        "legalMovesIgnoreMarker": {
+          "$v2": [0, 0]
+        }
+      },
+      "group": "table",
+      "id": "b79",
+      "object": "defaultRules",
+      "type": "DefaultRules"
+    },
+    {
+      "fields": {
+        "blackButton": {
+          "$beh": "b81"
+        },
+        "chessManager": {
+          "$beh": "b2"
+        },
+        "displayBlack": {
+          "$comp": "leftTimer",
+          "kind": "Text"
+        },
+        "displayMoves": {
+          "$comp": "movesCounter",
+          "kind": "Text"
+        },
+        "displayWhite": {
+          "$comp": "rightTimer",
+          "kind": "Text"
+        },
+        "isCurrentSideWhite": false,
+        "isStarted": false,
+        "millisecondsDisplayBlack": {
+          "$comp": "leftMilliseconds",
+          "kind": "Text"
+        },
+        "millisecondsDisplayWhite": {
+          "$comp": "rightMilliseconds",
+          "kind": "Text"
+        },
+        "moves": 0,
+        "timeBlack": 0,
+        "timeWhite": 0,
+        "whiteButton": {
+          "$beh": "b82"
+        }
+      },
+      "group": "table",
+      "id": "b80",
+      "object": "timer",
+      "type": "Timer"
+    },
+    {
+      "fields": {
+        "allowPush": false,
+        "baseEuler": {
+          "$v3": [0, 0, 0]
+        },
+        "isRaised": false,
+        "raiseAngle": 10,
+        "timer": {
+          "$beh": "b80"
+        }
+      },
+      "id": "b81",
+      "object": "timerButtonLeft",
+      "type": "TimerButton"
+    },
+    {
+      "fields": {
+        "allowPush": false,
+        "baseEuler": {
+          "$v3": [0, 0, 0]
+        },
+        "isRaised": false,
+        "raiseAngle": -10,
+        "timer": {
+          "$beh": "b80"
+        }
+      },
+      "id": "b82",
+      "object": "timerButtonRight",
+      "type": "TimerButton"
+    },
+    {
+      "fields": {},
+      "group": "table",
+      "id": "b83",
+      "object": "whitePlayerObject",
+      "type": "PlayerHolder"
+    },
+    {
+      "fields": {},
+      "group": "table",
+      "id": "b84",
+      "object": "blackPlayerObject",
+      "type": "PlayerHolder"
+    },
+    {
+      "fields": {
+        "eventName": "_EndTurn",
+        "targetBehaviour": {
+          "$beh": "b2"
+        }
+      },
+      "id": "b85",
+      "object": "endTurnButton",
+      "type": "SendEventOnInteract"
+    },
+    {
+      "fields": {
+        "availableText": {
+          "$comp": "availableText",
+          "kind": "Text"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "currentType": "",
+        "pickup": null,
+        "pieceCount": {
+          "$comp": "pieceCount",
+          "kind": "Text"
+        },
+        "pieceMeshParent": {
+          "$comp": "pieces2",
+          "kind": "Transform"
+        },
+        "pieceMeshes": [
+          {
+            "$obj": "bishop9"
+          },
+          {
+            "$obj": "king8"
+          },
+          {
+            "$obj": "knight9"
+          },
+          {
+            "$obj": "pawn21"
+          },
+          {
+            "$obj": "queen17"
+          },
+          {
+            "$obj": "rook9"
+          }
+        ],
+        "white": false
+      },
+      "id": "b86",
+      "object": "piecePlacer",
+      "type": "PiecePlacer"
+    },
+    {
+      "fields": {
+        "eventName": "_EndTurn",
+        "targetBehaviour": {
+          "$beh": "b2"
+        }
+      },
+      "id": "b87",
+      "object": "endTurnButton2",
+      "type": "SendEventOnInteract"
+    },
+    {
+      "fields": {
+        "availableText": {
+          "$comp": "availableText2",
+          "kind": "Text"
+        },
+        "board": {
+          "$beh": "b1"
+        },
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "currentType": "",
+        "pickup": null,
+        "pieceCount": {
+          "$comp": "pieceCount2",
+          "kind": "Text"
+        },
+        "pieceMeshParent": {
+          "$comp": "pieces3",
+          "kind": "Transform"
+        },
+        "pieceMeshes": [
+          {
+            "$obj": "bishop10"
+          },
+          {
+            "$obj": "king9"
+          },
+          {
+            "$obj": "knight10"
+          },
+          {
+            "$obj": "pawn22"
+          },
+          {
+            "$obj": "queen18"
+          },
+          {
+            "$obj": "rook10"
+          }
+        ],
+        "white": true
+      },
+      "id": "b88",
+      "object": "piecePlacer2",
+      "type": "PiecePlacer"
+    },
+    {
+      "fields": {
+        "Pool": [
+          {
+            "$obj": "pawn0"
+          },
+          {
+            "$obj": "pawn1"
+          },
+          {
+            "$obj": "pawn2"
+          },
+          {
+            "$obj": "pawn3"
+          },
+          {
+            "$obj": "pawn4"
+          },
+          {
+            "$obj": "pawn5"
+          },
+          {
+            "$obj": "pawn6"
+          },
+          {
+            "$obj": "pawn7"
+          },
+          {
+            "$obj": "pawn8"
+          },
+          {
+            "$obj": "pawn9"
+          },
+          {
+            "$obj": "pawn10"
+          },
+          {
+            "$obj": "pawn11"
+          },
+          {
+            "$obj": "pawn12"
+          },
+          {
+            "$obj": "pawn13"
+          },
+          {
+            "$obj": "pawn14"
+          },
+          {
+            "$obj": "pawn15"
+          },
+          {
+            "$obj": "pawn16"
+          },
+          {
+            "$obj": "pawn17"
+          },
+          {
+            "$obj": "pawn18"
+          },
+          {
+            "$obj": "pawn19"
+          }
+        ],
+        "poolName": "pawn"
+      },
+      "id": "b89",
+      "object": "pawn20",
+      "type": "VRCObjectPool"
+    },
+    {
+      "fields": {
+        "Pool": [
+          {
+            "$obj": "bishop0"
+          },
+          {
+            "$obj": "bishop1"
+          },
+          {
+            "$obj": "bishop2"
+          },
+          {
+            "$obj": "bishop3"
+          },
+          {
+            "$obj": "bishop4"
+          },
+          {
+            "$obj": "bishop5"
+          },
+          {
+            "$obj": "bishop6"
+          },
+          {
+            "$obj": "bishop7"
+          }
+        ],
+        "poolName": "bishop"
+      },
+      "id": "b90",
+      "object": "bishop8",
+      "type": "VRCObjectPool"
+    },
+    {
+      "fields": {
+        "Pool": [
+          {
+            "$obj": "king0"
+          },
+          {
+            "$obj": "king1"
+          },
+          {
+            "$obj": "king2"
+          },
+          {
+            "$obj": "king3"
+          },
+          {
+            "$obj": "king4"
+          },
+          {
+            "$obj": "king5"
+          },
+          {
+            "$obj": "king6"
+          },
+          {
+            "$obj": "king7"
+          }
+        ],
+        "poolName": "king"
+      },
+      "id": "b91",
+      "object": "king",
+      "type": "VRCObjectPool"
+    },
+    {
+      "fields": {
+        "Pool": [
+          {
+            "$obj": "knight0"
+          },
+          {
+            "$obj": "knight1"
+          },
+          {
+            "$obj": "knight2"
+          },
+          {
+            "$obj": "knight3"
+          },
+          {
+            "$obj": "knight4"
+          },
+          {
+            "$obj": "knight5"
+          },
+          {
+            "$obj": "knight6"
+          },
+          {
+            "$obj": "knight7"
+          }
+        ],
+        "poolName": "knight"
+      },
+      "id": "b92",
+      "object": "knight8",
+      "type": "VRCObjectPool"
+    },
+    {
+      "fields": {
+        "Pool": [
+          {
+            "$obj": "queen0"
+          },
+          {
+            "$obj": "queen1"
+          },
+          {
+            "$obj": "queen2"
+          },
+          {
+            "$obj": "queen3"
+          },
+          {
+            "$obj": "queen4"
+          },
+          {
+            "$obj": "queen5"
+          },
+          {
+            "$obj": "queen6"
+          },
+          {
+            "$obj": "queen7"
+          },
+          {
+            "$obj": "queen8"
+          },
+          {
+            "$obj": "queen9"
+          },
+          {
+            "$obj": "queen10"
+          },
+          {
+            "$obj": "queen11"
+          },
+          {
+            "$obj": "queen12"
+          },
+          {
+            "$obj": "queen13"
+          },
+          {
+            "$obj": "queen14"
+          },
+          {
+            "$obj": "queen15"
+          }
+        ],
+        "poolName": "queen"
+      },
+      "id": "b93",
+      "object": "queen16",
+      "type": "VRCObjectPool"
+    },
+    {
+      "fields": {
+        "Pool": [
+          {
+            "$obj": "rook0"
+          },
+          {
+            "$obj": "rook1"
+          },
+          {
+            "$obj": "rook2"
+          },
+          {
+            "$obj": "rook3"
+          },
+          {
+            "$obj": "rook4"
+          },
+          {
+            "$obj": "rook5"
+          },
+          {
+            "$obj": "rook6"
+          },
+          {
+            "$obj": "rook7"
+          }
+        ],
+        "poolName": "rook"
+      },
+      "id": "b94",
+      "object": "rook8",
+      "type": "VRCObjectPool"
+    },
+    {
+      "fields": {
+        "board": {
+          "$beh": "b1"
+        }
+      },
+      "id": "b95",
+      "object": "squares",
+      "type": "ClickToMove"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 0,
+        "y": 0
+      },
+      "id": "b96",
+      "object": "sq_a1",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 0,
+        "y": 1
+      },
+      "id": "b97",
+      "object": "sq_a2",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 0,
+        "y": 2
+      },
+      "id": "b98",
+      "object": "sq_a3",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 0,
+        "y": 3
+      },
+      "id": "b99",
+      "object": "sq_a4",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 0,
+        "y": 4
+      },
+      "id": "b100",
+      "object": "sq_a5",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 0,
+        "y": 5
+      },
+      "id": "b101",
+      "object": "sq_a6",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 0,
+        "y": 6
+      },
+      "id": "b102",
+      "object": "sq_a7",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 0,
+        "y": 7
+      },
+      "id": "b103",
+      "object": "sq_a8",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 1,
+        "y": 0
+      },
+      "id": "b104",
+      "object": "sq_b1",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 1,
+        "y": 1
+      },
+      "id": "b105",
+      "object": "sq_b2",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 1,
+        "y": 2
+      },
+      "id": "b106",
+      "object": "sq_b3",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 1,
+        "y": 3
+      },
+      "id": "b107",
+      "object": "sq_b4",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 1,
+        "y": 4
+      },
+      "id": "b108",
+      "object": "sq_b5",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 1,
+        "y": 5
+      },
+      "id": "b109",
+      "object": "sq_b6",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 1,
+        "y": 6
+      },
+      "id": "b110",
+      "object": "sq_b7",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 1,
+        "y": 7
+      },
+      "id": "b111",
+      "object": "sq_b8",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 2,
+        "y": 0
+      },
+      "id": "b112",
+      "object": "sq_c1",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 2,
+        "y": 1
+      },
+      "id": "b113",
+      "object": "sq_c2",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 2,
+        "y": 2
+      },
+      "id": "b114",
+      "object": "sq_c3",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 2,
+        "y": 3
+      },
+      "id": "b115",
+      "object": "sq_c4",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 2,
+        "y": 4
+      },
+      "id": "b116",
+      "object": "sq_c5",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 2,
+        "y": 5
+      },
+      "id": "b117",
+      "object": "sq_c6",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 2,
+        "y": 6
+      },
+      "id": "b118",
+      "object": "sq_c7",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 2,
+        "y": 7
+      },
+      "id": "b119",
+      "object": "sq_c8",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 3,
+        "y": 0
+      },
+      "id": "b120",
+      "object": "sq_d1",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 3,
+        "y": 1
+      },
+      "id": "b121",
+      "object": "sq_d2",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 3,
+        "y": 2
+      },
+      "id": "b122",
+      "object": "sq_d3",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 3,
+        "y": 3
+      },
+      "id": "b123",
+      "object": "sq_d4",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 3,
+        "y": 4
+      },
+      "id": "b124",
+      "object": "sq_d5",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 3,
+        "y": 5
+      },
+      "id": "b125",
+      "object": "sq_d6",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 3,
+        "y": 6
+      },
+      "id": "b126",
+      "object": "sq_d7",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 3,
+        "y": 7
+      },
+      "id": "b127",
+      "object": "sq_d8",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 4,
+        "y": 0
+      },
+      "id": "b128",
+      "object": "sq_e1",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 4,
+        "y": 1
+      },
+      "id": "b129",
+      "object": "sq_e2",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 4,
+        "y": 2
+      },
+      "id": "b130",
+      "object": "sq_e3",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 4,
+        "y": 3
+      },
+      "id": "b131",
+      "object": "sq_e4",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 4,
+        "y": 4
+      },
+      "id": "b132",
+      "object": "sq_e5",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 4,
+        "y": 5
+      },
+      "id": "b133",
+      "object": "sq_e6",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 4,
+        "y": 6
+      },
+      "id": "b134",
+      "object": "sq_e7",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 4,
+        "y": 7
+      },
+      "id": "b135",
+      "object": "sq_e8",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 5,
+        "y": 0
+      },
+      "id": "b136",
+      "object": "sq_f1",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 5,
+        "y": 1
+      },
+      "id": "b137",
+      "object": "sq_f2",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 5,
+        "y": 2
+      },
+      "id": "b138",
+      "object": "sq_f3",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 5,
+        "y": 3
+      },
+      "id": "b139",
+      "object": "sq_f4",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 5,
+        "y": 4
+      },
+      "id": "b140",
+      "object": "sq_f5",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 5,
+        "y": 5
+      },
+      "id": "b141",
+      "object": "sq_f6",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 5,
+        "y": 6
+      },
+      "id": "b142",
+      "object": "sq_f7",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 5,
+        "y": 7
+      },
+      "id": "b143",
+      "object": "sq_f8",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 6,
+        "y": 0
+      },
+      "id": "b144",
+      "object": "sq_g1",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 6,
+        "y": 1
+      },
+      "id": "b145",
+      "object": "sq_g2",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 6,
+        "y": 2
+      },
+      "id": "b146",
+      "object": "sq_g3",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 6,
+        "y": 3
+      },
+      "id": "b147",
+      "object": "sq_g4",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 6,
+        "y": 4
+      },
+      "id": "b148",
+      "object": "sq_g5",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 6,
+        "y": 5
+      },
+      "id": "b149",
+      "object": "sq_g6",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 6,
+        "y": 6
+      },
+      "id": "b150",
+      "object": "sq_g7",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 6,
+        "y": 7
+      },
+      "id": "b151",
+      "object": "sq_g8",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 7,
+        "y": 0
+      },
+      "id": "b152",
+      "object": "sq_h1",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 7,
+        "y": 1
+      },
+      "id": "b153",
+      "object": "sq_h2",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 7,
+        "y": 2
+      },
+      "id": "b154",
+      "object": "sq_h3",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 7,
+        "y": 3
+      },
+      "id": "b155",
+      "object": "sq_h4",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 7,
+        "y": 4
+      },
+      "id": "b156",
+      "object": "sq_h5",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 7,
+        "y": 5
+      },
+      "id": "b157",
+      "object": "sq_h6",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 7,
+        "y": 6
+      },
+      "id": "b158",
+      "object": "sq_h7",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "clickToMove": {
+          "$beh": "b95"
+        },
+        "x": 7,
+        "y": 7
+      },
+      "id": "b159",
+      "object": "sq_h8",
+      "type": "BoardSquare"
+    },
+    {
+      "fields": {
+        "panel": {
+          "$obj": "creditsPanel"
+        }
+      },
+      "id": "b160",
+      "object": "creditsButton",
+      "type": "CreditsPanel"
+    }
+  ],
+  "bundles": {
+    "android": "",
+    "windows": ""
+  },
+  "events": [
+    {
+      "behaviour": "b2",
+      "kind": "click",
+      "method": "_RegisterWhite",
+      "object": "whiteJoin"
+    },
+    {
+      "behaviour": "b2",
+      "kind": "click",
+      "method": "_RegisterBlack",
+      "object": "blackJoin"
+    },
+    {
+      "behaviour": "b2",
+      "kind": "click",
+      "method": "_SetStandardGameMode",
+      "object": "standardButton"
+    },
+    {
+      "behaviour": "b2",
+      "kind": "click",
+      "method": "_SetAnarchyGameMode",
+      "object": "anarchyButton"
+    },
+    {
+      "behaviour": "b2",
+      "kind": "click",
+      "method": "_StartGame",
+      "object": "startButton"
+    },
+    {
+      "behaviour": "b2",
+      "kind": "click",
+      "method": "_ToggleAutoTimer",
+      "object": "background"
+    },
+    {
+      "behaviour": "b2",
+      "kind": "click",
+      "method": "_EndGame",
+      "object": "endGame"
+    },
+    {
+      "behaviour": "b80",
+      "kind": "click",
+      "method": "_ResetTimerEvent",
+      "object": "reset"
+    },
+    {
+      "behaviour": "b80",
+      "kind": "click",
+      "method": "_Add30s",
+      "object": "add30s"
+    },
+    {
+      "behaviour": "b80",
+      "kind": "click",
+      "method": "_Add1m",
+      "object": "add1m"
+    },
+    {
+      "behaviour": "b80",
+      "kind": "click",
+      "method": "_Add15m",
+      "object": "add15m"
+    },
+    {
+      "behaviour": "b86",
+      "kind": "click",
+      "method": "_NextType",
+      "object": "nextType"
+    },
+    {
+      "behaviour": "b86",
+      "kind": "click",
+      "method": "_PreviousType",
+      "object": "previousType"
+    },
+    {
+      "behaviour": "b88",
+      "kind": "click",
+      "method": "_NextType",
+      "object": "nextType2"
+    },
+    {
+      "behaviour": "b88",
+      "kind": "click",
+      "method": "_PreviousType",
+      "object": "previousType2"
+    },
+    {
+      "behaviour": "b160",
+      "kind": "click",
+      "method": "Toggle",
+      "object": "creditsPanel"
+    }
+  ],
+  "hash": "5daf37afe13101e8ba399b76ab553ac9aa45173d",
+  "objects": {
+    "add15m": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/Timer/TimerScreen/Canvas/Add15m",
+      "seat": false,
+      "sync": "none"
+    },
+    "add1m": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/Timer/TimerScreen/Canvas/Add1m",
+      "seat": false,
+      "sync": "none"
+    },
+    "add30s": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/Timer/TimerScreen/Canvas/Add30s",
+      "seat": false,
+      "sync": "none"
+    },
+    "anarchyButton": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/MainMenu/GameMode/Anarchy Button",
+      "seat": false,
+      "sync": "none"
+    },
+    "anarchyControlsBlack": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_Black",
+      "seat": false,
+      "sync": "none"
+    },
+    "anarchyControlsWhite": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_White",
+      "seat": false,
+      "sync": "none"
+    },
+    "availableCount": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/pawn/Canvas (1)/AvailableCount",
+      "seat": false,
+      "sync": "none"
+    },
+    "availableCount2": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/queen/Canvas/Image/AvailableCount",
+      "seat": false,
+      "sync": "none"
+    },
+    "availableCount3": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/knight/Canvas (1)/Image/AvailableCount",
+      "seat": false,
+      "sync": "none"
+    },
+    "availableCount4": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/bishop/Canvas (2)/Image (1)/AvailableCount",
+      "seat": false,
+      "sync": "none"
+    },
+    "availableCount5": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/rook/Canvas (3)/Image/AvailableCount",
+      "seat": false,
+      "sync": "none"
+    },
+    "availableText": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_Black/ButtonCanvas/AvailableText",
+      "seat": false,
+      "sync": "none"
+    },
+    "availableText2": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_White/ButtonCanvas/AvailableText",
+      "seat": false,
+      "sync": "none"
+    },
+    "background": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/MainMenu/AutoTimerToggle/Background",
+      "seat": false,
+      "sync": "none"
+    },
+    "bishop": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/bishop",
+      "seat": false,
+      "sync": "none"
+    },
+    "bishop0": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/bishop0",
+      "seat": false,
+      "sync": "none"
+    },
+    "bishop1": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/bishop1",
+      "seat": false,
+      "sync": "none"
+    },
+    "bishop10": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_White/PiecePlacerHolder/PiecePlacer/Pieces/bishop",
+      "seat": false,
+      "sync": "none"
+    },
+    "bishop2": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/bishop2",
+      "seat": false,
+      "sync": "none"
+    },
+    "bishop3": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/bishop3",
+      "seat": false,
+      "sync": "none"
+    },
+    "bishop4": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/bishop4",
+      "seat": false,
+      "sync": "none"
+    },
+    "bishop5": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/bishop5",
+      "seat": false,
+      "sync": "none"
+    },
+    "bishop6": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/bishop6",
+      "seat": false,
+      "sync": "none"
+    },
+    "bishop7": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/bishop7",
+      "seat": false,
+      "sync": "none"
+    },
+    "bishop8": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/pieces_pools/bishop",
+      "seat": false,
+      "sync": "none"
+    },
+    "bishop9": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_Black/PiecePlacerHolder/PiecePlacer/Pieces/bishop",
+      "seat": false,
+      "sync": "none"
+    },
+    "blackJoin": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/MainMenu/BlackJoin",
+      "seat": false,
+      "sync": "none"
+    },
+    "blackPlayerLabel": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/BlackPlayerLabel",
+      "seat": false,
+      "sync": "none"
+    },
+    "blackPlayerObject": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/Utils/PlayerObjects/blackPlayerObject",
+      "seat": false,
+      "sync": "none"
+    },
+    "blackScoreLabel": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/GameMenu/blackScore/blackScoreLabel",
+      "seat": false,
+      "sync": "none"
+    },
+    "board": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board",
+      "seat": false,
+      "sync": "none"
+    },
+    "checkmark": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/MainMenu/AutoTimerToggle/Background/Checkmark",
+      "seat": false,
+      "sync": "none"
+    },
+    "chessManager": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessManager",
+      "seat": false,
+      "sync": "none"
+    },
+    "creditsButton": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/CreditsButton",
+      "seat": false,
+      "sync": "none"
+    },
+    "creditsPanel": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/CreditsPanel",
+      "seat": false,
+      "sync": "none"
+    },
+    "currentMoveLabel": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/GameMenu/CurrentlyMoving/CurrentMoveLabel",
+      "seat": false,
+      "sync": "none"
+    },
+    "currentSideLabel": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/GameMenu/CurrentlyMoving/CurrentSideLabel",
+      "seat": false,
+      "sync": "none"
+    },
+    "defaultRules": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/Rules/DefaultRules",
+      "seat": false,
+      "sync": "none"
+    },
+    "endGame": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/GameMenu/endGame",
+      "seat": false,
+      "sync": "none"
+    },
+    "endTurnButton": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_Black/EndTurnButton",
+      "seat": false,
+      "sync": "none"
+    },
+    "endTurnButton2": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_White/EndTurnButton",
+      "seat": false,
+      "sync": "none"
+    },
+    "gameMenu": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/GameMenu",
+      "seat": false,
+      "sync": "none"
+    },
+    "gameModeText": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/MainMenu/GameMode/GameModeText",
+      "seat": false,
+      "sync": "none"
+    },
+    "gameOver": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/additional_transforms/GameOverMessage/GameOver",
+      "seat": false,
+      "sync": "none"
+    },
+    "gameOverMessage": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/additional_transforms/GameOverMessage",
+      "seat": false,
+      "sync": "none"
+    },
+    "gameOverText": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/additional_transforms/GameOverMessage/GameOver/Image/GameOverText",
+      "seat": false,
+      "sync": "none"
+    },
+    "king": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/pieces_pools/king",
+      "seat": false,
+      "sync": "none"
+    },
+    "king0": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/king0",
+      "seat": false,
+      "sync": "none"
+    },
+    "king1": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/king1",
+      "seat": false,
+      "sync": "none"
+    },
+    "king2": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/king2",
+      "seat": false,
+      "sync": "none"
+    },
+    "king3": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/king3",
+      "seat": false,
+      "sync": "none"
+    },
+    "king4": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/king4",
+      "seat": false,
+      "sync": "none"
+    },
+    "king5": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/king5",
+      "seat": false,
+      "sync": "none"
+    },
+    "king6": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/king6",
+      "seat": false,
+      "sync": "none"
+    },
+    "king7": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/king7",
+      "seat": false,
+      "sync": "none"
+    },
+    "king8": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_Black/PiecePlacerHolder/PiecePlacer/Pieces/king",
+      "seat": false,
+      "sync": "none"
+    },
+    "king9": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_White/PiecePlacerHolder/PiecePlacer/Pieces/king",
+      "seat": false,
+      "sync": "none"
+    },
+    "knight": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/knight",
+      "seat": false,
+      "sync": "none"
+    },
+    "knight0": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/knight0",
+      "seat": false,
+      "sync": "none"
+    },
+    "knight1": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/knight1",
+      "seat": false,
+      "sync": "none"
+    },
+    "knight10": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_White/PiecePlacerHolder/PiecePlacer/Pieces/knight",
+      "seat": false,
+      "sync": "none"
+    },
+    "knight2": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/knight2",
+      "seat": false,
+      "sync": "none"
+    },
+    "knight3": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/knight3",
+      "seat": false,
+      "sync": "none"
+    },
+    "knight4": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/knight4",
+      "seat": false,
+      "sync": "none"
+    },
+    "knight5": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/knight5",
+      "seat": false,
+      "sync": "none"
+    },
+    "knight6": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/knight6",
+      "seat": false,
+      "sync": "none"
+    },
+    "knight7": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/knight7",
+      "seat": false,
+      "sync": "none"
+    },
+    "knight8": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/pieces_pools/knight",
+      "seat": false,
+      "sync": "none"
+    },
+    "knight9": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_Black/PiecePlacerHolder/PiecePlacer/Pieces/knight",
+      "seat": false,
+      "sync": "none"
+    },
+    "leftMilliseconds": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/Timer/TimerScreen/Canvas/LeftTimer/LeftMilliseconds",
+      "seat": false,
+      "sync": "none"
+    },
+    "leftTimer": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/Timer/TimerScreen/Canvas/LeftTimer",
+      "seat": false,
+      "sync": "none"
+    },
+    "logText": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/logText",
+      "seat": false,
+      "sync": "none"
+    },
+    "mainMenu": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/MainMenu",
+      "seat": false,
+      "sync": "none"
+    },
+    "movesCounter": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/Timer/TimerScreen/Canvas/MovesCounter",
+      "seat": false,
+      "sync": "none"
+    },
+    "nextType": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_Black/ButtonCanvas/NextType",
+      "seat": false,
+      "sync": "none"
+    },
+    "nextType2": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_White/ButtonCanvas/NextType",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/pawn",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn0": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn0",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn1": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn1",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn10": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn10",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn11": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn11",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn12": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn12",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn13": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn13",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn14": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn14",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn15": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn15",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn16": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn16",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn17": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn17",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn18": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn18",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn19": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn19",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn2": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn2",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn20": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/pieces_pools/pawn",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn21": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_Black/PiecePlacerHolder/PiecePlacer/Pieces/pawn",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn22": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_White/PiecePlacerHolder/PiecePlacer/Pieces/pawn",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn3": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn3",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn4": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn4",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn5": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn5",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn6": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn6",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn7": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn7",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn8": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn8",
+      "seat": false,
+      "sync": "none"
+    },
+    "pawn9": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/pawn9",
+      "seat": false,
+      "sync": "none"
+    },
+    "pieceCount": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_Black/ButtonCanvas/PieceCount",
+      "seat": false,
+      "sync": "none"
+    },
+    "pieceCount2": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_White/ButtonCanvas/PieceCount",
+      "seat": false,
+      "sync": "none"
+    },
+    "piecePlacer": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/AnarchyControls_Black/PiecePlacerHolder/PiecePlacer",
+      "seat": false,
+      "sync": "none"
+    },
+    "piecePlacer2": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/AnarchyControls_White/PiecePlacerHolder/PiecePlacer",
+      "seat": false,
+      "sync": "none"
+    },
+    "pieces": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces",
+      "seat": false,
+      "sync": "none"
+    },
+    "pieces2": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_Black/PiecePlacerHolder/PiecePlacer/Pieces",
+      "seat": false,
+      "sync": "none"
+    },
+    "pieces3": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_White/PiecePlacerHolder/PiecePlacer/Pieces",
+      "seat": false,
+      "sync": "none"
+    },
+    "piecesParent": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/pieces_parent",
+      "seat": false,
+      "sync": "none"
+    },
+    "previousType": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_Black/ButtonCanvas/PreviousType",
+      "seat": false,
+      "sync": "none"
+    },
+    "previousType2": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_White/ButtonCanvas/PreviousType",
+      "seat": false,
+      "sync": "none"
+    },
+    "promotionPicker": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/queen",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen0": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/queen0",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen1": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/queen1",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen10": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/queen10",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen11": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/queen11",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen12": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/queen12",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen13": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/queen13",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen14": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/queen14",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen15": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/queen15",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen16": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/pieces_pools/queen",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen17": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_Black/PiecePlacerHolder/PiecePlacer/Pieces/queen",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen18": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_White/PiecePlacerHolder/PiecePlacer/Pieces/queen",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen2": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/queen2",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen3": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/queen3",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen4": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/queen4",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen5": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/queen5",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen6": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/queen6",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen7": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/queen7",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen8": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/queen8",
+      "seat": false,
+      "sync": "none"
+    },
+    "queen9": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/queen9",
+      "seat": false,
+      "sync": "none"
+    },
+    "reset": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/Timer/TimerScreen/Canvas/Reset",
+      "seat": false,
+      "sync": "none"
+    },
+    "rightMilliseconds": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/Timer/TimerScreen/Canvas/RightTimer/RightMilliseconds",
+      "seat": false,
+      "sync": "none"
+    },
+    "rightTimer": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/Timer/TimerScreen/Canvas/RightTimer",
+      "seat": false,
+      "sync": "none"
+    },
+    "rook": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/rook",
+      "seat": false,
+      "sync": "none"
+    },
+    "rook0": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/rook0",
+      "seat": false,
+      "sync": "none"
+    },
+    "rook1": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/rook1",
+      "seat": false,
+      "sync": "none"
+    },
+    "rook10": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_White/PiecePlacerHolder/PiecePlacer/Pieces/rook",
+      "seat": false,
+      "sync": "none"
+    },
+    "rook2": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/rook2",
+      "seat": false,
+      "sync": "none"
+    },
+    "rook3": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/rook3",
+      "seat": false,
+      "sync": "none"
+    },
+    "rook4": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/rook4",
+      "seat": false,
+      "sync": "none"
+    },
+    "rook5": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/rook5",
+      "seat": false,
+      "sync": "none"
+    },
+    "rook6": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/rook6",
+      "seat": false,
+      "sync": "none"
+    },
+    "rook7": {
+      "click": false,
+      "grab": true,
+      "path": "EmyChess/ChessSet/Board/pieces_parent/rook7",
+      "seat": false,
+      "sync": "none"
+    },
+    "rook8": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/pieces_pools/rook",
+      "seat": false,
+      "sync": "none"
+    },
+    "rook9": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/AnarchyControls_Black/PiecePlacerHolder/PiecePlacer/Pieces/rook",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_a1": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/a1",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_a2": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/a2",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_a3": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/a3",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_a4": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/a4",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_a5": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/a5",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_a6": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/a6",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_a7": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/a7",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_a8": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/a8",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_b1": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/b1",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_b2": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/b2",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_b3": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/b3",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_b4": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/b4",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_b5": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/b5",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_b6": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/b6",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_b7": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/b7",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_b8": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/b8",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_c1": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/c1",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_c2": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/c2",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_c3": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/c3",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_c4": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/c4",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_c5": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/c5",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_c6": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/c6",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_c7": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/c7",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_c8": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/c8",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_d1": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/d1",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_d2": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/d2",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_d3": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/d3",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_d4": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/d4",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_d5": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/d5",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_d6": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/d6",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_d7": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/d7",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_d8": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/d8",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_e1": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/e1",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_e2": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/e2",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_e3": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/e3",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_e4": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/e4",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_e5": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/e5",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_e6": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/e6",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_e7": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/e7",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_e8": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/e8",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_f1": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/f1",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_f2": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/f2",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_f3": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/f3",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_f4": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/f4",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_f5": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/f5",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_f6": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/f6",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_f7": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/f7",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_f8": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/f8",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_g1": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/g1",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_g2": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/g2",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_g3": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/g3",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_g4": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/g4",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_g5": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/g5",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_g6": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/g6",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_g7": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/g7",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_g8": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/g8",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_h1": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/h1",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_h2": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/h2",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_h3": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/h3",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_h4": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/h4",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_h5": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/h5",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_h6": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/h6",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_h7": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/h7",
+      "seat": false,
+      "sync": "none"
+    },
+    "sq_h8": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares/h8",
+      "seat": false,
+      "sync": "none"
+    },
+    "squares": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/Board/squares",
+      "seat": false,
+      "sync": "none"
+    },
+    "standardButton": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/MainMenu/GameMode/Standard Button",
+      "seat": false,
+      "sync": "none"
+    },
+    "startButton": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/MainMenu/StartButton",
+      "seat": false,
+      "sync": "none"
+    },
+    "text": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/MainMenu/WhiteJoin/Text",
+      "seat": false,
+      "sync": "none"
+    },
+    "text2": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/MainMenu/BlackJoin/Text",
+      "seat": false,
+      "sync": "none"
+    },
+    "timer": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/Timer",
+      "seat": false,
+      "sync": "none"
+    },
+    "timerButtonLeft": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/Timer/TimerButton_Left",
+      "seat": false,
+      "sync": "none"
+    },
+    "timerButtonRight": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/Timer/TimerButton_Right",
+      "seat": false,
+      "sync": "none"
+    },
+    "whiteJoin": {
+      "click": true,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/MainMenu/WhiteJoin",
+      "seat": false,
+      "sync": "none"
+    },
+    "whitePlayerLabel": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/WhitePlayerLabel",
+      "seat": false,
+      "sync": "none"
+    },
+    "whitePlayerObject": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/Utils/PlayerObjects/whitePlayerObject",
+      "seat": false,
+      "sync": "none"
+    },
+    "whiteScoreLabel": {
+      "click": false,
+      "grab": false,
+      "path": "EmyChess/ChessSet/UIHolder/Canvas/GameMenu/whiteScore/whiteScoreLabel",
+      "seat": false,
+      "sync": "none"
+    }
+  },
+  "refs": [
+    "pawn0",
+    "pawn1",
+    "pawn2",
+    "pawn3",
+    "pawn4",
+    "pawn5",
+    "pawn6",
+    "pawn7",
+    "pawn8",
+    "pawn9",
+    "pawn10",
+    "pawn11",
+    "pawn12",
+    "pawn13",
+    "pawn14",
+    "pawn15",
+    "pawn16",
+    "pawn17",
+    "pawn18",
+    "pawn19",
+    "bishop0",
+    "bishop1",
+    "bishop2",
+    "bishop3",
+    "bishop4",
+    "bishop5",
+    "bishop6",
+    "bishop7",
+    "king0",
+    "king1",
+    "king2",
+    "king3",
+    "king4",
+    "king5",
+    "king6",
+    "king7",
+    "knight0",
+    "knight1",
+    "knight2",
+    "knight3",
+    "knight4",
+    "knight5",
+    "knight6",
+    "knight7",
+    "queen0",
+    "queen1",
+    "queen2",
+    "queen3",
+    "queen4",
+    "queen5",
+    "queen6",
+    "queen7",
+    "queen8",
+    "queen9",
+    "queen10",
+    "queen11",
+    "queen12",
+    "queen13",
+    "queen14",
+    "queen15",
+    "rook0",
+    "rook1",
+    "rook2",
+    "rook3",
+    "rook4",
+    "rook5",
+    "rook6",
+    "rook7",
+    "sq_a1",
+    "sq_a2",
+    "sq_a3",
+    "sq_a4",
+    "sq_a5",
+    "sq_a6",
+    "sq_a7",
+    "sq_a8",
+    "sq_b1",
+    "sq_b2",
+    "sq_b3",
+    "sq_b4",
+    "sq_b5",
+    "sq_b6",
+    "sq_b7",
+    "sq_b8",
+    "sq_c1",
+    "sq_c2",
+    "sq_c3",
+    "sq_c4",
+    "sq_c5",
+    "sq_c6",
+    "sq_c7",
+    "sq_c8",
+    "sq_d1",
+    "sq_d2",
+    "sq_d3",
+    "sq_d4",
+    "sq_d5",
+    "sq_d6",
+    "sq_d7",
+    "sq_d8",
+    "sq_e1",
+    "sq_e2",
+    "sq_e3",
+    "sq_e4",
+    "sq_e5",
+    "sq_e6",
+    "sq_e7",
+    "sq_e8",
+    "sq_f1",
+    "sq_f2",
+    "sq_f3",
+    "sq_f4",
+    "sq_f5",
+    "sq_f6",
+    "sq_f7",
+    "sq_f8",
+    "sq_g1",
+    "sq_g2",
+    "sq_g3",
+    "sq_g4",
+    "sq_g5",
+    "sq_g6",
+    "sq_g7",
+    "sq_g8",
+    "sq_h1",
+    "sq_h2",
+    "sq_h3",
+    "sq_h4",
+    "sq_h5",
+    "sq_h6",
+    "sq_h7",
+    "sq_h8",
+    "anarchyButton",
+    "endTurnButton",
+    "endTurnButton2",
+    "whitePlayerLabel",
+    "blackPlayerLabel",
+    "gameModeText",
+    "logText",
+    "startButton",
+    "text",
+    "text2",
+    "currentMoveLabel",
+    "currentSideLabel",
+    "whiteScoreLabel",
+    "blackScoreLabel",
+    "endGame",
+    "availableCount",
+    "availableCount2",
+    "availableCount3",
+    "availableCount4",
+    "availableCount5",
+    "gameOverText",
+    "leftTimer",
+    "leftMilliseconds",
+    "rightTimer",
+    "rightMilliseconds",
+    "movesCounter",
+    "availableText",
+    "pieceCount",
+    "availableText2",
+    "pieceCount2",
+    "board"
+  ],
+  "schema": 1,
+  "slug": "chess-table"
+}

@@ -1,0 +1,7 @@
+{
+  "source": "..",
+  "destination": "Assets/Upstream",
+  "roots": ["Packages/com.emymin.emychess/Runtime"],
+  "copy_files": ["LICENSE", "LICENSE-CC-BY-SA"],
+  "notice": "EmyChess by emymin (GPL-3.0 code, CC-BY-SA art), https://github.com/emymin/EmyChess"
+}
