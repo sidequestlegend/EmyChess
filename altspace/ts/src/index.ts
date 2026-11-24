@@ -8,7 +8,7 @@ import { BoardSquare, ClickToMove } from "./ClickToMove.ts";
 import { CreditsPanel } from "./CreditsPanel.ts";
 import { DefaultRules } from "./DefaultRules.ts";
 import { GameOverMessage } from "./GameOverMessage.ts";
-import { Piece } from "./Piece.ts";
+import { inputTrace, Piece } from "./Piece.ts";
 import { PiecePlacer } from "./PiecePlacer.ts";
 import { PlayerHolder } from "./PlayerHolder.ts";
 import { PromotionButton } from "./PromotionButton.ts";
@@ -76,6 +76,8 @@ function debugHooks(instance: GameInstance): Record<string, unknown> {
     },
     squarePath: (name: string) => instance.bindings.objects["sq_" + name]?.path ?? "",
     pathOf: (key: string) => instance.bindings.objects[key]?.path ?? "",
+    trace: () => inputTrace.slice(),
+    frame: () => String(board().WorldToSquare(board().squareRenderers[0]!.gameObject.transform.position)),
     /** The local player as the instance knows them. */
     me: () => ({ sid: instance.networking.LocalPlayer.sid, uid: instance.networking.LocalPlayer.uid, name: instance.networking.LocalPlayer.displayName }),
     table: () => {

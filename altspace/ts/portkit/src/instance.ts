@@ -58,6 +58,11 @@ export interface GameDefinition {
   interactReach?: number;
   /** A refused write that belongs to no single behaviour (a protected value, the referee's own records). */
   onWriteRefused?: (refusal: WriteRefusal) => void;
+  /**
+   * Extra readers for Play-mode tests, added to the instance's entry in `window.__pk1.debug` beside digest, state,
+   * referee and players (a board as text, whose turn it is). Called once, when the instance has started.
+   */
+  debug?: (instance: GameInstance) => Record<string, unknown>;
 }
 
 interface Address {
@@ -347,6 +352,14 @@ export class GameInstance implements NetHost {
       object.setActive(active);
       return true;
     };
+    // Objects the upstream prefab had switched off: the kit holds them on so that the page could find them; off they go now.
+    let hidden = 0;
+    for (const key of keys) {
+      if (bindings.objects[key]!.active !== false) continue;
+      this.objects.get(key)!.SetActive(false);
+      hidden++;
+    }
+    if (hidden) this.host.flush();
     this.host.fallbackClip = (key, index) => {
       const object = this.kit?.objects.get(key);
       if (!object) return false;
@@ -413,7 +426,10 @@ export class GameInstance implements NetHost {
     this.commands.review();
     for (const early of this.earlyGraphEvents.splice(0)) this.onGraphEvent(early.name, early.args);
     this.scheduler.start(() => this.tick());
+    let extra: Record<string, unknown> = {};
+    if (this.game.debug) core.guard("debug hooks", () => (extra = this.game.debug!(this)));
     this.platform.expose(relayKey(core.slug, core.inst), {
+      ...extra,
       digest: () => this.digest(),
       state: () => JSON.parse(this.sync.snapshotText()),
       referee: () => this.referee.current(),

@@ -138,6 +138,8 @@ namespace PortKit
             public string Path;
             public string Sync = "none";
             public bool Grab, Click, Seat;
+            /// <summary>False: the upstream prefab had it switched off; the kit holds it on and the runtime switches it off (README).</summary>
+            public bool Active = true;
         }
 
         public sealed class BehaviourEntry
@@ -169,10 +171,13 @@ namespace PortKit
         {
             var objects = new JObject();
             foreach (var pair in Objects)
+            {
                 objects[pair.Key] = new JObject
                 {
                     ["path"] = pair.Value.Path, ["sync"] = pair.Value.Sync, ["grab"] = pair.Value.Grab, ["click"] = pair.Value.Click, ["seat"] = pair.Value.Seat,
                 };
+                if (!pair.Value.Active) objects[pair.Key]["active"] = false;       // written only when off: a kit with none keeps its hash
+            }
             var body = new JObject
             {
                 ["schema"] = Schema,

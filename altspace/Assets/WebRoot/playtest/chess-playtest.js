@@ -70,24 +70,59 @@
     return r.startsWith("ok");
   }
 
+  /** Listens to a kit object's own page events (grab, drop, click), as raw as the page has them. */
+  const rawSeen = [];
+  const t0 = Date.now();
+  const stamp = () => "@" + (Date.now() - t0);
+  function listenRaw(path) {
+    try {
+      const name = path.slice(path.lastIndexOf("/") + 1);
+      const scene = window.BS.Scene.GetInstance();
+      const go = Object.values(scene.objects).find((o) => o.name === name && !o.destroyed);
+      if (!go) return "not known to the page";
+      if (!go.__chessRaw) {
+        go.__chessRaw = true;
+        for (const kind of ["grab", "drop", "click"]) go.On(kind, () => rawSeen.push(kind + " " + name + " @" + (Date.now() - t0)));
+      }
+      return "listening (layer " + go.layer + ")";
+    } catch (e) {
+      return "error " + e;
+    }
+  }
+
+  /** Where to point at a piece: a little above its foot (a pointer aimed at the foot meets the piece in front first). */
+  async function pieceAim(square) {
+    const p = (await probe("pos", debug().piecePath(square))).split(" ").map(Number);
+    const s = (await probe("pos", debug().squarePath(square))).split(" ").map(Number);
+    const y = Math.max(p[1], s[1] + 0.03);
+    return p[0] + " " + y + " " + p[2];
+  }
+
   /** A move through the desktop grab: press on the piece, carry it over the target square, let go. */
   async function grabMove(uci, label) {
     const from = uci.slice(0, 2);
     const to = uci.slice(2, 4);
     const before = fen();
-    const piecePos = await probe("pos", debug().piecePath(from));
+    const piecePos = await pieceAim(from);
+    say("INFO", label + " raw", listenRaw(debug().piecePath(from)));
     const fromSquare = await probe("pos", debug().squarePath(from));
     const toSquare = await probe("pos", debug().squarePath(to));
     // aim at the target square at the height the piece is held by (the held piece keeps its distance along the ray)
     const lift = Number(piecePos.split(" ")[1]) - Number(fromSquare.split(" ")[1]);
     await cmd("look " + toSquare);
+    say("INFO", label + " press " + stamp());
     const pressed = await cmd("press " + piecePos);
-    await cmd("wait 10");
+    await cmd("wait 20");
+    say("INFO", label + " carry " + stamp());
     const moved = await cmd("pointer " + add(toSquare, lift));
-    await cmd("wait 10");
+    await cmd("wait 20");
+    say("INFO", label + " held at " + (await probe("pos", debug().piecePath(from))) + " " + stamp());
     await cmd("release");
+    say("INFO", label + " released " + stamp());
     await until(() => fen() !== before, 3000);
-    if (fen() === before && table().chosen === from) {
+    say("INFO", label + " raw events", JSON.stringify(rawSeen.splice(0)));
+    say("INFO", label + " trace", JSON.stringify(debug().trace().slice(-4)) + " frame a1 " + debug().frame());
+    if (fen() === before && table().chosen !== null) {
       // the grab let go at once (the first grab of a Play session does, RESULTS.md S6) or where it was: the piece is
       // chosen, and a click on the square finishes the move (click-to-move)
       say("INFO", label + ": the piece came down on its own square and is chosen; finishing by clicking " + to);
@@ -103,15 +138,14 @@
     const from = uci.slice(0, 2);
     const to = uci.slice(2, 4);
     const before = fen();
-    const piecePos = await probe("pos", debug().piecePath(from));
+    const piecePos = await pieceAim(from);
     await cmd("look " + piecePos);
-    await cmd("click " + piecePos);
+    say("INFO", label + " click piece", await cmd("click " + piecePos) + " raw " + listenRaw(debug().piecePath(from)));
     const chosen = await until(() => table().chosen === from, 3000);
-    const target = debug().piecePath(to) || debug().squarePath(to);
-    const targetPos = await probe("pos", target);
+    const targetPos = debug().piecePath(to) ? await pieceAim(to) : await probe("pos", debug().squarePath(to));
     await cmd("click " + targetPos);
     await until(() => fen() !== before, 3000);
-    say("INFO", label + " (click)", "chosen " + !!chosen);
+    say("INFO", label + " (click)", "chosen " + !!chosen + "; trace " + JSON.stringify(debug().trace().slice(-4)));
     return fen() !== before;
   }
 
@@ -164,7 +198,7 @@
     for (let i = 0; i < plan.length; i++) {
       const [uci, how] = plan[i];
       const ok = await how(uci, uci);
-      check(ok && fen() === expect[i], `${uci} is played (${how === grabMove ? "grab and drop" : "click a piece, click a square"})`, fen());
+      check(ok && fen() === expect[i], `${uci} is played (${how === grabMove ? "grabbed and let go (in place, then the square clicked: see TESTS.md)" : "click a piece, click a square"})`, fen());
       await sleep(800);
     }
     await until(() => table().gameOver !== 0, 5000);
@@ -189,7 +223,12 @@
     // End Game clears the board
     await clickObject("endGame", "End Game");
     await until(() => !table().inProgress, 4000);
-    check(!table().inProgress && fen() === "8/8/8/8/8/8/8/8" && (await probe("active", debug().pathOf("pawn0"))) === "False", "End Game clears the board", fen());
+    let pawn0 = "";
+    for (let i = 0; i < 20 && pawn0 !== "False"; i++) {
+      pawn0 = await probe("active", debug().pathOf("pawn0"));
+      if (pawn0 !== "False") await sleep(150);
+    }
+    check(!table().inProgress && fen() === "8/8/8/8/8/8/8/8" && pawn0 === "False", "End Game clears the board (the pieces are switched off in Unity)", `${fen()}, pawn0 active ${pawn0}`);
     // the credits panel opens and closes for this viewer
     await clickObject("creditsButton", "Credits");
     const open = await probe("active", debug().pathOf("creditsPanel"));

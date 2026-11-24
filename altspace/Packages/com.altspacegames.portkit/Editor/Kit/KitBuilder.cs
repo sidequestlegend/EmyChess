@@ -507,6 +507,24 @@ namespace PortKit
             builder.Finishing(this);
             int stripped = Strip();
 
+            // ---- objects switched off: a BS Object Id wakes (and the page learns of its object) only on an object that is on,
+            //      so every bound object and each of its parents is saved on; the bound ones that were off are written
+            //      "active": false, and the runtime switches them off as soon as it has found them ----
+            for (bool more = true; more;)
+            {
+                more = false;
+                foreach (var go in entries.Keys.ToList())
+                    for (var t = go.transform; t != null && t != Root.transform; t = t.parent)
+                    {
+                        if (t.gameObject.activeSelf) continue;
+                        if (!entries.ContainsKey(t.gameObject)) { Object(t.gameObject); more = true; }
+                        entries[t.gameObject].Active = false;
+                        t.gameObject.SetActive(true);
+                    }
+            }
+            int off = entries.Count(e => !e.Value.Active);
+            if (off > 0) Report.AppendLine($"   {off} bound objects were off in the prefab: saved on, written \"active\": false");
+
             // ---- objects: ids, layers, colliders ----
             Type idType = T("BS.BSObjectId");
             foreach (var pair in entries.ToList())

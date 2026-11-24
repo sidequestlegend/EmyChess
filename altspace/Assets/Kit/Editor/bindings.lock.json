@@ -203,6 +203,7 @@
     "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/knight": "knight",
     "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/knight/Canvas (1)/Image/AvailableCount": "availableCount3",
     "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/pawn": "pawn",
+    "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/pawn/Canvas (1)": "canvas1",
     "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/pawn/Canvas (1)/AvailableCount": "availableCount",
     "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/queen": "queen",
     "EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces/queen/Canvas/Image/AvailableCount": "availableCount2",

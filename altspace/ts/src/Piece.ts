@@ -15,6 +15,13 @@ import { type AudioClipRef, type AudioSourceRef, Behaviour, type Deserialization
 import type { Board } from "./Board.ts";
 import type { VRCObjectPool } from "./VRCObjectPool.ts";
 
+/** The last few things players did to pieces on this page, for Play-mode tests (window.__pk1.debug[...].trace()). */
+export const inputTrace: string[] = [];
+export function trace(line: string): void {
+  inputTrace.push(line);
+  if (inputTrace.length > 40) inputTrace.shift();
+}
+
 /** Layers: Grabbable (a piece that may be picked up) and UI (clickable, hands pass through). */
 export const GRAB_LAYER = 20;
 export const CLICK_LAYER = 5;
@@ -83,7 +90,10 @@ export class Piece extends Behaviour {
     this.SetActiveState(this._active);
     this.SetGrabbable(false);
     // a click on a piece (UI layer: not grabbable now, or click-only input) chooses it, or captures it, for click-to-move
-    this.gameObject.On("click", () => this.board.clickToMove?.PieceClicked(this));
+    this.gameObject.On("click", () => {
+      trace(`click ${this.type} ${this.x},${this.y}`);
+      this.board.clickToMove?.PieceClicked(this);
+    });
   }
 
   /** Makes the object match `_active`: on the board or back in its pool. */
@@ -224,6 +234,7 @@ export class Piece extends Behaviour {
   }
 
   override OnPickup(): void {
+    trace(`pickup ${this.type} ${this.x},${this.y} grabbable ${this.grabbable}`);
     this.held = true;
     this.pickedUp = this.grabbable;
     const manager = this.board.chessManager;
@@ -259,6 +270,7 @@ export class Piece extends Behaviour {
   }
 
   override OnDrop(): void {
+    trace(`drop ${this.type} ${this.x},${this.y} held ${this.held} picked ${this.pickedUp} at ${this.transform.position}`);
     const wasHeld = this.held && this.pickedUp;
     this.held = false;
     this.pickedUp = false;

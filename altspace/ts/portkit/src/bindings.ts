@@ -11,6 +11,12 @@ export interface BindingObject {
   grab: boolean;
   click: boolean;
   seat: boolean;
+  /**
+   * False for an object the upstream prefab has switched off. The kit holds every bound object switched on (an object
+   * that is off never wakes its BS Object Id, so the page would never learn of it); the runtime switches it off as soon
+   * as it has found it. Absent: on.
+   */
+  active?: boolean;
 }
 
 export interface BindingBehaviour {
@@ -132,6 +138,7 @@ export function validateBindings(json: unknown): Bindings {
   for (const key of Object.keys(objects)) {
     const o = objects[key] as Record<string, unknown>;
     normalObjects[key] = { path: o.path as string, sync: o.sync === "transform" ? "transform" : "none", grab: o.grab === true, click: o.click === true, seat: o.seat === true };
+    if (o.active === false) normalObjects[key]!.active = false;
   }
   return {
     schema: 1,
