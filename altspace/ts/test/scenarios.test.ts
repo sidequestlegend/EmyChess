@@ -280,3 +280,49 @@ test("the game's state fits the room's key budget", () => {
   assert.equal(budget.spaceLeaves, 5, "ref, ack, fd, and the table's owner and value leaves");
   assert.ok(budget.userLeavesPerPlayer <= 2);
 });
+
+test("End Game while a promotion is open on the other page closes it there, and its buttons do nothing (D10)", async () => {
+  const world = newWorld(20);
+  const ann = world.join({ name: "Ann" });
+  const bob = world.join({ name: "Bob" });
+  await settle(world);
+  for (const c of [ann, bob]) placeSquares(c);
+  await seatAndStart(world, ann, bob);
+  for (const [i, m] of ["h2h4", "g7g5", "h4g5", "g8f6", "g5g6", "a7a6", "g6g7", "a6a5", "g7h8"].entries()) assert.ok(await grabMove(world, i % 2 ? bob : ann, m), m);
+  assert.equal(shown(ann, "pieces"), true, "Ann's picker is open");
+  await press(world, bob, "_EndGame");
+  assert.equal(manager(world, ann).inProgress, false);
+  assert.equal(shown(ann, "pieces"), false, "the picker closed on Ann's page");
+  ann.click(SLUG, "0", "queen");
+  await world.run(STEP);
+  assert.equal(board(world, ann).GetPieceCount(), 0, "no piece appears on the cleared board");
+  assert.ok(world.agree());
+});
+
+test("manual clock: anyone may set time and switch it; the raised button switches, the lowered one does nothing", async () => {
+  const world = newWorld(21);
+  const ann = world.join({ name: "Ann" });
+  const cat = world.join({ name: "Cat" });
+  await settle(world);
+  await press(world, cat, "_Add1m");
+  await press(world, cat, "_Add30s");
+  assert.equal(timer(world, ann).timeWhite, 90);
+  assert.equal(timer(world, ann).timeBlack, 90);
+  // White's button is raised after a reset: pressing Black's (lowered) does nothing, White's starts Black's countdown
+  assert.ok(cat.click(SLUG, "0", "timerButtonLeft"));
+  await world.run(STEP);
+  assert.equal(timer(world, ann).isStarted, false);
+  assert.ok(cat.click(SLUG, "0", "timerButtonRight"));
+  await world.run(STEP);
+  assert.equal(timer(world, ann).isStarted, true);
+  assert.equal(timer(world, ann).isCurrentSideWhite, false);
+  assert.equal(timer(world, ann).moves, 1);
+  // while it runs, time cannot be added; RESET stops it
+  await press(world, ann, "_Add15m");
+  assert.equal(timer(world, cat).timeWhite, 90);
+  await press(world, ann, "_ResetTimerEvent");
+  assert.equal(timer(world, cat).isStarted, false);
+  assert.equal(timer(world, cat).timeWhite, 0);
+  assert.equal(cat.graph(SLUG).text.get("movesCounter"), "000");
+  assert.ok(world.agree());
+});
