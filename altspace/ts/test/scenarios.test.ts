@@ -277,7 +277,7 @@ test("the game's state fits the room's key budget", () => {
     return cls ? { synced: (cls.synced ?? []).length, perPlayer: cls.perPlayer === true } : null;
   });
   assert.equal(budget.slots, 1, "one sync group: the whole table is one slot");
-  assert.equal(budget.spaceLeaves, 5, "ref, ack, fd, and the table's owner and value leaves");
+  assert.equal(budget.spaceLeaves, 3, "ref, and the table's owner and value leaves (acks and draw numbers live in the referee's user state)");
   assert.ok(budget.userLeavesPerPlayer <= 2);
 });
 

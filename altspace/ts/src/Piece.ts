@@ -28,6 +28,8 @@ export const CLICK_LAYER = 5;
 
 export class Piece extends Behaviour {
   static override synced = ["_state", "_active"];
+  /** Sent to every player by the mover (Piece.OnDrop, PiecePlacer.PlaceAt): the move and capture sounds. */
+  static override networkCallable = ["PieceMovedAudio", "PieceCapturedAudio"];
 
   // ---- piece state ----------------------------------------------------------------------------------------------
   /** Synced state in one byte: x (3 bits), y (3 bits), white, hasMoved. Use the properties. */

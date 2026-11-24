@@ -77,6 +77,11 @@ namespace PortKit
                     var u = t.GetComponent<Graphic>().color;
                     reply($"{F(u.r)} {F(u.g)} {F(u.b)} {F(u.a)}");
                     break;
+                case "scale": reply($"{F(t.localScale.x)} {F(t.localScale.y)} {F(t.localScale.z)}"); break;
+                case "ison": reply(t.GetComponent<Toggle>()?.isOn.ToString() ?? "error: no toggle"); break;
+                case "slider": reply(t.GetComponent<Slider>() is Slider sl ? F(sl.value) : "error: no slider"); break;
+                case "animenabled": reply(t.GetComponent<Animator>()?.enabled.ToString() ?? "error: no animator"); break;
+                case "audio": reply(t.GetComponent<AudioSource>() is AudioSource au ? $"{F(au.pitch)} {F(au.volume)}" : "error: no audio source"); break;
                 default: reply("error: no such probe"); break;
             }
             return null;

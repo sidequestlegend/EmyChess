@@ -31,9 +31,15 @@ namespace PortKit
         /// the audio op (the allow list has no member of BS Audio Source). The kit builder writes it with every $clip it encodes.
         /// </summary>
         public const string ClipsVariable = "PkClips";
+        /// <summary>
+        /// The Object variable on a TMP_InputField's object: the text last reported to the page or set by it. The relay graph
+        /// reports the field's text when it differs and the field is not being edited (TMP_InputField's own events are not on
+        /// the allow list: they need a listener delegate). The kit builder declares it with the field's starting text.
+        /// </summary>
+        public const string FieldVariable = "PkField";
 
         /// <summary>The event kinds a graph has to relay, because the page has no event of its own for them.</summary>
-        public static readonly string[] RelayedKinds = { "uiButton", "uiSlider", "uiToggle", "heldTrigger", "heldPrimary", "heldSecondary" };
+        public static readonly string[] RelayedKinds = { "uiButton", "uiSlider", "uiToggle", "heldTrigger", "heldPrimary", "heldSecondary", "field" };
 
         public readonly struct Event
         {
@@ -106,9 +112,19 @@ namespace PortKit
             ops.Add("text", () =>
             {
                 var text = g.Keep(ops.Text(0));
-                var tmp = g.Keep(g.ComponentOf(ops.Target, typeof(TMPro.TMP_Text)));
-                g.IfNotNull(tmp, () => g.Set(typeof(TMPro.TMP_Text), "text", tmp, text),
-                    () => ops.With(typeof(UnityEngine.UI.Text), legacy => g.Set(typeof(UnityEngine.UI.Text), "text", legacy, text)));
+                // an input field first (its text, without its events; and remembered, so the field event does not echo it),
+                // then a TMP text, then a legacy text
+                var field = g.Keep(g.ComponentOf(ops.Target, typeof(TMPro.TMP_InputField)));
+                g.IfNotNull(field, () =>
+                {
+                    g.Do(typeof(TMPro.TMP_InputField), "SetTextWithoutNotify", new[] { typeof(string) }, field, text);
+                    g.SetObjVar(FieldVariable, text, ops.Target, typeof(string));
+                }, () =>
+                {
+                    var tmp = g.Keep(g.ComponentOf(ops.Target, typeof(TMPro.TMP_Text)));
+                    g.IfNotNull(tmp, () => g.Set(typeof(TMPro.TMP_Text), "text", tmp, text),
+                        () => ops.With(typeof(UnityEngine.UI.Text), legacy => g.Set(typeof(UnityEngine.UI.Text), "text", legacy, text)));
+                });
             });
             ops.Add("active", () => g.Do(typeof(GameObject), "SetActive", new[] { typeof(bool) }, ops.Target, ops.Flag(0)));
             ops.Add("animBool", () => ops.With(typeof(Animator), a => g.Do(typeof(Animator), "SetBool", new[] { typeof(string), typeof(bool) }, a, ops.Arg(0), ops.Flag(1))));
@@ -151,11 +167,45 @@ namespace PortKit
             }));
         }
 
+        /// <summary>The ops the first game ports asked for (README op table).</summary>
+        static void Added(Ops ops)
+        {
+            var g = ops.g;
+            ops.Add("audioPitch", () => ops.With(typeof(AudioSource), s => g.Set(typeof(AudioSource), "pitch", s, ops.Number(0))));
+            ops.Add("audioVolume", () => ops.With(typeof(AudioSource), s => g.Set(typeof(AudioSource), "volume", s, ops.Number(0))));
+            // audioScaled | <target> | <clip index> | <holder's refs index> | <volume scale>: as audio, with PlayOneShot's volume scale
+            ops.Add("audioScaled", () => ops.With(typeof(AudioSource), source =>
+            {
+                var holder = g.Keep(g.KitRef(ops.Whole(1)));
+                g.IfNotNull(holder, () =>
+                {
+                    var clip = g.Keep(g.ListItem(g.ObjVarOf(holder, ClipsVariable, typeof(System.Collections.IList)), ops.Whole(0), typeof(AudioClip)));
+                    g.IfNotNull(clip, () => g.Do(typeof(AudioSource), "PlayOneShot", new[] { typeof(AudioClip), typeof(float) }, source, clip, ops.Number(2)));
+                });
+            }));
+            ops.Add("animEnabled", () => ops.With(typeof(Animator), a => g.Set(typeof(Animator), "enabled", a, ops.Flag(0))));
+            ops.Add("uiSetToggle", () => ops.With(typeof(UnityEngine.UI.Toggle), t => g.Do(typeof(UnityEngine.UI.Toggle), "SetIsOnWithoutNotify", new[] { typeof(bool) }, t, ops.Flag(0))));
+            ops.Add("uiSetSlider", () => ops.With(typeof(UnityEngine.UI.Slider), sl => g.Do(typeof(UnityEngine.UI.Slider), "SetValueWithoutNotify", new[] { typeof(float) }, sl, ops.Number(0))));
+            ops.Add("scale", () => g.Set(typeof(Transform), "localScale", g.Get(typeof(GameObject), "transform", ops.Target), g.V3(ops.Number(0), ops.Number(1), ops.Number(2))));
+            ops.Add("rbVelocity", () => ops.With(typeof(Rigidbody), rb => g.Set(typeof(Rigidbody), "linearVelocity", rb, g.V3(ops.Number(0), ops.Number(1), ops.Number(2)))));
+            ops.Add("rbKinematic", () => ops.With(typeof(Rigidbody), rb => g.Set(typeof(Rigidbody), "isKinematic", rb, ops.Flag(0))));
+            // spawn | <template> | <name>: a copy under the template's parent, named, switched on; "@<parent path>/<name>" reaches it
+            ops.Add("spawn", () =>
+            {
+                var parent = g.Keep(g.Get(typeof(Transform), "parent", g.Get(typeof(GameObject), "transform", ops.Target)));
+                var copy = g.Keep(g.Call(typeof(GameObject), "Instantiate", new[] { typeof(UnityEngine.Object), typeof(Transform) }, null, ops.Target, parent));
+                g.Set(typeof(GameObject), "name", copy, ops.Text(0));
+                g.Do(typeof(GameObject), "SetActive", new[] { typeof(bool) }, copy, true);
+            });
+            ops.Add("despawn", () => g.Do(typeof(GameObject), "Destroy", new[] { typeof(UnityEngine.Object) }, null, ops.Target));
+        }
+
         /// <summary>The names of the ops a graph built with `extra` answers to.</summary>
         public static List<string> OpNames(Action<Ops> extra = null)
         {
             var ops = new Ops(new GraphWriter());
             Standard(ops);
+            Added(ops);
             extra?.Invoke(ops);
             return new[] { "clock" }.Concat(ops.Names).ToList();
         }
@@ -166,6 +216,7 @@ namespace PortKit
             Type clock = GraphTypes.Find("BS.SyncedClock");
             var ops = new Ops(g);
             Standard(ops);
+            Added(ops);
             extra?.Invoke(ops);
             const string At = "PkAt", Next = "PkNext", TargetVariable = "PkTarget";
             g.Declare(At, null);
@@ -236,6 +287,24 @@ namespace PortKit
                     g.On(new OnSliderValueChanged(), slider => g.PageEvent(kind, index, g.InvariantText(g.EventOut(slider, "value", typeof(float)))), ("target", g.KitRef(index)));
                 else if (kind == "uiToggle")
                     g.On(new OnToggleValueChanged(), toggle => g.PageEvent(kind, index, g.Select(g.EventOut(toggle, "value", typeof(bool)), "1", "0", typeof(string))), ("target", g.KitRef(index)));
+                else if (kind == "field")
+                    // TMP_InputField's events need a listener delegate (not on the allow list): the text is compared every
+                    // frame instead, and reported once the field is no longer being edited
+                    g.On(new Update(), _ =>
+                    {
+                        var target = g.Keep(g.KitRef(index));
+                        var field = g.Keep(g.ComponentOf(target, typeof(TMPro.TMP_InputField)));
+                        g.IfNotNull(field, () =>
+                        {
+                            var text = g.Keep(g.Get(typeof(TMPro.TMP_InputField), "text", field));
+                            g.If(g.And(g.Not(g.Get(typeof(TMPro.TMP_InputField), "isFocused", field)),
+                                       g.Not(g.Same(text, g.ObjVarOf(target, FieldVariable, typeof(string))))), () =>
+                            {
+                                g.SetObjVar(FieldVariable, text, target, typeof(string));
+                                g.PageEvent(kind, index, g.EncodeArg(text));
+                            });
+                        });
+                    });
                 else if (unit != null)
                     g.On(g.Platform(unit, ("banterHeldEvents", g.KitRef(index))), held =>
                         g.PageEvent(kind, index, g.Select(g.EventOut(held, "Is Left", typeof(bool)), "left", "right", typeof(string))));

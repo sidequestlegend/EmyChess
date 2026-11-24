@@ -511,6 +511,16 @@ namespace PortKit
             builder.Finishing(this);
             int stripped = Strip();
 
+            // ---- text fields: every TMP_InputField reports its edits to the page (graph event "field", README); the relay
+            //      graph compares its text with the PkField variable, which starts as the field's own text ----
+            foreach (var field in Root.GetComponentsInChildren<TMPro.TMP_InputField>(true))
+            {
+                var go = field.gameObject;
+                if (!events.Any(e => e.go == go && e.kind == "field")) Event(go, "field");
+                var fieldVariables = go.GetComponent<Variables>() ?? go.AddComponent<Variables>();
+                fieldVariables.declarations.Set(RelayGraph.FieldVariable, field.text ?? "");
+            }
+
             // ---- objects switched off: a BS Object Id wakes (and the page learns of its object) only on an object that is on,
             //      so every bound object and each of its parents is saved on; the bound ones that were off are written
             //      "active": false, and the runtime switches them off as soon as it has found them ----

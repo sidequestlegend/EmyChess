@@ -130,7 +130,7 @@ namespace PortKit
     {
         public const int Schema = 1;
         public static readonly string[] EventKinds =
-            { "click", "grab", "drop", "triggerEnter", "triggerExit", "collisionEnter", "uiButton", "uiSlider", "uiToggle", "heldTrigger", "heldPrimary", "heldSecondary" };
+            { "click", "grab", "drop", "triggerEnter", "triggerExit", "collisionEnter", "uiButton", "uiSlider", "uiToggle", "heldTrigger", "heldPrimary", "heldSecondary", "field" };
         public static readonly string[] SyncKinds = { "none", "transform" };
 
         public sealed class ObjectEntry
