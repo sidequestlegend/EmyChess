@@ -1,0 +1,19 @@
+pk-chess-table.js - Chess Table, a port of EmyChess to Altspace.
+
+Copyright (C) 2021-2024 emymin and the EmyChess contributors (BlackStartx, ZenithVal, BluWizard)
+Copyright (C) 2026 the Chess Table port's contributors
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+License as published by the Free Software Foundation, version 3 of the License (GPL-3.0-only).
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details:
+https://www.gnu.org/licenses/gpl-3.0.html
+
+Upstream source: https://github.com/emymin/EmyChess
+Source of this script (corresponding source, TypeScript): https://github.com/sidequestlegend/EmyChess (branch altspace,
+folder altspace/ts; build with npm run build)
+
+This file bundles the portkit runtime (MIT License, Copyright (c) 2026 the portkit authors); as a whole it is GPL-3.0.
+The kit it loads (models, materials, sounds, fonts) carries its own notices: CC BY-SA 4.0 (EmyChess art), CC0 (wood
+texture, sounds), SIL Open Font License 1.1 (Liberation Sans, DSEG7 Classic). See THIRD-PARTY-NOTICES.md in the source.

@@ -1038,6 +1038,77 @@ frame time on Quest with 12 canvases and 52 texts; clock text rate; hover feedba
 | Q8 | May a host switch the credits panel off? | No: drop the `credits` setting |
 | Q9 | Should other players see a piece while it is held (not in upstream)? | No, unless R1 forces synced objects anyway |
 
+**Decided by the coordinator (2026-11-24)**, replacing the defaults above:
+
+| # | Decision |
+|---|---|
+| Q1 | Standard chess: no castling out of check, through an attacked square or into check. Anarchy stays as upstream (free moves, no validation) |
+| Q2 | King against king and the other dead positions are a **draw** ("DRAW! Neither side can checkmate"), game-over state 4 |
+| Q3 | The upstream defects that are plainly bugs are fixed (placer one square off, promotion counters, check square cleared in the same call, and the rest that are bugs rather than rules), each listed in 10.5 as a deliberate difference. A ghost let go off the board adds nothing (D6 fixed too) |
+| Q4 | Pieces are picked up and dropped as upstream (grabbable, `sync: none`, position read back at drop, snapped by the rules). Click-to-move is offered as well (click a piece, then a square), for desktop and as the VR fallback |
+| Q5 | A player claims White or Black as upstream (taking an occupied side still replaces its holder; spectators may press the clock, mode and timer controls). When a seated player leaves, the side is freed after 60 s (upstream acts at once; a player who comes back within the minute keeps the side) |
+| Q6 | No table: upstream ships none; the snippet is the board, clock and controls. The slug proposal `chess-table` stays |
+| Q7 | `EmyLCD.ttf` is replaced by an openly licensed seven-segment font: DSEG7 Classic (SIL OFL 1.1). The wood texture is kept: its OpenGameArt page (node 10010) was fetched and reads CC0, and `wood.png` is a crop of that page's `darkwood2.jpg` |
+| Q8 | A small credits panel on the board, opened and closed by each viewer, lists the licences and the source links. It cannot be switched off (no `credits` setting) |
+| -  | Licence: `pk-chess-table.js` is GPL-3.0 as a whole (it bundles the MIT portkit runtime); its header carries the licence, the copyright lines, the upstream URL and the fork's (`https://github.com/sidequestlegend/EmyChess`). Upstream art stays CC BY-SA 4.0 with attribution. Nothing VRChat's ships |
+
+### 10.5 As built: every deliberate difference from upstream
+
+Rules (checked against upstream's own C# by the golden vectors, `ts/test/golden.test.ts`: these are the only differences
+they allow):
+
+| # | Difference | Upstream |
+|---|---|---|
+| D1 | Castling is refused when the king is in check or crosses an attacked square (`DefaultRules.GetAllLegalMoves`, `CastlesThroughCheck`) | allowed: Kiwipete perft(2) is 2043 upstream, 2039 here (the published count) |
+| D2 | Dead positions are a draw, state 4: bare kings, king and one bishop or knight against a king, kings and bishops all on one square colour (`Board.IsDeadPosition`) | kings only: state 1, "CHECKMATE! Winner: <last mover>" |
+| D5 | The ghost piece lands on the square under it (the nearest centre, as a piece does) | `(int)pos*-1-1`: one square toward a1 |
+| D6 | A ghost let go off the board adds nothing | clamped onto an edge square |
+| D14 | The clock shows total hours, 00 to 99 | `TimeSpan.Hours`: wraps at 24 |
+
+Bugs fixed (not rules), each tested in `ts/test/scenarios.test.ts` or by the Play-mode test:
+
+| # | Fix |
+|---|---|
+| D3 | The red square of a king in check is shown, on every client, while it is that side's move |
+| D4 | The promotion counters show the pieces left in each pool (the picker reads its PromotionButtons, not the stray Piece) |
+| D7 | The stray Piece behaviours on the picker's buttons and `reference_pawn` (and the bishop button's extra BoxCollider) are not in the kit |
+| D8 | The pawn open to en passant is synced (`Board.doublePushIndex`) instead of guessed on each client |
+| D9 | No piece can be picked up while a result shows or a promotion is open |
+| D10 | The promotion picker closes on every client when the game stops, and a click on it afterwards does nothing |
+| D11, D12 | A side is a user id. A player who leaves is shown "(away)" and keeps the side 60 s; then the other registered player, or the referee if none is left, ends the game and frees the side |
+| D13 | The clock is a stored time plus the shared-clock moment its count began; every client works it out; only the referee calls TIME'S UP |
+| D15 | Start Game with a running automated clock stops it (keeping both times) and starts White's; upstream reset it to zero, so it never started |
+| D20, D21 | Gone by design: the whole table is one sync group (one leaf), applied as a whole before any behaviour reacts |
+| D22 | A missing winner reads "-" |
+| D23 | A piece let go while no game is on, or after it was captured, goes back to its square; nothing else happens |
+| D24 | The banner turns at 90 degrees a second (a small graph), not one degree a frame |
+
+Other changes, and why:
+
+- **Size.** The kit is 1/16 of upstream's prefab: a 0.5 m board, a 9.8 cm king. The snippet's `scale` (default 1)
+  multiplies that. (Proposed in 8.1 as `scale="0.0625"`; baked into the kit so that scale 1 is the natural size.)
+- **Fonts and text.** Every legacy uGUI Text is TextMesh Pro (Liberation Sans); the clock's digits use an atlas drawn
+  from DSEG7 Classic. The banner's text uses TextMesh Pro with back faces culled instead of `BackfaceCulledUI.shader`.
+- **Board.** An 8 x 8 checker texture (a1 dark, read from the board mesh's UVs) instead of the procedural shader; 64
+  square quads carry the tints (orange: a legal move, red: check, green: the piece chosen for click-to-move) and are the
+  click targets for click-to-move.
+- **Buttons.** The 15 uGUI buttons are clicked through colliders on the UI layer (no uGUI raycaster); a button that does
+  nothing for you now is drawn grey (Start Game, End Game) or dark (END TURN). Spectators' clicks on Join/Start/End
+  during a game are ignored, as the hidden menu made them upstream.
+- **Pieces.** Grabbable (BS Grababble on the Grabbable layer) while they may be moved, else on the UI layer (clickable,
+  hands pass through); white or black by colour and smoothness on the piece's own material (relay `color`, `matFloat`).
+  Sounds play through each piece's audio source from the board's clip list (relay `audio`). With `input="click"` no
+  piece is ever grabbable.
+- **Click-to-move.** A piece clicked, or let go on its own square, is chosen; a click on a highlighted square or the
+  piece standing there moves it, through upstream's own PiecePicked and PieceDropped. In Anarchy the ghost piece can be
+  clicked and then a square.
+- **Settings.** `mode`, `auto-timer`, `clock`, `input`, `allow-anarchy`, `sound` apply to a fresh table (set by its
+  referee). `credits` is not a setting (Q8).
+- **Left out of 8.4:** the "remove" target beside the board for deleting a piece in click mode (deleting is by carrying
+  a piece off the board, as upstream).
+- **Manual clock at zero:** a side whose time has run out cannot be switched (upstream's count stopped a hair above
+  zero and could still switch).
+
 ---
 
 ## 11. Not determined
