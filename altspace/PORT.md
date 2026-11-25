@@ -1176,13 +1176,24 @@ has no `OnOwnershipRequest`) and write its synced variables. The port is the sam
 | 6 | A drop before the board's position is known left tints and locks | That drop now clears tints and unlocks the side's pieces; a degenerate frame (squares all reported at one point) is not taken as the board's position | "a drop before the board's position is known ..." (fails on the old `Piece.ts`) |
 | 7 | `gameObject.host?.releaseGrab()` instead of `GameObject.ReleaseGrab()` | Uses `ReleaseGrab()` (the same call underneath: no change in behaviour, so no test can fail before it) | "End Game while a piece is held lets go of it" covers the path |
 
-Known issues left: none from the review. Found in this pass, outside the game's code: in editor Play mode a click on
-a piece never reaches the page, because the SDK's `BSScene.Click` throws on the `BSPlayerEvents` that every
-BS Grababble gets with a null `onClick` (TESTS.md, rung 3). Squares, buttons and grabs work, and a capture can be made
-by clicking the target square beside the piece; choosing an opponent's piece by clicking it, and `input="click"`
-choosing a piece, do not work there. The fix belongs in the SDK; whether the app is affected is not known (rung 5).
-A game-side workaround (pieces on a layer the pointer passes through, every click going to the square) would rework
-click-to-move and is not made blind.
+Known issues left: none from the review. Found in that pass, outside the game's code: in editor Play mode a click on
+a piece never reached the page, because the SDK's `BSScene.Click` throws on the `BSPlayerEvents` that every
+BS Grababble gets with a null `onClick` (TESTS.md, rung 3). Closed in the kit (10.9); the SDK fix is still Shane's.
+
+### 10.9 Re-sync to portkit c971100 (2026-11-25)
+
+The kit is portkit **c971100** (`tools/sync.sh chess-table`; 110 kit tests). No game code changed; the bindings hash
+stays `570f51b0...`; `npm test` 53 of 53.
+
+| What | Before | Now |
+|---|---|---|
+| Piece clicks in Play mode | A click on a piece threw in `BSScene.Click` (null `onClick`); the Play-mode tests captured by clicking the square's edge beside the captured piece (`targetAim`), and promoted on the empty g8 because h8's edge is hidden behind the h7 pawn from the desktop camera | The kit builder puts a `BSPlayerEvents` with its events made on each of the 70 pieces (BS Held Events takes it). Workaround removed: `targetAim` aims at the captured piece, and the promotion is g7xh8 with the rook clicked. **Newly verified in Play mode:** a capture by clicking the opponent's piece, in rung 3 and rung 4, twice each (the page's own `click` listener heard `pawn6` and `rook1`; the game's trace ends `click pawn 6,4`, `click rook 7,7`), and promotion with capture. Black's bystander press on White's pawn now reaches the page and does nothing, instead of throwing |
+| Licence texts in `dist/` | In the bundles only | `dist/licenses/chess-table/` holds `GPL-3.0.txt`, `CC-BY-SA-4.0.txt`, `OFL-DSEG.txt` and `LiberationSans - OFL.txt`, each with its sha1 in `dist/manifest.json` |
+| Bundles | Android 1,664 KiB, Windows 2,211 KiB | Android 1,677 KiB, Windows 2,215 KiB (70 `BSPlayerEvents`, and 70 per-body launch-variable holders the kit declares on every Rigidbody although chess launches nothing: 583 behaviours against 443, graph blobs 375 against 316 KiB) |
+
+Not taken up because chess has no use for it: `checkDeal`, `Networking.HeadOf`, `InReach`, `KitStage.Attachable` /
+`StartOff`, footprint overrides (the footprint is 0.88 x 0.24 x 1.00 m, as before). Commands waiting for the sender's
+writes changes nothing here (chess sends no `SendCommand`).
 
 ---
 

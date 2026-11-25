@@ -100,15 +100,41 @@
   }
 
   /**
-   * Where to click to move onto a square: its centre, or, when a piece stands there (a capture), the square's edge
-   * nearest the camera, beside the piece. A click on a piece itself never reaches the page in Play mode: every
-   * BS Grababble gets a BSPlayerEvents whose onClick is null, and BSScene.Click throws on it (TESTS.md, kit gaps).
+   * Where to click to move onto a square: its centre, or, when a piece stands there (a capture), the piece itself.
+   * Before portkit c971100 a click on a piece never reached the page in Play mode (the SDK's BSScene.Click threw on the
+   * null onClick of the BSPlayerEvents that BS Grababble adds) and this clicked the square's edge beside it; the kit
+   * builder now gives every grabbable a BSPlayerEvents with its events made, so the capture is a click on the piece.
    */
   async function targetAim(square) {
-    const s = (await probe("pos", debug().squarePath(square))).split(" ").map(Number);
-    if (!debug().piecePath(square)) return s.join(" ");
-    const d = Math.hypot(s[0], s[2]) || 1; // the desktop camera stands at x 0, z 0
-    return s[0] - (s[0] / d) * 0.026 + " " + s[1] + " " + (s[2] - (s[2] / d) * 0.026);
+    if (debug().piecePath(square)) return pieceAim(square);
+    return (await probe("pos", debug().squarePath(square))).split(" ").map(Number).join(" ");
+  }
+
+  /** Captures this page made by clicking the captured piece: { move, piece, reached } (the page heard the click on it). */
+  const captureClicks = [];
+  /** Clicks the target of a move (targetAim); returns a function to call once the move is done, which records a capture. */
+  async function clickTarget(uci) {
+    const to = uci.slice(2, 4);
+    const target = debug().piecePath(to);
+    const name = target ? target.slice(target.lastIndexOf("/") + 1) : null;
+    if (target) listenRaw(target);
+    const mark = rawSeen.length;
+    const aim = await targetAim(to);
+    await cmd("look " + aim);
+    await cmd("click " + aim);
+    return () => {
+      if (!name) return;
+      const reached = rawSeen.slice(mark).some((e) => e.startsWith("click " + name + " "));
+      captureClicks.push({ move: uci, piece: name, reached });
+      say("INFO", uci + " capture: the click on " + name + (reached ? " reached the page" : " did not reach the page"));
+    };
+  }
+  /** Checks that every capture this page made was a click on the captured piece that reached the page. */
+  function checkCaptureClicks(want) {
+    const moves = captureClicks.map((c) => c.move).join(" ");
+    check(captureClicks.length === want && captureClicks.every((c) => c.reached),
+      "each capture is a click on the captured piece, and the page hears it (the kit's click fix)",
+      JSON.stringify(captureClicks) + " (" + moves + ")");
   }
 
   /** A move through the desktop grab: press on the piece, carry it over the target square, let go. */
@@ -139,10 +165,9 @@
       // the grab let go at once (the first grab of a Play session does, RESULTS.md S6) or where it was: the piece is
       // chosen, and a click on the square finishes the move (click-to-move)
       say("INFO", label + ": the piece came down on its own square and is chosen; finishing by clicking " + to);
-      const aim = await targetAim(to);
-      await cmd("look " + aim);
-      await cmd("click " + aim);
+      const done = await clickTarget(uci);
       await until(() => fen() !== before, 3000);
+      done();
     }
     say("INFO", label + " (grab)", "press " + pressed + "; carry " + moved);
     return fen() !== before;
@@ -166,9 +191,9 @@
       await cmd("release");
       chosen = await until(() => table().chosen === from, 3000);
     }
-    const targetPos = await targetAim(to);
-    await cmd("click " + targetPos);
+    const done = await clickTarget(uci);
     await until(() => fen() !== before, 3000);
+    done();
     say("INFO", label + " (click)", "chosen " + !!chosen + "; trace " + JSON.stringify(debug().trace().slice(-4)));
     return fen() !== before;
   }
@@ -289,15 +314,16 @@
       await sleep(500);
     }
     await until(() => table().pickerOpen, 3000);
+    checkCaptureClicks(2); // h4xg5 and g7xh8
     const pieces = await waitActive(debug().pathOf("pieces"), "True");
-    check(all && table().promotionSquare === PROMO_SQ && pieces === "True" && table().whiteToMove, "a pawn reaching g8 opens the picker, and the pending promotion is shared state", `${fen()}, promotionSquare ${table().promotionSquare}, picker ${pieces}`);
+    check(all && table().promotionSquare === PROMO_SQ && pieces === "True" && table().whiteToMove, "a pawn taking on h8 opens the picker, and the pending promotion is shared state", `${fen()}, promotionSquare ${table().promotionSquare}, picker ${pieces}`);
     const locked = (await probe("layer", debug().piecePath("b1"))) === "5" && (await probe("layer", debug().piecePath("a5"))) === "5";
     check(locked, "nothing can be picked up while the choice is pending (b1 and a5 on the UI layer)", fen());
     await clickObject("queen", "the picker's queen");
     await until(() => !table().whiteToMove, 5000);
     const after = table();
     const shut = await waitActive(debug().pathOf("pieces"), "False");
-    check(fen() === PROMO_QUEEN && !after.whiteToMove && after.promotionSquare === -1 && shut === "False", "the queen is chosen: g8 is a white queen, the picker closes, Black is to move", fen());
+    check(fen() === PROMO_QUEEN && !after.whiteToMove && after.promotionSquare === -1 && shut === "False", "the queen is chosen: h8 is a white queen, the picker closes, Black is to move", fen());
   }
 
   /** Polls a kit object's active state until it is `want` (probes run ahead of the relay). */
@@ -310,10 +336,10 @@
     return v;
   }
 
-  // A line to a promotion on an empty square (g8), with one capture (h4xg5, made by clicking beside the captured piece:
-  // targetAim), ending with the pawn on g8 and the choice open. (A capture onto h8 failed: from the desktop camera the
-  // h7 pawn stands in front of h8's near edge.)
-  const PROMO = ["h2h4", "g7g5", "h4g5", "g8f6", "g5g6", "a7a6", "g6g7", "a6a5", "g7g8"];
+  // A line to a promotion with capture (g7xh8), with one capture on the way (h4xg5), each made by clicking the captured
+  // piece (targetAim), ending with the pawn on h8 and the choice open. (Before portkit c971100 the line promoted on the
+  // empty g8: a click on a piece did not reach the page, and h8's edge is hidden behind the h7 pawn from the camera.)
+  const PROMO = ["h2h4", "g7g5", "h4g5", "g8f6", "g5g6", "a7a6", "g6g7", "a6a5", "g7h8"];
   const PROMO_AFTER = [
     "rnbqkbnr/pppppppp/8/8/7P/8/PPPPPPP1/RNBQKBNR",
     "rnbqkbnr/pppppp1p/8/6p1/7P/8/PPPPPPP1/RNBQKBNR",
@@ -323,11 +349,11 @@
     "rnbqkb1r/1ppppp1p/p4nP1/8/8/8/PPPPPPP1/RNBQKBNR",
     "rnbqkb1r/1pppppPp/p4n2/8/8/8/PPPPPPP1/RNBQKBNR",
     "rnbqkb1r/1pppppPp/5n2/p7/8/8/PPPPPPP1/RNBQKBNR",
-    "rnbqkbPr/1ppppp1p/5n2/p7/8/8/PPPPPPP1/RNBQKBNR",
+    "rnbqkb1P/1ppppp1p/5n2/p7/8/8/PPPPPPP1/RNBQKBNR",
   ];
-  const PROMO_QUEEN = "rnbqkbQr/1ppppp1p/5n2/p7/8/8/PPPPPPP1/RNBQKBNR";
-  /** g8: x 6, y 7. */
-  const PROMO_SQ = 6 * 8 + 7;
+  const PROMO_QUEEN = "rnbqkb1Q/1ppppp1p/5n2/p7/8/8/PPPPPPP1/RNBQKBNR";
+  /** h8: x 7, y 7. */
+  const PROMO_SQ = 7 * 8 + 7;
 
   // ---- two players -------------------------------------------------------------------------------------------
   // Both pages run this. The page whose session id sorts first plays White, the other Black. They follow each other
@@ -419,7 +445,7 @@
       send({ kind: "whiteBack" });
       await clickObject("queen", "the picker's queen");
       const done = await until(() => fen() === PROMO_QUEEN && !table().whiteToMove, 5000, 100);
-      check(!!done && (await waitActive(debug().pathOf("pieces"), "False")) === "False", "White chooses the queen after the reload: g8 is a queen, the picker closes, Black to move", fen());
+      check(!!done && (await waitActive(debug().pathOf("pieces"), "False")) === "False", "White chooses the queen after the reload: h8 is a queen, the picker closes, Black to move", fen());
       await sleep(1000);
       send({ kind: "queen", stamp: await steadyStamp() });
       return;
@@ -478,9 +504,10 @@
     }
     const last = PLY.length - 1;
     if (white) {
-      // the pawn stands on g8 and the choice is open here: the picker shows, and White reloads its page
+      // the pawn stands on h8 and the choice is open here: the picker shows, and White reloads its page
       const open = await until(() => table().pickerOpen && table().promotionSquare === PROMO_SQ, 5000, 100);
-      check(!!open && (await waitActive(debug().pathOf("pieces"), "True")) === "True", "g7g8: White's picker opens and the pending promotion is shared", `promotionSquare ${table().promotionSquare}`);
+      checkCaptureClicks(2); // White's h4xg5 and g7xh8
+      check(!!open && (await waitActive(debug().pathOf("pieces"), "True")) === "True", "g7h8: White's picker opens and the pending promotion is shared", `promotionSquare ${table().promotionSquare}`);
       await sameAs(await until(() => heard.find((m) => m.kind === "digest" && m.ply === last), 20000, 250), "both pages hold the same state with the promotion pending (digest at the same version)");
       await reloadAs("white");
       return;
