@@ -48,7 +48,7 @@ Re-synced `ts/portkit` and the package to portkit `552622c`. That commit include
 items one at a time, because overlapping loads lost relay graphs and Variables in the app. It also includes
 `0880bf5`: a referee claimant starts only once its claim has stood for 1.5 s, which fixes the equal-term double
 claim, and user-state flushes go one at a time. The bundles are unchanged from the rebuild below. `npm test`:
-**53 of 53** (0 failed). `npm run build`: 502194 bytes. Export Artifacts -> `dist/`: 9 files (4 licence texts), footprint 0.88 x 0.24 x 1 m, bindings 570f51b07013d2ca2f36dbf48a01db107e487d7d.
+**53 of 53** (0 failed). `npm run build`: 502194 bytes. Export Artifacts -> `dist/`: 9 files (4 licence texts), footprint 0.88 x 0.24 x 1 m, bindings 570f51b07013d2ca2f36dbf48a01db107e487d7d. Rung 4 again on this script (pages start up to 1.5 s later now): **47 passed, 0 failed**, 0 console error lines (`playtest/evidence_multi.txt`).
 
 ## Canvas colliders, 2026-11-25 evening (portkit 476075d)
 
