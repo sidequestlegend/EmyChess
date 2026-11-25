@@ -8,7 +8,7 @@ local: script and bundles from the test server http://localhost:42300
 [main] CMD k3 probe pk1:chess-table:0 active EmyChess/ChessSet/UIHolder/Canvas/MainMenu
 [main] REPLY k3 True
 [main] PASS the kit is in the scene: pieces in their pools, the main menu showing: holder True, pawn0 active False, main menu True
-[main] PASS two players in the room: [{"id":1,"name":"Main Editor","sid":"rsess_4253981c-4a1a-4b1d-aa76-5872ddd00456"},{"id":2,"name":"Player 2","sid":"rsess_1651d751-5646-4493-bc6b-c6cd6f8dba33"}]
+[main] PASS two players in the room: [{"id":1,"name":"Main Editor","sid":"rsess_a3391943-fe3c-46f9-9f8f-d7fbba004860"},{"id":2,"name":"Player 2","sid":"rsess_330d405d-50cc-4a43-95f4-4fe1af06d624"}]
 [main] INFO Black is Main Editor
 [main] CMD k4 probe pk1:chess-table:0 pos EmyChess/ChessSet/UIHolder/Canvas/MainMenu/BlackJoin
 [main] REPLY k4 -0.422 0.467 0.641
@@ -43,23 +43,23 @@ local: script and bundles from the test server http://localhost:42300
 [main] REPLY k16 0.156 0.482 0.631
 [main] CMD k17 look 0.156 0.482 0.631
 [main] REPLY k17 ok camera at 0.00,1.60,0.00
-[main] INFO g7g5 press @16671
+[main] INFO g7g5 press @17842
 [main] CMD k18 press 0.156 0.5172 0.756
 [main] REPLY k18 ok screen 626,489 of 1285x842
 [main] CMD k19 wait 20
 [main] REPLY k19 ok
-[main] INFO g7g5 carry @16806
+[main] INFO g7g5 carry @17964
 [main] CMD k20 pointer 0.156 0.5172 0.631
 [main] REPLY k20 ok screen 643,431 of 1285x842
 [main] CMD k21 wait 20
 [main] REPLY k21 ok
 [main] CMD k22 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn6
 [main] REPLY k22 0.156 0.504 0.756
-[main] INFO g7g5 held at 0.156 0.504 0.756 @16903
+[main] INFO g7g5 held at 0.156 0.504 0.756 @18060
 [main] CMD k23 release
 [main] REPLY k23 ok
-[main] INFO g7g5 released @16921
-[main] INFO g7g5 raw events: ["grab pawn6 @16722","drop pawn6 @16914"]
+[main] INFO g7g5 released @18077
+[main] INFO g7g5 raw events: ["grab pawn6 @17889","drop pawn6 @18084"]
 [main] INFO g7g5 trace: ["click pawn 4,1","pickup pawn 6,6 grabbable true","drop pawn 6,6 held true picked true at (0.15625, 0.48125, 0.75625)"] frame a1 (0, 0)
 [main] INFO g7g5: the piece came down on its own square and is chosen; finishing by clicking g5
 [main] CMD k24 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g5
@@ -104,7 +104,7 @@ local: script and bundles from the test server http://localhost:42300
 [main] CMD k3 probe pk1:chess-table:0 active EmyChess/ChessSet/UIHolder/Canvas/MainMenu
 [main] REPLY k3 False
 [main] PASS the kit is in the scene again: holder True, pawn0 active True, main menu False
-[main] PASS two players in the room: [{"id":2,"name":"Player 2","sid":"rsess_1651d751-5646-4493-bc6b-c6cd6f8dba33"},{"id":3,"name":"Main Editor","sid":"rsess_dff1af5c-57c7-45c1-a708-60b8e700d7b6"}]
+[main] PASS two players in the room: [{"id":2,"name":"Player 2","sid":"rsess_330d405d-50cc-4a43-95f4-4fe1af06d624"},{"id":3,"name":"Main Editor","sid":"rsess_2351de10-a8fc-4ab3-8068-91a1c78e1872"}]
 [main] INFO Black is Main Editor (back after a reload)
 [main] PASS after reloading its page Black sees the position (late join): rnbqkb1r/pppppp1p/5n2/6P1/8/8/PPPPPPP1/RNBQKBNR
 [main] PASS Black is still Black after the reload (sides are user ids): Main Editor / Main Editor
@@ -120,23 +120,23 @@ local: script and bundles from the test server http://localhost:42300
 [main] REPLY k7 -0.219 0.482 0.694
 [main] CMD k8 look -0.219 0.482 0.694
 [main] REPLY k8 ok camera at 0.00,1.60,0.00
-[main] INFO a7a6 press @14000
+[main] INFO a7a6 press @13846
 [main] CMD k9 press -0.219 0.5172 0.756
 [main] REPLY k9 ok screen 653,459 of 1285x842
 [main] CMD k10 wait 20
 [main] REPLY k10 ok
-[main] INFO a7a6 carry @14125
+[main] INFO a7a6 carry @13951
 [main] CMD k11 pointer -0.219 0.5172 0.694
 [main] REPLY k11 ok screen 643,432 of 1285x842
 [main] CMD k12 wait 20
 [main] REPLY k12 ok
 [main] CMD k13 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn0
 [main] REPLY k13 -0.219 0.504 0.756
-[main] INFO a7a6 held at -0.219 0.504 0.756 @14244
+[main] INFO a7a6 held at -0.219 0.504 0.756 @14046
 [main] CMD k14 release
 [main] REPLY k14 ok
-[main] INFO a7a6 released @14265
-[main] INFO a7a6 raw events: ["grab pawn0 @14036","drop pawn0 @14255"]
+[main] INFO a7a6 released @14063
+[main] INFO a7a6 raw events: ["grab pawn0 @13874","drop pawn0 @14056"]
 [main] INFO a7a6 trace: ["pickup pawn 0,6 grabbable true","drop pawn 0,6 held true picked true at (-0.21875, 0.48125, 0.75625)"] frame a1 (0, 0)
 [main] INFO a7a6: the piece came down on its own square and is chosen; finishing by clicking a6
 [main] CMD k15 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/a6
@@ -173,7 +173,7 @@ local: script and bundles from the test server http://localhost:42300
 [main] REPLY k26 5
 [main] PASS Black cannot move while White's choice is pending: rnbqkb1P/1ppppp1p/5n2/p7/8/8/PPPPPPP1/RNBQKBNR
 [main] PASS White's queen (chosen after White's reload) arrives at Black, and it is Black's move: rnbqkb1Q/1ppppp1p/5n2/p7/8/8/PPPPPPP1/RNBQKBNR
-[main] PASS both pages reach the same state after the promotion (digest at the same version): 23:c63f17a1 21b6eadd / 23:c63f17a1 21b6eadd
+[main] PASS both pages reach the same state after the promotion (digest at the same version): 22:0583d82e 21b6eadd / 22:0583d82e 21b6eadd
 [main] INFO page result 14 passed, 0 failed
 [main] DONE
 [vp-mppma3ee0803] INFO vp-mppma3ee0803 in Play, page port 42200
@@ -185,7 +185,7 @@ local: script and bundles from the test server http://localhost:42300
 [vp-mppma3ee0803] CMD k3 probe pk1:chess-table:0 active EmyChess/ChessSet/UIHolder/Canvas/MainMenu
 [vp-mppma3ee0803] REPLY k3 True
 [vp-mppma3ee0803] PASS the kit is in the scene: pieces in their pools, the main menu showing: holder True, pawn0 active False, main menu True
-[vp-mppma3ee0803] PASS two players in the room: [{"id":1,"name":"Main Editor","sid":"rsess_4253981c-4a1a-4b1d-aa76-5872ddd00456"},{"id":2,"name":"Player 2","sid":"rsess_1651d751-5646-4493-bc6b-c6cd6f8dba33"}]
+[vp-mppma3ee0803] PASS two players in the room: [{"id":1,"name":"Main Editor","sid":"rsess_a3391943-fe3c-46f9-9f8f-d7fbba004860"},{"id":2,"name":"Player 2","sid":"rsess_330d405d-50cc-4a43-95f4-4fe1af06d624"}]
 [vp-mppma3ee0803] INFO White is Player 2
 [vp-mppma3ee0803] CMD k4 probe pk1:chess-table:0 pos EmyChess/ChessSet/UIHolder/Canvas/MainMenu/WhiteJoin
 [vp-mppma3ee0803] REPLY k4 -0.422 0.467 0.561
@@ -213,23 +213,23 @@ local: script and bundles from the test server http://localhost:42300
 [vp-mppma3ee0803] REPLY k13 0.219 0.482 0.569
 [vp-mppma3ee0803] CMD k14 look 0.219 0.482 0.569
 [vp-mppma3ee0803] REPLY k14 ok camera at 0.00,1.60,0.00
-[vp-mppma3ee0803] INFO h2h4 press @9459
+[vp-mppma3ee0803] INFO h2h4 press @9757
 [vp-mppma3ee0803] CMD k15 press 0.219 0.5172 0.444
 [vp-mppma3ee0803] REPLY k15 ok screen 1303,307 of 2560x702
 [vp-mppma3ee0803] CMD k16 wait 20
 [vp-mppma3ee0803] REPLY k16 ok
-[vp-mppma3ee0803] INFO h2h4 carry @9599
+[vp-mppma3ee0803] INFO h2h4 carry @9879
 [vp-mppma3ee0803] CMD k17 pointer 0.219 0.5172 0.569
 [vp-mppma3ee0803] REPLY k17 ok screen 1280,359 of 2560x702
 [vp-mppma3ee0803] CMD k18 wait 20
 [vp-mppma3ee0803] REPLY k18 ok
 [vp-mppma3ee0803] CMD k19 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn15
 [vp-mppma3ee0803] REPLY k19 0.219 0.504 0.444
-[vp-mppma3ee0803] INFO h2h4 held at 0.219 0.504 0.444 @9715
+[vp-mppma3ee0803] INFO h2h4 held at 0.219 0.504 0.444 @9964
 [vp-mppma3ee0803] CMD k20 release
 [vp-mppma3ee0803] REPLY k20 ok
-[vp-mppma3ee0803] INFO h2h4 released @9731
-[vp-mppma3ee0803] INFO h2h4 raw events: ["grab pawn15 @9520","drop pawn15 @9735"]
+[vp-mppma3ee0803] INFO h2h4 released @9979
+[vp-mppma3ee0803] INFO h2h4 raw events: ["grab pawn15 @9819","drop pawn15 @9994"]
 [vp-mppma3ee0803] INFO h2h4 trace: ["pickup pawn 7,1 grabbable true","drop pawn 7,1 held true picked true at (0.21875, 0.48125, 0.44375)"] frame a1 (0, 0)
 [vp-mppma3ee0803] INFO h2h4: the piece came down on its own square and is chosen; finishing by clicking h4
 [vp-mppma3ee0803] CMD k21 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/h4
@@ -250,74 +250,74 @@ local: script and bundles from the test server http://localhost:42300
 [vp-mppma3ee0803] CMD k27 click 0.219 0.5172 0.569
 [vp-mppma3ee0803] REPLY k27 ok screen 1280,351 of 2560x702
 [vp-mppma3ee0803] INFO h4g5 click piece: ok screen 1280,351 of 2560x702 raw listening (layer 20)
-[vp-mppma3ee0803] CMD k28 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn6
-[vp-mppma3ee0803] REPLY k28 0.156 0.504 0.631
-[vp-mppma3ee0803] CMD k29 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g5
-[vp-mppma3ee0803] REPLY k29 0.156 0.482 0.631
-[vp-mppma3ee0803] CMD k30 look 0.156 0.5172 0.631
-[vp-mppma3ee0803] REPLY k30 ok camera at 0.00,1.60,0.00
-[vp-mppma3ee0803] CMD k31 click 0.156 0.5172 0.631
-[vp-mppma3ee0803] REPLY k31 ok screen 1280,351 of 2560x702
+[vp-mppma3ee0803] INFO h4g5: the quick click on h4 registered nothing; holding it and letting go in place
+[vp-mppma3ee0803] CMD k28 press 0.219 0.5172 0.569
+[vp-mppma3ee0803] REPLY k28 ok screen 1280,351 of 2560x702
+[vp-mppma3ee0803] CMD k29 wait 20
+[vp-mppma3ee0803] REPLY k29 ok
+[vp-mppma3ee0803] CMD k30 release
+[vp-mppma3ee0803] REPLY k30 ok
+[vp-mppma3ee0803] CMD k31 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn6
+[vp-mppma3ee0803] REPLY k31 0.156 0.504 0.631
+[vp-mppma3ee0803] CMD k32 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g5
+[vp-mppma3ee0803] REPLY k32 0.156 0.482 0.631
+[vp-mppma3ee0803] CMD k33 look 0.156 0.5172 0.631
+[vp-mppma3ee0803] REPLY k33 ok camera at 0.00,1.60,0.00
+[vp-mppma3ee0803] CMD k34 click 0.156 0.5172 0.631
+[vp-mppma3ee0803] REPLY k34 ok screen 1280,351 of 2560x702
 [vp-mppma3ee0803] INFO h4g5 capture: the click on pawn6 reached the page
 [vp-mppma3ee0803] INFO h4g5 (click): chosen true; trace ["drop pawn 7,1 held true picked true at (0.21875, 0.48125, 0.44375)","pickup pawn 7,3 grabbable true","drop pawn 7,3 held true picked true at (0.21875, 0.48125, 0.56875)","click pawn 6,4"]
 [vp-mppma3ee0803] PASS h4g5 played by White: rnbqkbnr/pppppp1p/8/6P1/8/8/PPPPPPP1/RNBQKBNR
 [vp-mppma3ee0803] PASS g8f6 arrives at the other player: rnbqkb1r/pppppp1p/5n2/6P1/8/8/PPPPPPP1/RNBQKBNR
-[vp-mppma3ee0803] PASS Black's page, reloaded, holds the same state as White's (digest at the same version): 13:17dfac2f fb9373cb / 13:17dfac2f fb9373cb
-[vp-mppma3ee0803] CMD k32 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn15
-[vp-mppma3ee0803] REPLY k32 0.156 0.504 0.631
-[vp-mppma3ee0803] CMD k33 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g5
-[vp-mppma3ee0803] REPLY k33 0.156 0.482 0.631
+[vp-mppma3ee0803] PASS Black's page, reloaded, holds the same state as White's (digest at the same version): 12:e2baf122 fb9373cb / 12:e2baf122 fb9373cb
+[vp-mppma3ee0803] CMD k35 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn15
+[vp-mppma3ee0803] REPLY k35 0.156 0.504 0.631
+[vp-mppma3ee0803] CMD k36 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g5
+[vp-mppma3ee0803] REPLY k36 0.156 0.482 0.631
 [vp-mppma3ee0803] INFO g5g6 raw: listening (layer 20)
-[vp-mppma3ee0803] CMD k34 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g5
-[vp-mppma3ee0803] REPLY k34 0.156 0.482 0.631
-[vp-mppma3ee0803] CMD k35 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g6
-[vp-mppma3ee0803] REPLY k35 0.156 0.482 0.694
-[vp-mppma3ee0803] CMD k36 look 0.156 0.482 0.694
-[vp-mppma3ee0803] REPLY k36 ok camera at 0.00,1.60,0.00
-[vp-mppma3ee0803] INFO g5g6 press @36332
-[vp-mppma3ee0803] CMD k37 press 0.156 0.5172 0.631
-[vp-mppma3ee0803] REPLY k37 ok screen 1287,335 of 2560x702
-[vp-mppma3ee0803] CMD k38 wait 20
-[vp-mppma3ee0803] REPLY k38 ok
-[vp-mppma3ee0803] INFO g5g6 carry @36448
-[vp-mppma3ee0803] CMD k39 pointer 0.156 0.5172 0.694
-[vp-mppma3ee0803] REPLY k39 ok screen 1280,360 of 2560x702
-[vp-mppma3ee0803] CMD k40 wait 20
-[vp-mppma3ee0803] REPLY k40 ok
-[vp-mppma3ee0803] CMD k41 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn15
-[vp-mppma3ee0803] REPLY k41 0.156 0.504 0.631
-[vp-mppma3ee0803] INFO g5g6 held at 0.156 0.504 0.631 @36560
-[vp-mppma3ee0803] CMD k42 release
-[vp-mppma3ee0803] REPLY k42 ok
-[vp-mppma3ee0803] INFO g5g6 released @36577
-[vp-mppma3ee0803] INFO g5g6 raw events: ["grab pawn15 @20171","drop pawn15 @20193","click pawn6 @20360","grab pawn15 @36372","drop pawn15 @36570"]
+[vp-mppma3ee0803] CMD k37 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g5
+[vp-mppma3ee0803] REPLY k37 0.156 0.482 0.631
+[vp-mppma3ee0803] CMD k38 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g6
+[vp-mppma3ee0803] REPLY k38 0.156 0.482 0.694
+[vp-mppma3ee0803] CMD k39 look 0.156 0.482 0.694
+[vp-mppma3ee0803] REPLY k39 ok camera at 0.00,1.60,0.00
+[vp-mppma3ee0803] INFO g5g6 press @39318
+[vp-mppma3ee0803] CMD k40 press 0.156 0.5172 0.631
+[vp-mppma3ee0803] REPLY k40 ok screen 1287,335 of 2560x702
+[vp-mppma3ee0803] CMD k41 wait 20
+[vp-mppma3ee0803] REPLY k41 ok
+[vp-mppma3ee0803] INFO g5g6 carry @39404
+[vp-mppma3ee0803] CMD k42 pointer 0.156 0.5172 0.694
+[vp-mppma3ee0803] REPLY k42 ok screen 1280,360 of 2560x702
+[vp-mppma3ee0803] CMD k43 wait 20
+[vp-mppma3ee0803] REPLY k43 ok
+[vp-mppma3ee0803] CMD k44 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn15
+[vp-mppma3ee0803] REPLY k44 0.156 0.504 0.631
+[vp-mppma3ee0803] INFO g5g6 held at 0.156 0.504 0.631 @39488
+[vp-mppma3ee0803] CMD k45 release
+[vp-mppma3ee0803] REPLY k45 ok
+[vp-mppma3ee0803] INFO g5g6 released @39502
+[vp-mppma3ee0803] INFO g5g6 raw events: ["grab pawn15 @23232","drop pawn15 @23332","click pawn6 @23483","grab pawn15 @39352","drop pawn15 @39513"]
 [vp-mppma3ee0803] INFO g5g6 trace: ["drop pawn 7,3 held true picked true at (0.21875, 0.48125, 0.56875)","click pawn 6,4","pickup pawn 6,4 grabbable true","drop pawn 6,4 held true picked true at (0.15625, 0.48125, 0.63125)"] frame a1 (0, 0)
 [vp-mppma3ee0803] INFO g5g6: the piece came down on its own square and is chosen; finishing by clicking g6
-[vp-mppma3ee0803] CMD k43 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g6
-[vp-mppma3ee0803] REPLY k43 0.156 0.482 0.694
-[vp-mppma3ee0803] CMD k44 look 0.156 0.482 0.694
-[vp-mppma3ee0803] REPLY k44 ok camera at 0.00,1.60,0.00
-[vp-mppma3ee0803] CMD k45 click 0.156 0.482 0.694
-[vp-mppma3ee0803] REPLY k45 ok screen 1280,351 of 2560x702
+[vp-mppma3ee0803] CMD k46 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g6
+[vp-mppma3ee0803] REPLY k46 0.156 0.482 0.694
+[vp-mppma3ee0803] CMD k47 look 0.156 0.482 0.694
+[vp-mppma3ee0803] REPLY k47 ok camera at 0.00,1.60,0.00
+[vp-mppma3ee0803] CMD k48 click 0.156 0.482 0.694
+[vp-mppma3ee0803] REPLY k48 ok screen 1280,351 of 2560x702
 [vp-mppma3ee0803] INFO g5g6 (grab): press ok screen 1287,335 of 2560x702; carry ok screen 1280,360 of 2560x702
 [vp-mppma3ee0803] PASS g5g6 played by White: rnbqkb1r/pppppp1p/5nP1/8/8/8/PPPPPPP1/RNBQKBNR
 [vp-mppma3ee0803] PASS a7a6 arrives at the other player: rnbqkb1r/1ppppp1p/p4nP1/8/8/8/PPPPPPP1/RNBQKBNR
-[vp-mppma3ee0803] CMD k46 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn15
-[vp-mppma3ee0803] REPLY k46 0.156 0.504 0.694
-[vp-mppma3ee0803] CMD k47 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g6
-[vp-mppma3ee0803] REPLY k47 0.156 0.482 0.694
-[vp-mppma3ee0803] CMD k48 look 0.156 0.5172 0.694
-[vp-mppma3ee0803] REPLY k48 ok camera at 0.00,1.60,0.00
-[vp-mppma3ee0803] CMD k49 click 0.156 0.5172 0.694
-[vp-mppma3ee0803] REPLY k49 ok screen 1280,351 of 2560x702
+[vp-mppma3ee0803] CMD k49 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn15
+[vp-mppma3ee0803] REPLY k49 0.156 0.504 0.694
+[vp-mppma3ee0803] CMD k50 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g6
+[vp-mppma3ee0803] REPLY k50 0.156 0.482 0.694
+[vp-mppma3ee0803] CMD k51 look 0.156 0.5172 0.694
+[vp-mppma3ee0803] REPLY k51 ok camera at 0.00,1.60,0.00
+[vp-mppma3ee0803] CMD k52 click 0.156 0.5172 0.694
+[vp-mppma3ee0803] REPLY k52 ok screen 1280,351 of 2560x702
 [vp-mppma3ee0803] INFO g6g7 click piece: ok screen 1280,351 of 2560x702 raw listening (layer 20)
-[vp-mppma3ee0803] INFO g6g7: the quick click on g6 registered nothing; holding it and letting go in place
-[vp-mppma3ee0803] CMD k50 press 0.156 0.5172 0.694
-[vp-mppma3ee0803] REPLY k50 ok screen 1280,351 of 2560x702
-[vp-mppma3ee0803] CMD k51 wait 20
-[vp-mppma3ee0803] REPLY k51 ok
-[vp-mppma3ee0803] CMD k52 release
-[vp-mppma3ee0803] REPLY k52 ok
 [vp-mppma3ee0803] CMD k53 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/squares/g7
 [vp-mppma3ee0803] REPLY k53 0.156 0.482 0.756
 [vp-mppma3ee0803] CMD k54 look 0.156 0.482 0.756
@@ -338,23 +338,23 @@ local: script and bundles from the test server http://localhost:42300
 [vp-mppma3ee0803] REPLY k59 0.219 0.482 0.819
 [vp-mppma3ee0803] CMD k60 look 0.219 0.482 0.819
 [vp-mppma3ee0803] REPLY k60 ok camera at 0.00,1.60,0.00
-[vp-mppma3ee0803] INFO g7h8 press @54528
+[vp-mppma3ee0803] INFO g7h8 press @53874
 [vp-mppma3ee0803] CMD k61 press 0.156 0.5172 0.756
 [vp-mppma3ee0803] REPLY k61 ok screen 1260,333 of 2560x702
 [vp-mppma3ee0803] CMD k62 wait 20
 [vp-mppma3ee0803] REPLY k62 ok
-[vp-mppma3ee0803] INFO g7h8 carry @54644
+[vp-mppma3ee0803] INFO g7h8 carry @53976
 [vp-mppma3ee0803] CMD k63 pointer 0.219 0.5172 0.819
 [vp-mppma3ee0803] REPLY k63 ok screen 1280,360 of 2560x702
 [vp-mppma3ee0803] CMD k64 wait 20
 [vp-mppma3ee0803] REPLY k64 ok
 [vp-mppma3ee0803] CMD k65 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/pawn15
 [vp-mppma3ee0803] REPLY k65 0.156 0.504 0.756
-[vp-mppma3ee0803] INFO g7h8 held at 0.156 0.504 0.756 @54754
+[vp-mppma3ee0803] INFO g7h8 held at 0.156 0.504 0.756 @54063
 [vp-mppma3ee0803] CMD k66 release
 [vp-mppma3ee0803] REPLY k66 ok
-[vp-mppma3ee0803] INFO g7h8 released @54769
-[vp-mppma3ee0803] INFO g7h8 raw events: ["grab pawn15 @50112","drop pawn15 @50193","grab pawn15 @54572","drop pawn15 @54771"]
+[vp-mppma3ee0803] INFO g7h8 released @54079
+[vp-mppma3ee0803] INFO g7h8 raw events: ["grab pawn15 @49670","drop pawn15 @49693","grab pawn15 @53912","drop pawn15 @54072"]
 [vp-mppma3ee0803] INFO g7h8 trace: ["pickup pawn 6,5 grabbable true","drop pawn 6,5 held true picked true at (0.15625, 0.48125, 0.69375)","pickup pawn 6,6 grabbable true","drop pawn 6,6 held true picked true at (0.15625, 0.48125, 0.75625)"] frame a1 (0, 0)
 [vp-mppma3ee0803] INFO g7h8: the piece came down on its own square and is chosen; finishing by clicking h8
 [vp-mppma3ee0803] CMD k67 probe pk1:chess-table:0 pos EmyChess/ChessSet/Board/pieces_parent/rook1
@@ -370,9 +370,11 @@ local: script and bundles from the test server http://localhost:42300
 [vp-mppma3ee0803] PASS g7h8 played by White: rnbqkb1P/1ppppp1p/5n2/p7/8/8/PPPPPPP1/RNBQKBNR
 [vp-mppma3ee0803] PASS each capture is a click on the captured piece, and the page hears it (the kit's click fix): [{"move":"h4g5","piece":"pawn6","reached":true},{"move":"g7h8","piece":"rook1","reached":true}] (h4g5 g7h8)
 [vp-mppma3ee0803] CMD k71 probe pk1:chess-table:0 active EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces
-[vp-mppma3ee0803] REPLY k71 True
+[vp-mppma3ee0803] REPLY k71 False
+[vp-mppma3ee0803] CMD k72 probe pk1:chess-table:0 active EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces
+[vp-mppma3ee0803] REPLY k72 True
 [vp-mppma3ee0803] PASS g7h8: White's picker opens and the pending promotion is shared: promotionSquare 63
-[vp-mppma3ee0803] PASS both pages hold the same state with the promotion pending (digest at the same version): 22:370a1141 9dee00a6 / 22:370a1141 9dee00a6
+[vp-mppma3ee0803] PASS both pages hold the same state with the promotion pending (digest at the same version): 21:e4979fa9 9dee00a6 / 21:e4979fa9 9dee00a6
 [vp-mppma3ee0803] INFO White reloads its page
 [vp-mppma3ee0803] PASS the kit loads from a hand-written bs-snippet and the instance starts:
 [vp-mppma3ee0803] CMD k1 probe pk1:chess-table:0 exists .
@@ -382,7 +384,7 @@ local: script and bundles from the test server http://localhost:42300
 [vp-mppma3ee0803] CMD k3 probe pk1:chess-table:0 active EmyChess/ChessSet/UIHolder/Canvas/MainMenu
 [vp-mppma3ee0803] REPLY k3 False
 [vp-mppma3ee0803] PASS the kit is in the scene again: holder True, pawn0 active True, main menu False
-[vp-mppma3ee0803] PASS two players in the room: [{"id":3,"name":"Main Editor","sid":"rsess_dff1af5c-57c7-45c1-a708-60b8e700d7b6"},{"id":4,"name":"Player 2","sid":"rsess_94415599-50ee-448d-9cf2-1a90c07674b9"}]
+[vp-mppma3ee0803] PASS two players in the room: [{"id":3,"name":"Main Editor","sid":"rsess_2351de10-a8fc-4ab3-8068-91a1c78e1872"},{"id":4,"name":"Player 2","sid":"rsess_9f2779d5-2ee1-4a31-88cf-d8a20a87fb3c"}]
 [vp-mppma3ee0803] INFO White is Player 2 (back after a reload)
 [vp-mppma3ee0803] CMD k4 probe pk1:chess-table:0 active EmyChess/ChessSet/Board/additional_transforms/PromotionPicker/Pieces
 [vp-mppma3ee0803] REPLY k4 True

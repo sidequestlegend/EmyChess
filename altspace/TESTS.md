@@ -42,6 +42,21 @@ portkit/tools/playtest.sh altspace altspace/playtest/single.json chess-table   r
 portkit/tools/playtest.sh altspace altspace/playtest/multi.json chess-table    rung 4
 ```
 
+## Canvas colliders, 2026-11-25 evening (portkit 476075d)
+
+In world 9d7311 the SDK's `BSKitItem` gave every world-space canvas without a BoxCollider a solid one when the kit
+loaded: rect x scale, on the canvas's layer. rp-toolkit's head-label canvas then pushed its wearer about (measured in
+the hub's Play mode, portkit GAPS.md "Fourth pass"). Re-synced to portkit `476075d`, whose builder gives every
+world-space canvas a trigger box of its own first, and whose `PortKit/Kit/Check` fails a canvas that would end up
+solid. Rebuilt:
+
+- Build Prefabs: 12 trigger boxes added to world-space canvases, 0 canvas boxes made triggers.
+- rung 0/1: `npm test` **53 of 53** (0 failed). `npm run build`: 499377 bytes.
+- rung 2: Check all PASS (bindings `570f51b0`, the new "canvas colliders" line, both bundles). Android 1676 KiB, Windows 2212 KiB.
+- rung 3 (`playtest/single.json`, chess-single): **28 passed, 0 failed**, 0 console error lines (`playtest/evidence_single.txt`).
+- rung 4 (`playtest/multi.json`, chess-multi): **47 passed, 0 failed**, 0 console error lines (`playtest/evidence_multi.txt`).
+- `dist/` exported: 9 files (4 licence texts), footprint 0.88 x 0.24 x 1 m, bindings 570f51b07013d2ca2f36dbf48a01db107e487d7d.
+
 ## Rung 0: static
 
 `npm run typecheck` (tsc, strict) and `npm run lint` (only the platform adapters touch the page or the clock): clean.
