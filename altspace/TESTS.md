@@ -42,6 +42,14 @@ portkit/tools/playtest.sh altspace altspace/playtest/single.json chess-table   r
 portkit/tools/playtest.sh altspace altspace/playtest/multi.json chess-table    rung 4
 ```
 
+## Page script on portkit 552622c, 2026-11-25 evening
+
+Re-synced `ts/portkit` and the package to portkit `552622c`. That commit includes `425bd55`: the page loads kit
+items one at a time, because overlapping loads lost relay graphs and Variables in the app. It also includes
+`0880bf5`: a referee claimant starts only once its claim has stood for 1.5 s, which fixes the equal-term double
+claim, and user-state flushes go one at a time. The bundles are unchanged from the rebuild below. `npm test`:
+**53 of 53** (0 failed). `npm run build`: 502194 bytes. Export Artifacts -> `dist/`: 9 files (4 licence texts), footprint 0.88 x 0.24 x 1 m, bindings 570f51b07013d2ca2f36dbf48a01db107e487d7d.
+
 ## Canvas colliders, 2026-11-25 evening (portkit 476075d)
 
 In world 9d7311 the SDK's `BSKitItem` gave every world-space canvas without a BoxCollider a solid one when the kit
